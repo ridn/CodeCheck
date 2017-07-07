@@ -44,6 +44,7 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         homeButton = app.getGUI().initChildButton(progressionToolbar, VIEW_SHOW_ICON.toString(),VIEW_SHOW_TOOLTIP.toString(), false);
 
         FlowPane fileToolbar =  (FlowPane)app.getGUI().getTopToolbarPane().getChildren().get(0);
+        renameButton = app.getGUI().initChildButton(fileToolbar, VIEW_SHOW_ICON.toString(),VIEW_SHOW_TOOLTIP.toString(), false);
         aboutButton = app.getGUI().initChildButton(fileToolbar, VIEW_SHOW_ICON.toString(),VIEW_SHOW_TOOLTIP.toString(), false);
 
         app.getGUI().getTopToolbarPane().getChildren().add(progressionToolbar);
