@@ -11,6 +11,7 @@ import djf.components.AppWorkspaceComponent;
 import static djf.settings.AppPropertyType.VIEW_SHOW_ICON;
 import static djf.settings.AppPropertyType.VIEW_SHOW_TOOLTIP;
 import javafx.scene.control.Button;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 
 /**
@@ -42,10 +43,14 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         nextButton = app.getGUI().initChildButton(progressionToolbar, VIEW_SHOW_ICON.toString(),VIEW_SHOW_TOOLTIP.toString(), false);
         homeButton = app.getGUI().initChildButton(progressionToolbar, VIEW_SHOW_ICON.toString(),VIEW_SHOW_TOOLTIP.toString(), false);
 
+        FlowPane fileToolbar =  (FlowPane)app.getGUI().getTopToolbarPane().getChildren().get(0);
+        aboutButton = app.getGUI().initChildButton(fileToolbar, VIEW_SHOW_ICON.toString(),VIEW_SHOW_TOOLTIP.toString(), false);
+
         app.getGUI().getTopToolbarPane().getChildren().add(progressionToolbar);
 
     }
     private void initControllers() {
+        controller = new CodeCheckWorkspaceViewController();
         
     }
     private void initControlBinding() {
