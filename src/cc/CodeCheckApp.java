@@ -7,6 +7,7 @@ package cc;
 
 import cc.data.CodeCheckProjectData;
 import cc.startup.CodeCheckWelcomeView;
+import cc.workspace.CodeCheckWorkspaceView;
 import djf.AppTemplate;
 import java.util.Locale;
 import javafx.application.Application;
@@ -14,10 +15,6 @@ import static javafx.application.Application.launch;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import properties_manager.PropertiesManager;
@@ -36,8 +33,10 @@ public class CodeCheckApp extends AppTemplate {
         // CONSTRUCT ALL FOUR COMPONENTS. NOTE THAT FOR THIS APP
         // THE WORKSPACE NEEDS THE DATA COMPONENT TO EXIST ALREADY
         // WHEN IT IS CONSTRUCTED, SO BE CAREFUL OF THE ORDER
+        
         //dataComponent = new SlideshowCreatorData(this);
-        //workspaceComponent = new SlideshowCreatorWorkspace(this);
+        
+        workspaceComponent = new CodeCheckWorkspaceView(this);
         //fileComponent = new SlideshowCreatorFiles(this);
 
     }
