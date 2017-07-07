@@ -29,6 +29,7 @@ import properties_manager.PropertiesManager;
 public class CodeCheckApp extends AppTemplate {
     CodeCheckWelcomeView appWelcomeComponent;
     private Stage appStage;
+    private Stage welcomeStage;
     
       @Override
     public void buildAppComponentsHook() {
@@ -53,22 +54,23 @@ public class CodeCheckApp extends AppTemplate {
     }
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.initStyle(StageStyle.UNDECORATED);
         appStage = primaryStage;
-        launchWelcomeView(primaryStage);
+        welcomeStage = new Stage();
+        launchWelcomeView(welcomeStage);
 
     }
     public void launchWelcomeView(Stage stage) {
         //CodeCheckProjectData data = (SlideshowCreatorData)app.getDataComponent();
         //viewer.start(app.getGUI().getWindow());
         appWelcomeComponent = new CodeCheckWelcomeView(this);
+        stage.initStyle(StageStyle.UNDECORATED);
         stage.setScene(new Scene(appWelcomeComponent));
         stage.show();
 
         //super.start(primaryStage);
     }
     public void handleWelcomeViewResponse(CodeCheckProjectData data) {
-        appStage.close();
+        welcomeStage.close();
         setDataComponent(data);
         super.start(appStage);
 
@@ -77,8 +79,8 @@ public class CodeCheckApp extends AppTemplate {
     protected void setDataComponent(CodeCheckProjectData data) {
         dataComponent = data;
     }
-    public Stage getStage (){
-        return appStage;
+    public Stage getWelcomeStage (){
+        return welcomeStage;
     }
     
 }

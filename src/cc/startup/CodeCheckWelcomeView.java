@@ -58,7 +58,7 @@ public class CodeCheckWelcomeView extends BorderPane {
         
     }
    private void initWindow() {
-        primaryStage = app.getStage();
+        primaryStage = app.getWelcomeStage();
         Screen screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();
 
