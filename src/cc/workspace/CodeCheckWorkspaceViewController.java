@@ -8,6 +8,8 @@ package cc.workspace;
 import cc.CodeCheckApp;
 import java.net.URL;
 import java.util.Arrays;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -88,23 +90,32 @@ class CodeCheckWorkspaceViewController {
         
     }
     public void printMessageToLog(String message,MESSAGE_TYPE type) {
+        /*
+        TextField text = new TextField(message);
+        text.setEditable(false);
+        text.setBackground(Background.EMPTY);
+        text.setFocusTraversable(false);
+        */
         CodeCheckWorkspacePane activePane = (CodeCheckWorkspacePane)workspace.getWorkspace();
         Text logText = new Text(message + "\n"); 
-        logText.setFont(new Font(15)); 
+        //logText.setFont(new Font(15)); 
         
         switch(type){
             case MESSAGE_NORMAL:
                 logText.setFill(Color.BLACK); 
+                //text.setStyle("-fx-text-inner-color: black;");
                 break;
             case MESSAGE_SUCCESS:
                 logText.setFill(Color.GREEN); 
+                //text.setStyle("-fx-text-inner-color: green;");
                 break;
             case MESSAGE_ERROR:
                 logText.setFill(Color.RED); 
+                //text.setStyle("-fx-text-inner-color: red;");
                 break;
 
         }
-        activePane.actionLog.getChildren().add(logText);
+        activePane.actionLog.getChildren().addAll(logText);
     }
 
 }

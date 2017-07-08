@@ -58,7 +58,9 @@ class CodeCheckWorkspacePane extends HBox{
         leftPaneSpace.setSpacing(10);
         leftPaneSpace.setPadding(new Insets(10, 10, 10, 10));
         stepTitleLabel = new Label("Step Title: " + paneIndex);
-        hintLabel = new Label("Step " + paneIndex+ " hint");
+        hintLabel = new Label("");
+        hintLabel.setWrapText(true);
+        VBox.setVgrow(hintLabel, Priority.ALWAYS);
         
         filesView = new ListView();
         filesView.setOrientation(Orientation.VERTICAL);
@@ -84,6 +86,7 @@ class CodeCheckWorkspacePane extends HBox{
         actionLog.setTextAlignment(TextAlignment.LEFT);
         actionLog.setPrefSize(300, 100);
         actionLog.setLineSpacing(5.0); 
+        actionLog.setPadding(new Insets(10, 10, 10, 10));
 
         logScrollArea.setContent(actionLog);
         logScrollArea.setFitToWidth(true);

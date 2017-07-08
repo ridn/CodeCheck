@@ -2,7 +2,9 @@
 .root{
 
 }
-
+.bordered_pane {
+    -fx-padding:5;
+}
 .welcome_panel {
     -fx-background-color: #FAFAFA;
     

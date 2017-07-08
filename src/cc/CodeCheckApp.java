@@ -14,7 +14,9 @@ import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import properties_manager.PropertiesManager;
@@ -70,6 +72,14 @@ public class CodeCheckApp extends AppTemplate {
         welcomeStage.close();
         setDataComponent(data);
         super.start(appStage);
+        Screen screen = Screen.getPrimary();
+        Rectangle2D bounds = screen.getVisualBounds();
+
+        appStage.setWidth(bounds.getWidth()/1.4);
+        appStage.setHeight(bounds.getHeight()/1.4);
+        appStage.centerOnScreen();
+        appStage.setMinWidth(615);
+        appStage.setMinHeight(350);
         
     }
     protected void setDataComponent(CodeCheckProjectData data) {

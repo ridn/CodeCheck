@@ -18,6 +18,8 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import properties_manager.PropertiesManager;
 
 /**
@@ -46,13 +48,13 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         PropertiesManager props = PropertiesManager.getPropertiesManager();
 
         progressionToolbar = new HBox();
-        progressionToolbar.setPadding(new Insets(10, 10, 10, 10));
+        progressionToolbar.setPadding(new Insets(5, 5, 5, 5));
         
         homeButton = app.getGUI().initChildButton(progressionToolbar, HOME_BUTTON_ICON.toString(),HOME_BUTTON_TEXT.toString(), false);
         prevButton = app.getGUI().initChildButton(progressionToolbar, PREV_BUTTON_ICON.toString(),PREV_BUTTON_TEXT.toString(), false);
         nextButton = app.getGUI().initChildButton(progressionToolbar, NEXT_BUTTON_ICON.toString(),NEXT_BUTTON_TEXT.toString(), false);
 
-        FlowPane fileToolbar =  (FlowPane)app.getGUI().getTopToolbarPane().getChildren().get(0);
+        FlowPane fileToolbar = app.getGUI().getFileToolbar();
         setupToolbarAsNeeded(fileToolbar);
         renameButton = app.getGUI().initChildButton(fileToolbar, RENAME_BUTTON_TEXT.toString(),RENAME_BUTTON_TEXT.toString(), false);
         aboutButton = app.getGUI().initChildButton(fileToolbar, ABOUT_BUTTON_TEXT.toString(),ABOUT_BUTTON_TEXT.toString(), false);
@@ -106,6 +108,7 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
 	URL stylesheetURL =  CodeCheckApp.class.getResource(stylesheet);
 	String stylesheetPath = stylesheetURL.toExternalForm();
         app.getGUI().getTopToolbarPane().getStyleClass().add(WORKSPACE_TOOLBAR);
+        progressionToolbar.getStyleClass().add(WORKSPACE_TOOLBAR);
 
     }
     private void setupToolbarAsNeeded(FlowPane toolbar) {
