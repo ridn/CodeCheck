@@ -9,8 +9,8 @@
 <properties>
     <property_list>
         <property name="APP_TITLE"	    value="Code Check"></property>
-	<property name="APP_LOGO"	    value="SlideshowCreatorLogo.png"></property>
-    <property name="UNTITLED_SHOW_TEXT"	    value="Untitled Slideshow"></property>
+	<property name="APP_LOGO"	    value="CodeCheck.png"></property>
+    <property name="UNTITLED_SHOW_TEXT"	    value="Untitled CodeCheck"></property>
 	<property name="APP_PATH_CSS"	    value="style/"></property>
 	<property name="APP_CSS"	    value="cc_style.css"></property>
         <property name="APP_PATH_WORK"      value="work/"></property>
@@ -18,40 +18,17 @@
         <!-- PROGRAM ICON FILES -->
         <property name="NEW_ICON"	    value="New.png"></property>
         <property name="LOAD_ICON"	    value="Load.png"></property>
-        <property name="SAVE_ICON"	    value="Save.png"></property>
-        <property name="SAVE_AS_ICON"	    value="SaveAs.png"></property>
-        <property name="ADD_ALL_IMAGES_ICON"	value="AddDIR.png"></property>
-        <property name="ADD_IMAGE_ICON"	value="addimage.png"></property>
-        <property name="REMOVE_IMAGE_ICON"	value="removeimage.png"></property>
-        <property name="UNDO_ICON"	    value="undo.png"></property>
-        <property name="REDO_ICON"	    value="redo.png"></property>
-        <property name="MOVE_SLIDE_UP_ICON"	    value="up.png"></property>
-        <property name="MOVE_SLIDE_DOWN_ICON"	    value="down.png"></property>
-        <property name="VIEW_SHOW_ICON"	    value="view.png"></property>
-        <property name="NEXT_SLIDE_ICON"	    value="next.png"></property>
-        <property name="PREV_SLIDE_ICON"	    value="prev.png"></property>
-        <property name="PLAY_ICON"	    value="play.png"></property>
-        <property name="PAUSE_ICON"	    value="pause.png"></property>
-        <property name="EXIT_ICON"          value="Exit.png"></property>
+        <property name="PREV_BUTTON_ICON"	    value="prev.png"></property>
+        <property name="NEXT_BUTTON_ICON"	    value="next.png"></property>
+        <property name="HOME_BUTTON_ICON"	    value="home.png"></property>
 
         <!-- TOOLTIPS FOR BUTTONS -->
-        <property name="NEW_TOOLTIP"		value="Create a New Slideshow"></property>
-        <property name="LOAD_TOOLTIP"		value="Load an existing Slideshow"></property>
-        <property name="SAVE_TOOLTIP"		value="Save the current Slideshow"></property>
-        <property name="SAVE_AS_TOOLTIP"		value="Save the current Slideshow as new"></property>
-        <property name="ADD_ALL_IMAGES_TOOLTIP"	value="Add all images in a directory"></property>
-        <property name="ADD_IMAGE_TOOLTIP"	value="Add specified image"></property>
-        <property name="REMOVE_IMAGE_TOOLTIP"	value="Remove selected slide"></property>
-        <property name="UNDO_TOOLTIP"	value="Undo previous action"></property>
-        <property name="REDO_TOOLTIP"	value="Redo previous action"></property>
-        <property name="MOVE_SLIDE_UP_TOOLTIP"	value="Move slide up"></property>
-        <property name="MOVE_SLIDE_DOWN_TOOLTIP"	value="Move slide down"></property>
-        <property name="VIEW_SHOW_TOOLTIP"	value="View slideshow"></property>
-        <property name="NEXT_SLIDE_TOOLTIP"	value="Next slide"></property>
-        <property name="PREV_SLIDE_TOOLTIP"	value="Previous slide"></property>
-        <property name="PLAY_TOOLTIP"	value="Play slideshow"></property>
-        <property name="PAUSE_TOOLTIP"	value="Pause slideshow"></property>
-        <property name="EXIT_TOOLTIP"		value="Exit the Application"></property>
+        <property name="NEW_TOOLTIP"		value="Create new Code Check"></property>
+        <property name="LOAD_TOOLTIP"		value="Load an existing Code Check"></property>
+        <property name="PREV_BUTTON_TOOLTIP"		value="Go to previous step"></property>
+        <property name="NEXT_BUTTON_TOOLTIP"		value="Go to next step"></property>
+        <property name="HOME_BUTTON_TOOLTIP"		value="Go to first step"></property>
+
 
         <!-- ERROR MESSAGES -->
         <property name="CLOSE_BUTTON_TEXT"              value="Close"></property>
@@ -90,30 +67,11 @@
 	<property name="WORK_FILE_EXT_DESC"		value="Slideshow"></property>
 
         <!-- WORKSPACE CONTROLS STUFF -->
-	<property name="SLIDES_HEADER_TEXT"		value="Slideshow Slides"></property>
-	<property name="ADD_IMAGE_BUTTON_TEXT"		value="+"></property>
-	<property name="REMOVE_IMAGE_BUTTON_TEXT"	value="-"></property>
-    <property name="MOVE_SLIDE_UP_BUTTON_TEXT"	value="⬆︎"></property>
-    <property name="MOVE_SLIDE_DOWN_BUTTON_TEXT"	value="⬇︎"></property>
-	<property name="FILE_NAME_COLUMN_TEXT"		value="File Name"></property>
-	<property name="CAPTION_COLUMN_TEXT"		value="Caption"></property>
-	<property name="ORIGINAL_WIDTH_COLUMN_TEXT"	value="Orig. Width"></property>
-	<property name="ORIGINAL_HEIGHT_COLUMN_TEXT"	value="Orig. Height"></property>
-	<property name="CURRENT_WIDTH_COLUMN_TEXT"	value="Current Width"></property>
-    <property name="CURRENT_HEIGHT_COLUMN_TEXT"	value="Current Height"></property>
-    <property name="ORIGIN_X_COLUMN_TEXT"	value="x Position"></property>
-    <property name="ORIGIN_Y_COLUMN_TEXT"	value="y Position"></property>
-	<property name="FILE_NAME_PROMPT_TEXT"		value="File Name:"></property>
-	<property name="PATH_PROMPT_TEXT"		value="Path:"></property>
-	<property name="CAPTION_PROMPT_TEXT"		value="Caption:"></property>
-	<property name="ORIGINAL_WIDTH_PROMPT_TEXT"	value="Original Image Width:"></property>
-	<property name="ORIGINAL_HEIGHT_PROMPT_TEXT"	value="Original Image Height:"></property>
-	<property name="CURRENT_WIDTH_PROMPT_TEXT"	value="Current Width:"></property>
-	<property name="CURRENT_HEIGHT_PROMPT_TEXT"	value="Current Height:"></property>
-    <property name="X_POS_PROMPT_TEXT"	value="X Position:"></property>
-	<property name="Y_POS_PROMPT_TEXT"	value="Y Position:"></property>
-    <property name="UPDATE_BUTTON_TEXT"		value="Update"></property>
-    <property name="SHOW_TITLE_PROMPT_TEXT"		value="Slideshow Title"></property>
+        <property name="PREV_BUTTON_TEXT"		value="Previous"></property>
+        <property name="NEXT_BUTTON_TEXT"		value="Next"></property>
+        <property name="HOME_BUTTON_TEXT"		value="Home"></property>
+        <property name="RENAME_BUTTON_TEXT"		value="Rename"></property>
+        <property name="ABOUT_BUTTON_TEXT"		value="About"></property>
 
         <!-- WORKSPACE ERROR MESSAGES -->
         <property name="INVALID_IMAGE_PATH_TITLE"       value="Invalid Image Path"></property>

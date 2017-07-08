@@ -6,13 +6,14 @@
 package cc.workspace;
 
 import cc.CodeCheckApp;
+import static cc.CodeCheckProp.*;
 import djf.components.AppDataComponent;
 import djf.components.AppWorkspaceComponent;
-import static djf.settings.AppPropertyType.VIEW_SHOW_ICON;
-import static djf.settings.AppPropertyType.VIEW_SHOW_TOOLTIP;
+import java.util.Arrays;
 import javafx.scene.control.Button;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import properties_manager.PropertiesManager;
 
 /**
  *
@@ -21,7 +22,6 @@ import javafx.scene.layout.HBox;
 public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
     private CodeCheckApp app;
     private CodeCheckWorkspaceViewController controller;
-    protected CodeCheckWorkspacePane currentWorkspacePane;
     protected CodeCheckWorkspacePane stepPanes[];
     protected HBox progressionToolbar;
     protected Button prevButton, nextButton, homeButton;
@@ -36,23 +36,55 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         initStyle();
     }
     private void initLayout() {
-        
+
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+
         progressionToolbar = new HBox();
         
-        prevButton = app.getGUI().initChildButton(progressionToolbar, VIEW_SHOW_ICON.toString(),VIEW_SHOW_TOOLTIP.toString(), false);
-        nextButton = app.getGUI().initChildButton(progressionToolbar, VIEW_SHOW_ICON.toString(),VIEW_SHOW_TOOLTIP.toString(), false);
-        homeButton = app.getGUI().initChildButton(progressionToolbar, VIEW_SHOW_ICON.toString(),VIEW_SHOW_TOOLTIP.toString(), false);
+        homeButton = app.getGUI().initChildButton(progressionToolbar, HOME_BUTTON_ICON.toString(),HOME_BUTTON_TEXT.toString(), false);
+        prevButton = app.getGUI().initChildButton(progressionToolbar, PREV_BUTTON_ICON.toString(),PREV_BUTTON_TEXT.toString(), false);
+        nextButton = app.getGUI().initChildButton(progressionToolbar, NEXT_BUTTON_ICON.toString(),NEXT_BUTTON_TEXT.toString(), false);
 
         FlowPane fileToolbar =  (FlowPane)app.getGUI().getTopToolbarPane().getChildren().get(0);
         setupToolbarAsNeeded(fileToolbar);
-        renameButton = app.getGUI().initChildButton(fileToolbar, VIEW_SHOW_ICON.toString(),VIEW_SHOW_TOOLTIP.toString(), false);
-        aboutButton = app.getGUI().initChildButton(fileToolbar, VIEW_SHOW_ICON.toString(),VIEW_SHOW_TOOLTIP.toString(), false);
+        renameButton = app.getGUI().initChildButton(fileToolbar, RENAME_BUTTON_TEXT.toString(),RENAME_BUTTON_TEXT.toString(), false);
+        aboutButton = app.getGUI().initChildButton(fileToolbar, ABOUT_BUTTON_TEXT.toString(),ABOUT_BUTTON_TEXT.toString(), false);
+        
+        stepPanes = new CodeCheckWorkspacePane[5];
+        workspace = stepPanes[0];
+        for(int i = 0; i < 5; i++) {
+            stepPanes[i] = new CodeCheckWorkspacePane(controller);
+            stepPanes[i].setStepNumber(i+1);
+        }
+
+        //USE THIS FOR BUTTONS WITHOUT ICONS
+        homeButton.setText(props.getProperty(HOME_BUTTON_TEXT.toString()));
+        prevButton.setText(props.getProperty(PREV_BUTTON_TEXT.toString()));
+        nextButton.setText(props.getProperty(NEXT_BUTTON_TEXT.toString()));
+        renameButton.setText(props.getProperty(RENAME_BUTTON_TEXT.toString()));
+        aboutButton.setText(props.getProperty(ABOUT_BUTTON_TEXT.toString()));
 
         app.getGUI().getTopToolbarPane().getChildren().add(progressionToolbar);
+        
+        setWorkspace(stepPanes[0]);
+        this.activateWorkspace(app.getGUI().getAppPane());
+
 
     }
     private void initControllers() {
-        controller = new CodeCheckWorkspaceViewController();
+        controller = new CodeCheckWorkspaceViewController(app,this);
+        
+        homeButton.setOnAction(e-> {
+            controller.handleHomeStepRequest();
+        });
+        
+        prevButton.setOnAction(e-> {
+            controller.handlePrevStepRequest();
+        });
+        
+        nextButton.setOnAction(e-> {
+            controller.handleNextStepRequest();
+        });
         
     }
     private void initControlBinding() {
@@ -65,17 +97,22 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         toolbar.getChildren().remove(2, 7);
     }
     void changeToWorkspace(int index) {
+        //System.out.println(Arrays.asList(stepPanes).toString());
+        System.out.println("Switched to step "+ (index+1));       
+        setWorkspace(stepPanes[index]);
+        System.out.println(workspaceActivated);
+        app.getGUI().getAppPane().setCenter(workspace);
         
     }
 
     @Override
     public void resetWorkspace() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void reloadWorkspace(AppDataComponent dataComponent) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

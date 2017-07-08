@@ -17,3 +17,6 @@
     -fx-font-size: 20;
     -fx-font-weight: bold;
 }
+.workspace_pane {
+    -fx-background-color:red;
+}
