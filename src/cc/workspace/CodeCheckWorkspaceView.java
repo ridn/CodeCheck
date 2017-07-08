@@ -15,6 +15,7 @@ import static djf.settings.AppPropertyType.APP_PATH_CSS;
 import java.net.URL;
 import java.util.Arrays;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
@@ -46,15 +47,20 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
     private void initLayout() {
 
         PropertiesManager props = PropertiesManager.getPropertiesManager();
+        FlowPane fileToolbar = app.getGUI().getFileToolbar();
 
+        Region spacer = new Region();
+        app.getGUI().getTopToolbarPane().getChildren().add(spacer);
         progressionToolbar = new HBox();
         progressionToolbar.setPadding(new Insets(5, 5, 5, 5));
+
+        spacer.prefWidthProperty().bind(app.getGUI().getTopToolbarPane().widthProperty().subtract(fileToolbar.widthProperty()).subtract(progressionToolbar.widthProperty()).subtract(20));
+        progressionToolbar.setAlignment(Pos.BASELINE_RIGHT);
         
         homeButton = app.getGUI().initChildButton(progressionToolbar, HOME_BUTTON_ICON.toString(),HOME_BUTTON_TEXT.toString(), false);
         prevButton = app.getGUI().initChildButton(progressionToolbar, PREV_BUTTON_ICON.toString(),PREV_BUTTON_TEXT.toString(), false);
         nextButton = app.getGUI().initChildButton(progressionToolbar, NEXT_BUTTON_ICON.toString(),NEXT_BUTTON_TEXT.toString(), false);
 
-        FlowPane fileToolbar = app.getGUI().getFileToolbar();
         setupToolbarAsNeeded(fileToolbar);
         renameButton = app.getGUI().initChildButton(fileToolbar, RENAME_BUTTON_TEXT.toString(),RENAME_BUTTON_TEXT.toString(), false);
         aboutButton = app.getGUI().initChildButton(fileToolbar, ABOUT_BUTTON_TEXT.toString(),ABOUT_BUTTON_TEXT.toString(), false);
