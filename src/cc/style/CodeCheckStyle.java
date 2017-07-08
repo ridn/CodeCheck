@@ -15,4 +15,5 @@ public class CodeCheckStyle {
     public static String WELCOME_VIEW_RECENTS_PANEL = "welcome_recents_panel";
     public static String WELCOME_VIEW_RECENTS_HEADER = "welcome_recents_header";
     public static String WORKSPACE_PANE = "workspace_pane";
+    public static String WORKSPACE_TOOLBAR = "toolbar";
 }

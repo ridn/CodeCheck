@@ -18,5 +18,9 @@
     -fx-font-weight: bold;
 }
 .workspace_pane {
-    -fx-background-color:red;
+    -fx-background-color:#ECECEC;
+}
+.toolbar {
+    -fx-background-color:#E4E4E4;
+    
 }

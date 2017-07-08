@@ -7,8 +7,13 @@ package cc.workspace;
 
 import cc.CodeCheckApp;
 import static cc.CodeCheckProp.*;
+import static cc.style.CodeCheckStyle.WORKSPACE_PANE;
+import static cc.style.CodeCheckStyle.WORKSPACE_TOOLBAR;
 import djf.components.AppDataComponent;
 import djf.components.AppWorkspaceComponent;
+import static djf.settings.AppPropertyType.APP_CSS;
+import static djf.settings.AppPropertyType.APP_PATH_CSS;
+import java.net.URL;
 import java.util.Arrays;
 import javafx.scene.control.Button;
 import javafx.scene.layout.FlowPane;
@@ -91,7 +96,13 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         
     }
     private void initStyle() {
-        
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+	String stylesheet = props.getProperty(APP_PATH_CSS);
+	stylesheet += props.getProperty(APP_CSS);
+	URL stylesheetURL =  CodeCheckApp.class.getResource(stylesheet);
+	String stylesheetPath = stylesheetURL.toExternalForm();
+        app.getGUI().getTopToolbarPane().getStyleClass().add(WORKSPACE_TOOLBAR);
+
     }
     private void setupToolbarAsNeeded(FlowPane toolbar) {
         toolbar.getChildren().remove(2, 7);

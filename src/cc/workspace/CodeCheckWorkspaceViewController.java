@@ -79,7 +79,8 @@ class CodeCheckWorkspaceViewController {
         
     }
     private void printMessageToLog(String message) {
-        
+        //CodeCheckWorkspacePane activePane = (CodeCheckWorkspacePane)workspace.getWorkspace();
+        //activePane.printMessageToLog(message);
     }
 
 }
