@@ -11,6 +11,8 @@ import static cc.style.CodeCheckStyle.WORKSPACE_PANE;
 import static djf.settings.AppPropertyType.APP_CSS;
 import static djf.settings.AppPropertyType.APP_PATH_CSS;
 import java.net.URL;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -53,19 +55,28 @@ class CodeCheckWorkspacePane extends HBox{
         
         //LEFT SIDE OF WORKSPACE
         leftPaneSpace = new VBox();
+        leftPaneSpace.setSpacing(10);
+        leftPaneSpace.setPadding(new Insets(10, 10, 10, 10));
         stepTitleLabel = new Label("Step Title: " + paneIndex);
         hintLabel = new Label("Step " + paneIndex+ " hint");
+        
+        filesView = new ListView();
+        filesView.setOrientation(Orientation.VERTICAL);
+        VBox.setVgrow(filesView, Priority.ALWAYS);
+
         testButton = new Button("test");
         removeButton = new Button("remove");
         refreshButton = new Button("refresh");
         viewButton = new Button("view");
         leftActionButtonsPane = new HBox(testButton,removeButton,refreshButton,viewButton);
         
-        leftPaneSpace.getChildren().addAll(stepTitleLabel,hintLabel,leftActionButtonsPane);
+        leftPaneSpace.getChildren().addAll(stepTitleLabel,hintLabel,filesView,leftActionButtonsPane);
 
         //RIGHT SIDE OF WORKSPACE
         rightPaneSpace = new VBox();
         rightPaneSpace.setFillWidth(true);
+        rightPaneSpace.setSpacing(10);
+        rightPaneSpace.setPadding(new Insets(10, 10, 10, 10));
 
         progressLabel = new Label("Step " + paneIndex+ " progress");
         ScrollPane logScrollArea = new ScrollPane();
@@ -77,6 +88,8 @@ class CodeCheckWorkspacePane extends HBox{
         logScrollArea.setContent(actionLog);
         logScrollArea.setFitToWidth(true);
         logScrollArea.setFitToHeight(true);
+        VBox.setVgrow(logScrollArea, Priority.ALWAYS);
+        
         rightPaneSpace.getChildren().addAll(progressLabel,logScrollArea);
 
         HBox.setHgrow(leftPaneSpace, Priority.ALWAYS);
