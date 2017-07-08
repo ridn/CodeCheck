@@ -55,7 +55,8 @@ class CodeCheckWorkspacePane extends HBox{
         leftPaneSpace = new VBox();
         testButton = new Button("test");
         removeButton = new Button("remove");
-        leftActionButtonsPane = new HBox(testButton,removeButton);
+        refreshButton = new Button("refresh");
+        leftActionButtonsPane = new HBox(testButton,removeButton,refreshButton);
         leftPaneSpace.getChildren().add(leftActionButtonsPane);
 
         rightPaneSpace = new VBox();
