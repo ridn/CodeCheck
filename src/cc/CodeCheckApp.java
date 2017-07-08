@@ -34,10 +34,10 @@ public class CodeCheckApp extends AppTemplate {
         // THE WORKSPACE NEEDS THE DATA COMPONENT TO EXIST ALREADY
         // WHEN IT IS CONSTRUCTED, SO BE CAREFUL OF THE ORDER
         
-        //dataComponent = new SlideshowCreatorData(this);
+        //dataComponent = new CodeCheckProjectData(this);
         
         workspaceComponent = new CodeCheckWorkspaceView(this);
-        //fileComponent = new SlideshowCreatorFiles(this);
+        //fileComponent = new CodeCheckFileComponent(this);
 
     }
     
@@ -59,20 +59,17 @@ public class CodeCheckApp extends AppTemplate {
 
     }
     public void launchWelcomeView(Stage stage) {
-        //CodeCheckProjectData data = (SlideshowCreatorData)app.getDataComponent();
-        //viewer.start(app.getGUI().getWindow());
+
         appWelcomeComponent = new CodeCheckWelcomeView(this);
         stage.initStyle(StageStyle.UNDECORATED);
         stage.setScene(new Scene(appWelcomeComponent));
         stage.show();
 
-        //super.start(primaryStage);
     }
     public void handleWelcomeViewResponse(CodeCheckProjectData data) {
         welcomeStage.close();
         setDataComponent(data);
         super.start(appStage);
-
         
     }
     protected void setDataComponent(CodeCheckProjectData data) {
