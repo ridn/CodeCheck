@@ -9,10 +9,10 @@
 <properties>
     <property_list>
         <property name="APP_TITLE"	    value="Code Check"></property>
-	<property name="APP_LOGO"	    value="CodeCheck.png"></property>
-    <property name="UNTITLED_SHOW_TEXT"	    value="Untitled CodeCheck"></property>
-	<property name="APP_PATH_CSS"	    value="style/"></property>
-	<property name="APP_CSS"	    value="cc_style.css"></property>
+    	<property name="APP_LOGO"	    value="CodeCheck.png"></property>
+        <property name="UNTITLED_SHOW_TEXT"	    value="Untitled CodeCheck"></property>
+    	<property name="APP_PATH_CSS"	    value="style/"></property>
+    	<property name="APP_CSS"	    value="cc_style.css"></property>
         <property name="APP_PATH_WORK"      value="work/"></property>
 
         <!-- PROGRAM ICON FILES -->
@@ -29,6 +29,22 @@
         <property name="NEXT_BUTTON_TOOLTIP"		value="Go to next step"></property>
         <property name="HOME_BUTTON_TOOLTIP"		value="Go to first step"></property>
 
+        <!-- LABELS -->
+        <property name="STEP_1_TITLE"		value="Step 1: Extract Submissions"></property>
+        <property name="STEP_2_TITLE"		value="Step 2: Rename Student Submissions"></property>
+        <property name="STEP_3_TITLE"		value="Step 3: Unzip Student Submissions"></property>
+        <property name="STEP_4_TITLE"		value="Step 4: Extract Source Code"></property>
+        <property name="STEP_5_TITLE"		value="Step 5: Code Check"></property>
+        <property name="STEP_1_HINT"		value="Select the submissions below from which to extract student work"></property>
+        <property name="STEP_2_HINT"		value="Click the Rename button to rename all submissions"></property>
+        <property name="STEP_3_HINT"		value="Select student submissions and click Unzip"></property>
+        <property name="STEP_4_HINT"		value="Select students and click Extract Code"></property>
+        <property name="STEP_5_HINT"		value="Select students and click Code Check"></property>
+        <property name="STEP_1_PROGRESS"		value="Extraction Progress"></property>
+        <property name="STEP_2_PROGRESS"		value="Rename Progress"></property>
+        <property name="STEP_3_PROGRESS"		value="Unzip Progress"></property>
+        <property name="STEP_4_PROGRESS"		value="Code Progress"></property>
+        <property name="STEP_5_PROGRESS"		value="Check Progress"></property>
 
         <!-- ERROR MESSAGES -->
         <property name="CLOSE_BUTTON_TEXT"              value="Close"></property>
@@ -61,10 +77,10 @@
         <property name="WORK_LOADED_MESSAGE"		value="The Work has been Loaded"></property>
         <property name="WORK_SAVED_MESSAGE"		value="The Work has been Saved"></property>
         <property name="SAVE_UNSAVED_WORK_MESSAGE"	value="Do you want to save your unsaved work first?"></property>
-	<property name="SAVE_WORK_TITLE"		value="Save your work"></property>
-	<property name="LOAD_WORK_TITLE"		value="Select file to load"></property>
-	<property name="WORK_FILE_EXT"			value="json"></property>
-	<property name="WORK_FILE_EXT_DESC"		value="Slideshow"></property>
+    	<property name="SAVE_WORK_TITLE"		value="Save your work"></property>
+    	<property name="LOAD_WORK_TITLE"		value="Select file to load"></property>
+    	<property name="WORK_FILE_EXT"			value="json"></property>
+    	<property name="WORK_FILE_EXT_DESC"		value="Slideshow"></property>
 
         <!-- WORKSPACE CONTROLS STUFF -->
         <property name="PREV_BUTTON_TEXT"		value="Previous"></property>

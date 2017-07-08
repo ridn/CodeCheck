@@ -62,6 +62,9 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         for(int i = 0; i < 5; i++) {
             stepPanes[i] = new CodeCheckWorkspacePane(controller);
             stepPanes[i].setStepNumber(i+1);
+            stepPanes[i].setStepTitle(props.getProperty("STEP_"+ (i+1) +"_TITLE"));
+            stepPanes[i].setStepHint(props.getProperty("STEP_"+ (i+1) +"_HINT"));
+            stepPanes[i].setStepProgressLabel(props.getProperty("STEP_"+ (i+1) +"_PROGRESS"));
         }
 
         //USE THIS FOR BUTTONS WITHOUT ICONS
@@ -110,9 +113,9 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
     }
     void changeToWorkspace(int index) {
         //System.out.println(Arrays.asList(stepPanes).toString());
-        System.out.println("Switched to step "+ (index+1));       
+        //System.out.println("Switched to step "+ (index+1));       
         setWorkspace(stepPanes[index]);
-        System.out.println(workspaceActivated);
+        //System.out.println(workspaceActivated);
         app.getGUI().getAppPane().setCenter(workspace);
         
     }

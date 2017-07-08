@@ -92,9 +92,13 @@ class CodeCheckWorkspacePane extends HBox{
         
         rightPaneSpace.getChildren().addAll(progressLabel,logScrollArea);
 
-        HBox.setHgrow(leftPaneSpace, Priority.ALWAYS);
+        HBox.setHgrow(leftPaneSpace, Priority.SOMETIMES);
         HBox.setHgrow(rightPaneSpace, Priority.ALWAYS);
         getChildren().addAll(leftPaneSpace,rightPaneSpace);   
+
+        int btnCount = getChildren().size();
+        leftPaneSpace.prefWidthProperty().bind(widthProperty().divide(btnCount));
+        rightPaneSpace.prefWidthProperty().bind(widthProperty().divide(btnCount));
 
 
     }
@@ -119,5 +123,14 @@ class CodeCheckWorkspacePane extends HBox{
     public void setStepNumber(int step){
         paneIndex = step;
         testButton.setText("Step " + paneIndex);
+    }
+    public void setStepTitle(String title) {
+        stepTitleLabel.setText(title);
+    }
+    public void setStepHint(String hint) {
+        hintLabel.setText(hint);
+    }
+    public void setStepProgressLabel(String progress) {
+        progressLabel.setText(progress);
     }
 }
