@@ -7,7 +7,6 @@ package cc.workspace;
 
 import cc.CodeCheckApp;
 import static cc.CodeCheckProp.*;
-import static cc.style.CodeCheckStyle.WORKSPACE_PANE;
 import static cc.style.CodeCheckStyle.WORKSPACE_TOOLBAR;
 import djf.components.AppDataComponent;
 import djf.components.AppWorkspaceComponent;
@@ -15,6 +14,7 @@ import static djf.settings.AppPropertyType.APP_CSS;
 import static djf.settings.AppPropertyType.APP_PATH_CSS;
 import java.net.URL;
 import java.util.Arrays;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
@@ -46,6 +46,7 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         PropertiesManager props = PropertiesManager.getPropertiesManager();
 
         progressionToolbar = new HBox();
+        progressionToolbar.setPadding(new Insets(10, 10, 10, 10));
         
         homeButton = app.getGUI().initChildButton(progressionToolbar, HOME_BUTTON_ICON.toString(),HOME_BUTTON_TEXT.toString(), false);
         prevButton = app.getGUI().initChildButton(progressionToolbar, PREV_BUTTON_ICON.toString(),PREV_BUTTON_TEXT.toString(), false);

@@ -22,5 +22,11 @@
 }
 .toolbar {
     -fx-background-color:#E4E4E4;
-    
+}
+
+.step_title {
+    -fx-font-family: Helvetica, Arial, sans-serif;
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+
 }
