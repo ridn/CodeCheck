@@ -30,20 +30,16 @@ import properties_manager.PropertiesManager;
  * @author danniyazov
  */
 class CodeCheckWorkspacePane extends HBox{
-    private static enum MESSAGE_TYPE {
-        MESSAGE_NORMAL,
-        MESSAGE_SUCCESS,
-        MESSAGE_ERROR
-    }
+    
     private CodeCheckWorkspaceViewController controller;
     private int paneIndex;
     private VBox leftPaneSpace, rightPaneSpace;
-    private ListView filesView;
-    private Button testButton, removeButton, refreshButton,viewButton;
-    private TextFlow actionLog;
-    private Label stepTitleLabel, hintLabel, progressLabel;
-    private Button stepActionButtons[];
     private HBox leftActionButtonsPane, stepActionButtonsPane;
+    ListView filesView;
+    Button testButton, removeButton, refreshButton,viewButton;
+    TextFlow actionLog;
+    Label stepTitleLabel, hintLabel, progressLabel;
+    Button stepActionButtons[];
     
     public CodeCheckWorkspacePane(CodeCheckWorkspaceViewController initController) {
         controller = initController;
@@ -79,9 +75,9 @@ class CodeCheckWorkspacePane extends HBox{
     }
     private void initControllers() {
         testButton.setOnAction(e-> {
-            printMessageToLog("Test Message",MESSAGE_TYPE.MESSAGE_NORMAL);
-            printMessageToLog("ERROR Message",MESSAGE_TYPE.MESSAGE_ERROR);
-            printMessageToLog("SUCCESS Message",MESSAGE_TYPE.MESSAGE_SUCCESS);
+            controller.printMessageToLog("Test Message",CodeCheckWorkspaceViewController.MESSAGE_TYPE.MESSAGE_NORMAL);
+            controller.printMessageToLog("ERROR Message",CodeCheckWorkspaceViewController.MESSAGE_TYPE.MESSAGE_ERROR);
+            controller.printMessageToLog("SUCCESS Message",CodeCheckWorkspaceViewController.MESSAGE_TYPE.MESSAGE_SUCCESS);
         });
     }
     private void initStyle() {
@@ -96,24 +92,5 @@ class CodeCheckWorkspacePane extends HBox{
     public void setStepNumber(int step){
         paneIndex = step;
         testButton.setText("Step " + paneIndex);
-    }
-    public void printMessageToLog(String message, MESSAGE_TYPE type) {
-        Text logText = new Text(message + "\n"); 
-        logText.setFont(new Font(15)); 
-        
-        switch(type){
-            case MESSAGE_NORMAL:
-                logText.setFill(Color.BLACK); 
-                break;
-            case MESSAGE_SUCCESS:
-                logText.setFill(Color.GREEN); 
-                break;
-            case MESSAGE_ERROR:
-                logText.setFill(Color.RED); 
-                break;
-
-        }
-        actionLog.getChildren().add(logText);
-
     }
 }

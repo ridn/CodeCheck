@@ -34,6 +34,7 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
     
     public CodeCheckWorkspaceView(CodeCheckApp initApp) {
         app = initApp;
+        controller = new CodeCheckWorkspaceViewController(app,this);
         
         initLayout();
         initControllers();
@@ -77,7 +78,6 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
 
     }
     private void initControllers() {
-        controller = new CodeCheckWorkspaceViewController(app,this);
         
         homeButton.setOnAction(e-> {
             controller.handleHomeStepRequest();
