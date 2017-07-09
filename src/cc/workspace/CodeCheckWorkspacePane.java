@@ -5,12 +5,8 @@
  */
 package cc.workspace;
 
-import cc.CodeCheckApp;
 import static cc.style.CodeCheckStyle.STEP_TITLE_LABEL;
 import static cc.style.CodeCheckStyle.WORKSPACE_PANE;
-import static djf.settings.AppPropertyType.APP_CSS;
-import static djf.settings.AppPropertyType.APP_PATH_CSS;
-import java.net.URL;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
@@ -18,17 +14,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
-import properties_manager.PropertiesManager;
 
 /**
  *
@@ -97,7 +87,7 @@ class CodeCheckWorkspacePane extends HBox{
         
         rightPaneSpace.getChildren().addAll(progressLabel,stepActionButtonsPane,logScrollArea);
 
-        HBox.setHgrow(leftPaneSpace, Priority.SOMETIMES);
+        HBox.setHgrow(leftPaneSpace, Priority.ALWAYS);
         HBox.setHgrow(rightPaneSpace, Priority.ALWAYS);
         getChildren().addAll(leftPaneSpace,rightPaneSpace);   
 
@@ -118,7 +108,7 @@ class CodeCheckWorkspacePane extends HBox{
         getStyleClass().add(WORKSPACE_PANE);
         stepTitleLabel.getStyleClass().add(STEP_TITLE_LABEL);
         progressLabel.getStyleClass().add(STEP_TITLE_LABEL);
-        
+        setPadding(new Insets(10, 10, 10, 10));
 }
     public void setStepNumber(int step){
         paneIndex = step;

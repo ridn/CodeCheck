@@ -29,6 +29,7 @@ public enum CodeCheckProp {
     STEP_FOUR_LIST_TITLE,
     STEP_FIVE_LIST_TITLE,
     FILE_TYPE_LABEL,
+    FILE_TYPE_CUSTOM,
     
     PREV_BUTTON_ICON,
     NEXT_BUTTON_ICON,

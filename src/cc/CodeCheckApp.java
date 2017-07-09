@@ -79,7 +79,7 @@ public class CodeCheckApp extends AppTemplate {
         appStage.setHeight(bounds.getHeight()/1.4);
         appStage.centerOnScreen();
         appStage.setMinWidth(615);
-        appStage.setMinHeight(350);
+        appStage.setMinHeight(380);
         
     }
     protected void setDataComponent(CodeCheckProjectData data) {

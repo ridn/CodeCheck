@@ -5,9 +5,18 @@
 .bordered_pane {
     -fx-padding:5;
 }
-.welcome_panel {
+.welcome_panel_mac {
     -fx-background-color: #FAFAFA;
     
+}
+.welcome_panel_win {
+    -fx-background-color: #F3F3F3;
+    
+}
+.welcome_view_panel {
+    -fx-background-color: #FAFAFA;
+    -fx-padding: 10;
+
 }
 .welcome_recents_panel {
     -fx-background-color: #F3F3F3;
@@ -19,8 +28,30 @@
     -fx-font-size: 20;
     -fx-font-weight: bold;
 }
+.welcome_title_bar_mac {
+    -fx-background-color: #F3F3F3;
+    -fx-border-width: 0 1.1 0 0;
+    -fx-border-color: #E0E0E0;
+}
+.welcome_title_bar_win {
+    -fx-background-color: #FAFAFA;
+    -fx-border-width: 0 0 0 1.1;
+    -fx-border-color: #E0E0E0;
+}
+.welcome_close_button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #9B9B9B;
+    -fx-font-size: 20px;
+    -fx-font-family: Helvetica, Arial, sans-serif;
+
+}
+.welcome_close_button :hover{
+    -fx-opacity: 0.5;
+}
+
 .workspace_pane {
     -fx-background-color:#ECECEC;
+    -fx-margin:5;
 }
 .toolbar {
     -fx-background-color:#E4E4E4;
@@ -30,5 +61,8 @@
     -fx-font-family: Helvetica, Arial, sans-serif;
     -fx-font-size: 14;
     -fx-font-weight: bold;
+}
+.custom_source_textfield {
+    -fx-min-width: 160;
 
 }

@@ -11,10 +11,16 @@ package cc.style;
  */
 public class CodeCheckStyle {
     
-    public static String WELCOME_PANEL = "welcome_panel";
+    public static String WELCOME_PANEL_MAC = "welcome_panel_mac";
+    public static String WELCOME_PANEL_WIN = "welcome_panel_win";
+    public static String WELCOME_VIEW_PANEL = "welcome_view_panel";
     public static String WELCOME_VIEW_RECENTS_PANEL = "welcome_recents_panel";
     public static String WELCOME_VIEW_RECENTS_HEADER = "welcome_recents_header";
     public static String WORKSPACE_PANE = "workspace_pane";
     public static String WORKSPACE_TOOLBAR = "toolbar";
     public static String STEP_TITLE_LABEL = "step_title";
+    public static String CUSTOM_SOURCE_FIELD = "custom_source_textfield";
+    public static String WELCOME_TITLE_BAR_MAC = "welcome_title_bar_mac";
+    public static String WELCOME_TITLE_BAR_WIN = "welcome_title_bar_win";
+    public static String WELCOME_CLOSE_BUTTON = "welcome_close_button";
 }
