@@ -18,8 +18,10 @@ import java.util.Arrays;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -70,7 +72,7 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         
         stepPanes = new CodeCheckWorkspacePane[5];
         workspace = stepPanes[0];
-        for(int i = 0; i < 5; i++) {
+        for(int i = 0; i < stepPanes.length; i++) {
             stepPanes[i] = new CodeCheckWorkspacePane(controller);
             stepPanes[i].setStepNumber(i+1);
             
@@ -89,11 +91,22 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
             }
             if(i == 3){
                 //STEP 3 HAS AN EXTRA OPTIONS AREA
+                
+                //HERE'S THE LABEL
                 Label fileTypeLabel = new Label(props.getProperty(FILE_TYPE_LABEL));
                 fileTypeLabel.getStyleClass().add(STEP_TITLE_LABEL);
                 stepPanes[i].addExtraContent(0,fileTypeLabel);
                 
+                //AND HERE'S THE CONTENT
+                GridPane checkBoxPane = new GridPane();
+                checkBoxPane.setPadding(new Insets(5, 5, 5, 5));                
+                CheckBox[] sourceTypes = new CheckBox[5];
+                for (int type = 0; type < sourceTypes.length-1; type++)               
+                    sourceTypes[type] = new CheckBox(props.getProperty("FILE_TYPE_"+ (type+1)));
+                checkBoxPane.add(sourceTypes[0], 0, 0);
+                stepPanes[i].addExtraContent(0,checkBoxPane);
                 
+
             }
         }
 
