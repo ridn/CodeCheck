@@ -13,6 +13,7 @@ import static djf.settings.AppPropertyType.APP_PATH_CSS;
 import java.net.URL;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -114,11 +115,6 @@ class CodeCheckWorkspacePane extends HBox{
         });
     }
     private void initStyle() {
-        PropertiesManager props = PropertiesManager.getPropertiesManager();
-	String stylesheet = props.getProperty(APP_PATH_CSS);
-	stylesheet += props.getProperty(APP_CSS);
-	URL stylesheetURL =  CodeCheckApp.class.getResource(stylesheet);
-	String stylesheetPath = stylesheetURL.toExternalForm();
         getStyleClass().add(WORKSPACE_PANE);
         stepTitleLabel.getStyleClass().add(STEP_TITLE_LABEL);
         progressLabel.getStyleClass().add(STEP_TITLE_LABEL);
@@ -136,5 +132,15 @@ class CodeCheckWorkspacePane extends HBox{
     }
     public void setStepProgressLabel(String progress) {
         progressLabel.setText(progress);
+    }
+    public void addExtraContent(int side,Node node) {
+        //WE DONT NEED BOTH BUT WHY NOT
+        if(side == 0) {
+            //LEFT SIDE
+            leftPaneSpace.getChildren().add(node);
+        }else if (side == 1){
+            //RIGHT SIDE
+            rightPaneSpace.getChildren().add(node);
+        }
     }
 }

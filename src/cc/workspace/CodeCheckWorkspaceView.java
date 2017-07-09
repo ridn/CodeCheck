@@ -7,6 +7,7 @@ package cc.workspace;
 
 import cc.CodeCheckApp;
 import static cc.CodeCheckProp.*;
+import static cc.style.CodeCheckStyle.STEP_TITLE_LABEL;
 import static cc.style.CodeCheckStyle.WORKSPACE_TOOLBAR;
 import djf.components.AppDataComponent;
 import djf.components.AppWorkspaceComponent;
@@ -17,6 +18,7 @@ import java.util.Arrays;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -47,20 +49,21 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
     private void initLayout() {
 
         PropertiesManager props = PropertiesManager.getPropertiesManager();
+        
+        //HERE'S A NASTY WAY TO RIGHT ALIGN A TOOLBAR IN FLOWPANE
         FlowPane fileToolbar = app.getGUI().getFileToolbar();
-
         Region spacer = new Region();
         app.getGUI().getTopToolbarPane().getChildren().add(spacer);
         progressionToolbar = new HBox();
+        spacer.prefWidthProperty().bind(app.getGUI().getTopToolbarPane().widthProperty().subtract(fileToolbar.widthProperty()).subtract(progressionToolbar.widthProperty()).subtract(20));        
         progressionToolbar.setPadding(new Insets(5, 5, 5, 5));
-
-        spacer.prefWidthProperty().bind(app.getGUI().getTopToolbarPane().widthProperty().subtract(fileToolbar.widthProperty()).subtract(progressionToolbar.widthProperty()).subtract(20));
         progressionToolbar.setAlignment(Pos.BASELINE_RIGHT);
         
         homeButton = app.getGUI().initChildButton(progressionToolbar, HOME_BUTTON_ICON.toString(),HOME_BUTTON_TEXT.toString(), false);
         prevButton = app.getGUI().initChildButton(progressionToolbar, PREV_BUTTON_ICON.toString(),PREV_BUTTON_TEXT.toString(), false);
         nextButton = app.getGUI().initChildButton(progressionToolbar, NEXT_BUTTON_ICON.toString(),NEXT_BUTTON_TEXT.toString(), false);
 
+        //CUSTOMIZE THE FILE TOOLBAR AS NEEDED
         setupToolbarAsNeeded(fileToolbar);
         renameButton = app.getGUI().initChildButton(fileToolbar, RENAME_BUTTON_TEXT.toString(),RENAME_BUTTON_TEXT.toString(), false);
         aboutButton = app.getGUI().initChildButton(fileToolbar, ABOUT_BUTTON_TEXT.toString(),ABOUT_BUTTON_TEXT.toString(), false);
@@ -70,6 +73,8 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         for(int i = 0; i < 5; i++) {
             stepPanes[i] = new CodeCheckWorkspacePane(controller);
             stepPanes[i].setStepNumber(i+1);
+            
+            //STEP SPECIFIC LABELS
             stepPanes[i].setStepTitle(props.getProperty("STEP_"+ (i+1) +"_TITLE"));
             stepPanes[i].setStepHint(props.getProperty("STEP_"+ (i+1) +"_HINT"));
             stepPanes[i].setStepProgressLabel(props.getProperty("STEP_"+ (i+1) +"_PROGRESS"));
@@ -84,6 +89,11 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
             }
             if(i == 3){
                 //STEP 3 HAS AN EXTRA OPTIONS AREA
+                Label fileTypeLabel = new Label(props.getProperty(FILE_TYPE_LABEL));
+                fileTypeLabel.getStyleClass().add(STEP_TITLE_LABEL);
+                stepPanes[i].addExtraContent(0,fileTypeLabel);
+                
+                
             }
         }
 
@@ -120,11 +130,6 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         
     }
     private void initStyle() {
-        PropertiesManager props = PropertiesManager.getPropertiesManager();
-	String stylesheet = props.getProperty(APP_PATH_CSS);
-	stylesheet += props.getProperty(APP_CSS);
-	URL stylesheetURL =  CodeCheckApp.class.getResource(stylesheet);
-	String stylesheetPath = stylesheetURL.toExternalForm();
         app.getGUI().getTopToolbarPane().getStyleClass().add(WORKSPACE_TOOLBAR);
         progressionToolbar.getStyleClass().add(WORKSPACE_TOOLBAR);
 

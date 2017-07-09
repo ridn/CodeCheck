@@ -45,6 +45,7 @@
         <property name="STEP_3_PROGRESS"		value="Unzip Progress"></property>
         <property name="STEP_4_PROGRESS"		value="Code Progress"></property>
         <property name="STEP_5_PROGRESS"		value="Check Progress"></property>
+        <property name="FILE_TYPE_LABEL"		value="Source File Types"></property>
 
         <!-- ERROR MESSAGES -->
         <property name="CLOSE_BUTTON_TEXT"              value="Close"></property>
