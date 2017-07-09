@@ -88,6 +88,12 @@
         <property name="HOME_BUTTON_TEXT"		value="Home"></property>
         <property name="RENAME_BUTTON_TEXT"		value="Rename"></property>
         <property name="ABOUT_BUTTON_TEXT"		value="About"></property>
+        <property name="STEP_1_BUTTON_1_TEXT"		value="Extract"></property>
+        <property name="STEP_2_BUTTON_1_TEXT"		value="Rename"></property>
+        <property name="STEP_3_BUTTON_1_TEXT"		value="Unzip"></property>
+        <property name="STEP_4_BUTTON_1_TEXT"		value="Extract Code"></property>
+        <property name="STEP_5_BUTTON_1_TEXT"		value="Code Check"></property>
+        <property name="STEP_5_BUTTON_2_TEXT"		value="View Results"></property>
 
         <!-- WORKSPACE ERROR MESSAGES -->
         <property name="INVALID_IMAGE_PATH_TITLE"       value="Invalid Image Path"></property>

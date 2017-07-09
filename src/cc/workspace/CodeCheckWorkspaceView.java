@@ -73,6 +73,18 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
             stepPanes[i].setStepTitle(props.getProperty("STEP_"+ (i+1) +"_TITLE"));
             stepPanes[i].setStepHint(props.getProperty("STEP_"+ (i+1) +"_HINT"));
             stepPanes[i].setStepProgressLabel(props.getProperty("STEP_"+ (i+1) +"_PROGRESS"));
+            
+            //ADD THE STEP SPECIFIC BUTTONS
+            Button actionButtonOne = app.getGUI().initChildButton(stepPanes[i].stepActionButtonsPane, "STEP_"+(i+1)+"_BUTTON_1_TEXT","STEP_"+(i+1)+"_BUTTON_1_TEXT", false);
+            actionButtonOne.setText(props.getProperty("STEP_"+(i+1)+"_BUTTON_1_TEXT"));
+            if(i == 4) {
+                //STEP 5 HAS 2 BUTTONS
+                Button actionButtonTwo = app.getGUI().initChildButton(stepPanes[i].stepActionButtonsPane, "STEP_"+(i+1)+"_BUTTON_2_TEXT","STEP_"+(i+1)+"_BUTTON_2_TEXT", false);
+                actionButtonTwo.setText(props.getProperty("STEP_"+(i+1)+"_BUTTON_2_TEXT"));
+            }
+            if(i == 3){
+                //STEP 3 HAS AN EXTRA OPTIONS AREA
+            }
         }
 
         //USE THIS FOR BUTTONS WITHOUT ICONS

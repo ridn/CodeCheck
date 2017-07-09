@@ -38,12 +38,11 @@ class CodeCheckWorkspacePane extends HBox{
     private CodeCheckWorkspaceViewController controller;
     private int paneIndex;
     private VBox leftPaneSpace, rightPaneSpace;
-    private HBox leftActionButtonsPane, stepActionButtonsPane;
+    HBox leftActionButtonsPane, stepActionButtonsPane;
     ListView filesView;
     Button testButton, removeButton, refreshButton,viewButton;
     TextFlow actionLog;
     Label stepTitleLabel, hintLabel, progressLabel;
-    Button stepActionButtons[];
     
     public CodeCheckWorkspacePane(CodeCheckWorkspaceViewController initController) {
         controller = initController;
@@ -60,6 +59,7 @@ class CodeCheckWorkspacePane extends HBox{
         stepTitleLabel = new Label("Step Title: " + paneIndex);
         hintLabel = new Label("");
         hintLabel.setWrapText(true);
+        hintLabel.setPadding(new Insets(5, 5, 5, 5));
         VBox.setVgrow(hintLabel, Priority.ALWAYS);
         
         filesView = new ListView();
@@ -81,6 +81,7 @@ class CodeCheckWorkspacePane extends HBox{
         rightPaneSpace.setPadding(new Insets(10, 10, 10, 10));
 
         progressLabel = new Label("Step " + paneIndex+ " progress");
+        stepActionButtonsPane =  new HBox();
         ScrollPane logScrollArea = new ScrollPane();
         actionLog = new TextFlow();
         actionLog.setTextAlignment(TextAlignment.LEFT);
@@ -93,7 +94,7 @@ class CodeCheckWorkspacePane extends HBox{
         logScrollArea.setFitToHeight(true);
         VBox.setVgrow(logScrollArea, Priority.ALWAYS);
         
-        rightPaneSpace.getChildren().addAll(progressLabel,logScrollArea);
+        rightPaneSpace.getChildren().addAll(progressLabel,stepActionButtonsPane,logScrollArea);
 
         HBox.setHgrow(leftPaneSpace, Priority.SOMETIMES);
         HBox.setHgrow(rightPaneSpace, Priority.ALWAYS);
