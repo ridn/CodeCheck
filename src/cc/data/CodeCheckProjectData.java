@@ -6,13 +6,24 @@
 package cc.data;
 
 import djf.components.AppDataComponent;
+import java.io.File;
 
 /**
  *
  * @author danniyazov
  */
 public class CodeCheckProjectData implements AppDataComponent{
-
+    private File projectFile;
+    private String projectPath, projectTitle;
+    public void setFile(File file){
+        projectFile = file;
+    }
+    public String getPath(){
+        return projectFile.getAbsolutePath();
+    }
+    public String getTitle() {
+        return projectFile.getName();
+    }
     @Override
     public void resetData() {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

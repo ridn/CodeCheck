@@ -6,16 +6,13 @@
 package cc.startup;
 
 import cc.CodeCheckApp;
+import static cc.CodeCheckProp.APP_PATH_WORK;
 import cc.data.CodeCheckProjectData;
-import javafx.application.Application;
+import java.io.File;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
+import javafx.scene.control.TextInputDialog;
 import properties_manager.PropertiesManager;
 
 /**
@@ -31,23 +28,83 @@ public class CodeCheckWelcomeViewController  {
    }
 
    public void handleNewCodeCheckRequest() {
-       Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Code Check Name");
-        alert.setTitle("Create New Code Check");
-        alert.setHeaderText("New Code Check");
-        ButtonType buttonTypeOne = new ButtonType("Create");
-        ButtonType buttonTypeTwo = new ButtonType("Cancel");
 
-        alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo);
-
-        alert.showAndWait().ifPresent(response -> {
-            if (response == buttonTypeOne) {
-                //CREATE NEW PROJECT
-                
+        // The Java 8 way to get the response value (with lambda expression).
+        
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Create New Code Check");
+        dialog.setHeaderText("New Code Check");
+        dialog.setContentText("Please enter Code Check name");
+        dialog.getEditor().setPromptText("Code Check Name");
+        //dialog.getEditor()dialog.getEditor().requestFocus();
+        final Button btOk = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
+        btOk.addEventFilter(ActionEvent.ACTION, 
+            event -> {
                 //DO VALIDITY CHECKS HERE
-                app.handleWelcomeViewResponse(new CodeCheckProjectData());
+                PropertiesManager props = PropertiesManager.getPropertiesManager();
+                String dirPath = props.getProperty(APP_PATH_WORK) + dialog.getEditor().textProperty().get().trim();
+                File newCheck = new File(dirPath);
+                // Check whether some conditions are fulfilled
+                if (!newCheck.exists()) {
+                    //TRY TO MAKE THE PROJECT FOLDER
+                    boolean successful = newCheck.mkdirs();
+                    if(successful){
+                        //CONTINUE TO BUTTON ACTION
+                    }else{
+                        //FAILED TO MAKE DIR
+                        System.out.println("Failed to make project DIR");
+                        //dialog.getDialogPane().getChildren().add.();
+                        event.consume();
+                    }
+                }else{
+                    //THIS PROJECT/DIR EXISTS
+                    System.out.println("Project already exists");
+                    //dialog.getDialogPane().getChildren().add.();
+                    event.consume();
+
+                }
+            }
+        );
+        dialog.getEditor().textProperty().addListener((observableValue, oldValue, newValue) -> { 
+            if (!newValue.matches("[\\w\\d\\s]*")){
+                dialog.getEditor().setText(newValue.replaceAll("[^\\w^\\d^\\s]", ""));
+            }else if(newValue.length() > 30) {
+                dialog.getEditor().setText(oldValue);
+            }
+        });
+
+        dialog.showAndWait().ifPresent(response -> {
+            //DO MORE VALIDITY CHECKS HERE
+            PropertiesManager props = PropertiesManager.getPropertiesManager();
+            String dirPath = props.getProperty(APP_PATH_WORK) + response.trim();
+            File newCheck = new File(dirPath);
+
+            if (!newCheck.exists()) {
+                System.out.println("Project doesn't exist?");
+                //ERROR PROJECT DOESNT EXIST
+            }else{
+                //CREATE ALL SUB-DIRS
+                String subDIRs[] = new String[4];
+                subDIRs[0] = "blackboard";
+                subDIRs[1] = "submissions";
+                subDIRs[2] = "projects";
+                subDIRs[3] = "code";
                 
-            }else if(response == buttonTypeTwo) {
-                //USER CANCELED
+                for(String folder : subDIRs){
+                    File subDIR = new File(newCheck.getPath()+ "/" + folder);
+                    if (!subDIR.exists()) {
+                        boolean success = subDIR.mkdir();
+                        if(!success){
+                            //WE FAILED TO CREATE A DIR
+                        }
+                    }
+                }
+                //CREATE NEW PROJECT
+                //SET THE PROJECT TITLE AND OTHER NECESSARY DATA HERE
+                CodeCheckProjectData newProjectData = new CodeCheckProjectData();
+                newProjectData.setFile(newCheck);
+                app.handleWelcomeViewResponse(newProjectData);
+                
             }
         });
    }

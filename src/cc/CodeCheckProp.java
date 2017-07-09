@@ -40,8 +40,9 @@ public enum CodeCheckProp {
     UNZIP_BUTTON_ICON,
     EXTRACT_CODE_BUTTON_ICON,
     CHECK_CODE_BUTTON_ICON,
-    RESULTS_BUTTON_ICON
+    RESULTS_BUTTON_ICON,
+    
+    APP_PATH_WORK
 
-    
-    
+
 }

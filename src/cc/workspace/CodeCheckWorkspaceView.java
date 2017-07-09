@@ -169,10 +169,7 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         toolbar.getChildren().remove(2, 7);
     }
     void changeToWorkspace(int index) {
-        //System.out.println(Arrays.asList(stepPanes).toString());
-        //System.out.println("Switched to step "+ (index+1));       
         setWorkspace(stepPanes[index]);
-        //System.out.println(workspaceActivated);
         app.getGUI().getAppPane().setCenter(workspace);
         
     }
