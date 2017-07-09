@@ -105,6 +105,7 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
                     sourceTypes[type] = new CheckBox(props.getProperty("FILE_TYPE_"+ (type+1)));
                 checkBoxPane.add(sourceTypes[0], 0, 0);
                 checkBoxPane.add(sourceTypes[1], 0, 1);
+                checkBoxPane.add(sourceTypes[2], 1, 0);
                 stepPanes[i].addExtraContent(0,checkBoxPane);
                 
 
