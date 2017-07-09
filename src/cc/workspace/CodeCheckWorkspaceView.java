@@ -7,23 +7,20 @@ package cc.workspace;
 
 import cc.CodeCheckApp;
 import static cc.CodeCheckProp.*;
+import static cc.style.CodeCheckStyle.CUSTOM_SOURCE_FIELD;
 import static cc.style.CodeCheckStyle.STEP_TITLE_LABEL;
 import static cc.style.CodeCheckStyle.WORKSPACE_TOOLBAR;
 import djf.components.AppDataComponent;
 import djf.components.AppWorkspaceComponent;
-import static djf.settings.AppPropertyType.APP_CSS;
-import static djf.settings.AppPropertyType.APP_PATH_CSS;
-import java.net.URL;
-import java.util.Arrays;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import properties_manager.PropertiesManager;
 
@@ -99,17 +96,33 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
                 
                 //AND HERE'S THE CONTENT
                 GridPane checkBoxPane = new GridPane();
+                checkBoxPane.setHgap(50);
+                checkBoxPane.setVgap(10);
                 checkBoxPane.setPadding(new Insets(5, 5, 5, 5));                
                 CheckBox[] sourceTypes = new CheckBox[5];
+                
                 for (int type = 0; type < sourceTypes.length-1; type++)               
                     sourceTypes[type] = new CheckBox(props.getProperty("FILE_TYPE_"+ (type+1)));
+                
+                //REGULAR OPTIONS
                 checkBoxPane.add(sourceTypes[0], 0, 0);
                 checkBoxPane.add(sourceTypes[1], 0, 1);
                 checkBoxPane.add(sourceTypes[2], 1, 0);
                 checkBoxPane.add(sourceTypes[3], 1, 1);
-                stepPanes[i].addExtraContent(0,checkBoxPane);
                 
+                //CUSTOM SOURCE OPTION
+                TextField customSourceField = new TextField();
+                customSourceField.setPromptText(props.getProperty(FILE_TYPE_CUSTOM));
+                customSourceField.getStyleClass().add(CUSTOM_SOURCE_FIELD);
+                sourceTypes[4] = new CheckBox();
+                HBox customCheckbox = new HBox(sourceTypes[4],customSourceField);
+                customCheckbox.setFillHeight(true);
+                customCheckbox.setAlignment(Pos.CENTER_LEFT);
+                GridPane.setColumnSpan(customCheckbox, 2);
 
+                checkBoxPane.add(customCheckbox, 0, 2);
+                
+                stepPanes[i].addExtraContent(0,checkBoxPane);               
             }
         }
 
