@@ -106,6 +106,7 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
                 checkBoxPane.add(sourceTypes[0], 0, 0);
                 checkBoxPane.add(sourceTypes[1], 0, 1);
                 checkBoxPane.add(sourceTypes[2], 1, 0);
+                checkBoxPane.add(sourceTypes[3], 1, 1);
                 stepPanes[i].addExtraContent(0,checkBoxPane);
                 
 
