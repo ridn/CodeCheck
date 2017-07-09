@@ -8,12 +8,18 @@ package cc.startup;
 import cc.CodeCheckApp;
 import static cc.style.CodeCheckStyle.WELCOME_CLOSE_BUTTON;
 import static cc.style.CodeCheckStyle.WELCOME_PANEL_MAC;
+import static cc.style.CodeCheckStyle.WELCOME_PANEL_ROUND;
 import static cc.style.CodeCheckStyle.WELCOME_PANEL_WIN;
 import static cc.style.CodeCheckStyle.WELCOME_TITLE_BAR_MAC;
 import static cc.style.CodeCheckStyle.WELCOME_TITLE_BAR_WIN;
 import static cc.style.CodeCheckStyle.WELCOME_VIEW_PANEL;
 import static cc.style.CodeCheckStyle.WELCOME_VIEW_RECENTS_HEADER;
 import static cc.style.CodeCheckStyle.WELCOME_VIEW_RECENTS_PANEL;
+import static cc.style.CodeCheckStyle.WELCOME_VIEW_RECENTS_PANEL_MAC;
+import static cc.style.CodeCheckStyle.WELCOME_VIEW_RECENTS_PANEL_WIN;
+import static djf.settings.AppPropertyType.APP_CSS;
+import static djf.settings.AppPropertyType.APP_PATH_CSS;
+import static djf.settings.AppStartupConstants.APP_PROPERTIES_FILE_NAME;
 import java.net.URL;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -26,8 +32,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import properties_manager.PropertiesManager;
 
 /**
@@ -53,8 +62,12 @@ public class CodeCheckWelcomeView extends BorderPane {
    public CodeCheckWelcomeView(CodeCheckApp currentApp){
         //showData = data;
         //primaryStage = stage;
-        PropertiesManager props = PropertiesManager.getPropertiesManager();
         app = currentApp;
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+        boolean success = app.loadProperties(APP_PROPERTIES_FILE_NAME);
+        //DEAL WITH A FAILURE HERE
+        
+        
         //String title = (data.getShowTitle() == null || data.getShowTitle().isEmpty()) ? props.getProperty(UNTITLED_SHOW_TEXT) : data.getShowTitle(); 
         //primaryStage.setTitle(title);
         initWindow();
@@ -72,17 +85,23 @@ public class CodeCheckWelcomeView extends BorderPane {
         primaryStage.setHeight(bounds.getHeight()/2);
    }
     private void initLayout() {
+        Rectangle rect = new Rectangle(primaryStage.getWidth(),primaryStage.getHeight());
+        rect.setArcHeight(10.0);
+        rect.setArcWidth(10.0);
+        setClip(rect);
+    
         //ADD CUSTOM 'TITLEBAR'
         closeWindowButton = new Button("x");
         closeWindowButton.setPadding(new Insets(0, 10, 5, 10));
         titleBar = new HBox(closeWindowButton);
         
-        if(OS.contains("mac")){
+        if(!OS.contains("mac")){
             titleBar.setMaxWidth(300);
             titleBar.setAlignment(Pos.BASELINE_LEFT);
         }else{
             BorderPane.setAlignment(titleBar, Pos.BOTTOM_RIGHT);
-            titleBar.setMaxWidth(primaryStage.getWidth()-299);
+            //titleBar.setMaxWidth(primaryStage.getWidth()-299);
+            titleBar.setMaxWidth(300);
             titleBar.setAlignment(Pos.BASELINE_RIGHT);
             
         }
@@ -106,7 +125,11 @@ public class CodeCheckWelcomeView extends BorderPane {
         VBox.setVgrow(welcomePanel, Priority.ALWAYS);
         welcomePanel.setAlignment(Pos.CENTER);
         VBox container = new VBox(welcomePanel);
-        container.getStyleClass().add(WELCOME_PANEL_MAC);
+        if(!OS.contains("mac")){
+            container.getStyleClass().add(WELCOME_PANEL_MAC);
+        }else{
+            container.getStyleClass().add(WELCOME_PANEL_WIN);            
+        }
         setCenter(container);
         VBox.setMargin(welcomePanel, new Insets(22,22,100,22)); // optional
 
@@ -138,20 +161,30 @@ public class CodeCheckWelcomeView extends BorderPane {
 
    }
     private void initStyle(Scene primaryScene) {
-        //PropertiesManager props = PropertiesManager.getPropertiesManager();
-	//String stylesheet = props.getProperty(APP_PATH_CSS);
-	//stylesheet += props.getProperty(APP_CSS);
-	URL stylesheetURL =  CodeCheckApp.class.getResource("style/cc_style.css");
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+	String stylesheet = props.getProperty(APP_PATH_CSS);
+	stylesheet += props.getProperty(APP_CSS);
+	URL stylesheetURL =  CodeCheckApp.class.getResource(stylesheet);
 	String stylesheetPath = stylesheetURL.toExternalForm();
+
 	primaryScene.getStylesheets().add(stylesheetPath);
-        if(OS.contains("mac")){
-            getStyleClass().add(WELCOME_PANEL_MAC);
+        primaryStage.initStyle(StageStyle.TRANSPARENT);
+        primaryScene.setFill(Color.TRANSPARENT);
+        setPadding(new Insets(7,7,7,7));
+        //primaryScene.getRoot().setEffect(new DropShadow());
+        
+        if(!OS.contains("mac")){
+            //getStyleClass().add(WELCOME_PANEL_MAC);
             titleBar.getStyleClass().add(WELCOME_TITLE_BAR_MAC);
+            recentsPanel.getStyleClass().add(WELCOME_VIEW_RECENTS_PANEL_MAC);
         }else{
-            getStyleClass().add(WELCOME_PANEL_WIN);
+            //getStyleClass().add(WELCOME_PANEL_WIN);
             titleBar.getStyleClass().add(WELCOME_TITLE_BAR_WIN);
+            recentsPanel.getStyleClass().add(WELCOME_VIEW_RECENTS_PANEL_WIN);
             
         }
+        getStyleClass().add(WELCOME_PANEL_ROUND);
+        
         welcomePanel.getStyleClass().add(WELCOME_VIEW_PANEL);
  
         recentsPanel.getStyleClass().add(WELCOME_VIEW_RECENTS_PANEL);

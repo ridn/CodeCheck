@@ -13,8 +13,11 @@ public class CodeCheckStyle {
     
     public static String WELCOME_PANEL_MAC = "welcome_panel_mac";
     public static String WELCOME_PANEL_WIN = "welcome_panel_win";
+    public static String WELCOME_PANEL_ROUND = "welcome_panel_round";
     public static String WELCOME_VIEW_PANEL = "welcome_view_panel";
     public static String WELCOME_VIEW_RECENTS_PANEL = "welcome_recents_panel";
+    public static String WELCOME_VIEW_RECENTS_PANEL_MAC = "welcome_recents_panel_mac";
+    public static String WELCOME_VIEW_RECENTS_PANEL_WIN = "welcome_recents_panel_win";
     public static String WELCOME_VIEW_RECENTS_HEADER = "welcome_recents_header";
     public static String WORKSPACE_PANE = "workspace_pane";
     public static String WORKSPACE_TOOLBAR = "toolbar";

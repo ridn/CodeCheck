@@ -5,13 +5,26 @@
 .bordered_pane {
     -fx-padding:5;
 }
+.shadow-pane {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0.5, 0.0, 0.0);
+    -fx-background-radius: 10;
+    -fx-background-color: transparent;
+}
 .welcome_panel_mac {
     -fx-background-color: #FAFAFA;
-    
+    -fx-background-radius: 0 5 5 0;
+
 }
 .welcome_panel_win {
-    -fx-background-color: #F3F3F3;
-    
+    /*-fx-background-color: #F3F3F3;*/
+    -fx-background-color: #FAFAFA;
+    -fx-background-radius: 0 0 5 0;
+
+}
+.welcome_panel_round {
+    -fx-background-radius: 5 5 5 5;
+    -fx-border-radius: 5 5 5 5;
+
 }
 .welcome_view_panel {
     -fx-background-color: #FAFAFA;
@@ -23,6 +36,14 @@
     -fx-border-width: 0 1.1 0 0;
     -fx-border-color: #E0E0E0;
 }
+.welcome_recents_panel_mac {
+    -fx-background-radius: 0 0 0 5;
+
+}
+.welcome_recents_panel_win {
+    -fx-background-radius: 5 0 0 5;
+
+}
 .welcome_recents_header {
     -fx-font-family: Helvetica, Arial, sans-serif;
     -fx-font-size: 20;
@@ -32,8 +53,12 @@
     -fx-background-color: #F3F3F3;
     -fx-border-width: 0 1.1 0 0;
     -fx-border-color: #E0E0E0;
+    -fx-background-radius: 5 5 0 0;
+    -fx-border-radius: 5 5 0 0;
 }
 .welcome_title_bar_win {
+    -fx-background-radius: 5 5 0 0;
+    -fx-border-radius: 5 5 0 0;
     -fx-background-color: #FAFAFA;
     -fx-border-width: 0 0 0 1.1;
     -fx-border-color: #E0E0E0;

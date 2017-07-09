@@ -29,12 +29,13 @@ import properties_manager.PropertiesManager;
  * @author danniyazov
  */
 public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
-    private CodeCheckApp app;
-    private CodeCheckWorkspaceViewController controller;
-    protected CodeCheckWorkspacePane stepPanes[];
+    public static boolean activateOnLoad = false;
+    final private CodeCheckApp app;
+    final private CodeCheckWorkspaceViewController controller;
     protected HBox progressionToolbar;
     protected Button prevButton, nextButton, homeButton;
     protected Button renameButton, aboutButton;
+    CodeCheckWorkspacePane stepPanes[];
     
     public CodeCheckWorkspaceView(CodeCheckApp initApp) {
         app = initApp;
@@ -136,7 +137,8 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         app.getGUI().getTopToolbarPane().getChildren().add(progressionToolbar);
         
         setWorkspace(stepPanes[0]);
-        this.activateWorkspace(app.getGUI().getAppPane());
+        if(activateOnLoad)
+            this.activateWorkspace(app.getGUI().getAppPane());
 
 
     }

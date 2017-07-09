@@ -14,6 +14,7 @@ import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.stage.Screen;
@@ -36,7 +37,8 @@ public class CodeCheckApp extends AppTemplate {
         // THE WORKSPACE NEEDS THE DATA COMPONENT TO EXIST ALREADY
         // WHEN IT IS CONSTRUCTED, SO BE CAREFUL OF THE ORDER
         
-        //dataComponent = new CodeCheckProjectData(this);
+        if(dataComponent != null)
+                dataComponent = new CodeCheckProjectData();
         
         workspaceComponent = new CodeCheckWorkspaceView(this);
         //fileComponent = new CodeCheckFileComponent(this);
@@ -63,12 +65,14 @@ public class CodeCheckApp extends AppTemplate {
     public void launchWelcomeView(Stage stage) {
 
         appWelcomeComponent = new CodeCheckWelcomeView(this);
+        appWelcomeComponent.getStyleClass().add("shadow-pane");
         stage.initStyle(StageStyle.UNDECORATED);
         stage.setScene(new Scene(appWelcomeComponent));
         stage.show();
 
     }
     public void handleWelcomeViewResponse(CodeCheckProjectData data) {
+        if(data != null) CodeCheckWorkspaceView.activateOnLoad = true;
         welcomeStage.close();
         setDataComponent(data);
         super.start(appStage);
