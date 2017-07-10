@@ -6,16 +6,29 @@
 package cc.workspace;
 
 import cc.CodeCheckApp;
+import static cc.CodeCheckProp.ABOUT_LABEL_TEXT;
 import static cc.CodeCheckProp.APP_PATH_WORK;
+import static cc.CodeCheckProp.APP_VERSION;
+import static cc.CodeCheckProp.AUTHOR_TEXT;
+import static cc.CodeCheckProp.LEGAL_NOTICE;
+import static cc.CodeCheckProp.VERSION_TEXT;
 import cc.data.CodeCheckProjectData;
 import cc.filestore.CodeCheckFileStore;
+import static djf.settings.AppPropertyType.APP_TITLE;
 import static djf.settings.AppPropertyType.WORK_FILE_EXT;
 import static djf.settings.AppPropertyType.WORK_FILE_EXT_DESC;
 import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
+import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import properties_manager.PropertiesManager;
 
@@ -70,6 +83,26 @@ class CodeCheckWorkspaceViewController {
        }
 
 
+    }
+    public void displayAboutDialog() {
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("");        
+        alert.setHeaderText(props.getProperty(ABOUT_LABEL_TEXT));
+        Text titleText = new Text(props.getProperty(APP_TITLE) + "\n\n");
+        titleText.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 16));        
+        String aboutString = props.getProperty(VERSION_TEXT) + " " + props.getProperty(APP_VERSION);
+        aboutString += "\n" + props.getProperty(AUTHOR_TEXT);
+        aboutString += "\n" + props.getProperty(LEGAL_NOTICE);
+        Text aboutText = new Text(aboutString);
+
+        TextFlow aboutTextFlow = new TextFlow(titleText,aboutText);
+        aboutTextFlow.setLineSpacing(4);
+        aboutTextFlow.setPadding(new Insets(15,50,15,50));
+        aboutTextFlow.setTextAlignment(TextAlignment.CENTER);
+        alert.getDialogPane().setContent(aboutTextFlow);
+
+        alert.showAndWait();
     }
     public void handlePrevStepRequest(){
         int index = Arrays.asList(workspace.stepPanes).indexOf(workspace.getWorkspace());

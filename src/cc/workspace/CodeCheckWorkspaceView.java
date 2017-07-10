@@ -155,6 +155,9 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         nextButton.setOnAction(e-> {
             controller.handleNextStepRequest();
         });
+        aboutButton.setOnAction(e -> {
+            controller.displayAboutDialog();
+        });
         
     }
     private void initControlBinding() {
