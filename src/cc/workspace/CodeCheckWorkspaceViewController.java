@@ -8,6 +8,7 @@ package cc.workspace;
 import cc.CodeCheckApp;
 import static cc.CodeCheckProp.APP_PATH_WORK;
 import cc.data.CodeCheckProjectData;
+import cc.filestore.CodeCheckFileStore;
 import static djf.settings.AppPropertyType.WORK_FILE_EXT;
 import static djf.settings.AppPropertyType.WORK_FILE_EXT_DESC;
 import java.io.File;
@@ -63,6 +64,11 @@ class CodeCheckWorkspaceViewController {
             }*/
 
         }
+
+    }
+    public void handleNewCheckRequest() {
+        //SAVE THE CURRENT STATE OF THIS CHECK THEN CREATE NEW
+       ((CodeCheckFileStore)app.getFileComponent()).handleNewRequest();
 
     }
     public void handlePrevStepRequest(){

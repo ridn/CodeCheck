@@ -167,7 +167,11 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
     }
     private void setupToolbarAsNeeded(FlowPane toolbar) {
         //WE NEED CUSTOM NEW/LOAD ACTIONS
+        Button newButton = (Button)toolbar.getChildren().get(0);
         Button loadButton = (Button)toolbar.getChildren().get(1);
+        newButton.setOnAction(e -> {
+            controller.handleNewCheckRequest();
+        });
         loadButton.setOnAction(e -> {
             controller.handleLoadRequest();
         });

@@ -6,6 +6,7 @@
 package cc;
 
 import cc.data.CodeCheckProjectData;
+import cc.filestore.CodeCheckFileStore;
 import cc.startup.CodeCheckWelcomeView;
 import cc.workspace.CodeCheckWorkspaceView;
 import djf.AppTemplate;
@@ -38,11 +39,12 @@ public class CodeCheckApp extends AppTemplate {
         // THE WORKSPACE NEEDS THE DATA COMPONENT TO EXIST ALREADY
         // WHEN IT IS CONSTRUCTED, SO BE CAREFUL OF THE ORDER
         
-        if(dataComponent != null)
+        if(dataComponent == null)
                 dataComponent = new CodeCheckProjectData();
         
         workspaceComponent = new CodeCheckWorkspaceView(this);
-        //fileComponent = new CodeCheckFileComponent(this);
+        if(fileComponent == null)
+            fileComponent = new CodeCheckFileStore(this);
 
     }
     
@@ -64,6 +66,8 @@ public class CodeCheckApp extends AppTemplate {
 
     }
     public void launchWelcomeView(Stage stage) {
+        //WE NEED THIS NOW FOR PERSISTENT FILE STORE
+        fileComponent = new CodeCheckFileStore(this);
 
         appWelcomeComponent = new CodeCheckWelcomeView(this);
         appWelcomeComponent.getStyleClass().add("shadow-pane");
@@ -88,7 +92,7 @@ public class CodeCheckApp extends AppTemplate {
         appStage.setTitle(PropertiesManager.getPropertiesManager().getProperty(APP_TITLE) + " - " + data.getTitle());
         
     }
-    protected void setDataComponent(CodeCheckProjectData data) {
+    private void setDataComponent(CodeCheckProjectData data) {
         dataComponent = data;
     }
     public Stage getWelcomeStage() {
