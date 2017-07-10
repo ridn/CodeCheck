@@ -9,6 +9,7 @@ import cc.data.CodeCheckProjectData;
 import cc.startup.CodeCheckWelcomeView;
 import cc.workspace.CodeCheckWorkspaceView;
 import djf.AppTemplate;
+import static djf.settings.AppPropertyType.APP_TITLE;
 import java.util.Locale;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
@@ -84,14 +85,17 @@ public class CodeCheckApp extends AppTemplate {
         appStage.centerOnScreen();
         appStage.setMinWidth(615);
         appStage.setMinHeight(380);
-        appStage.setTitle(data.getTitle());
+        appStage.setTitle(PropertiesManager.getPropertiesManager().getProperty(APP_TITLE) + " - " + data.getTitle());
         
     }
     protected void setDataComponent(CodeCheckProjectData data) {
         dataComponent = data;
     }
-    public Stage getWelcomeStage (){
+    public Stage getWelcomeStage() {
         return welcomeStage;
     }
-    
+    public void updateStageTitle() {
+        CodeCheckProjectData data = (CodeCheckProjectData)getDataComponent();
+        appStage.setTitle(PropertiesManager.getPropertiesManager().getProperty(APP_TITLE) + " - " + data.getTitle());
+    }
 }

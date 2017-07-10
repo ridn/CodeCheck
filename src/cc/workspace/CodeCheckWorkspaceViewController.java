@@ -6,13 +6,23 @@
 package cc.workspace;
 
 import cc.CodeCheckApp;
+import static cc.CodeCheckProp.APP_PATH_WORK;
+import cc.data.CodeCheckProjectData;
+import static djf.settings.AppPropertyType.WORK_FILE_EXT;
+import static djf.settings.AppPropertyType.WORK_FILE_EXT_DESC;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
+import properties_manager.PropertiesManager;
 
 /**
  *
@@ -31,6 +41,29 @@ class CodeCheckWorkspaceViewController {
     public CodeCheckWorkspaceViewController(CodeCheckApp initApp,CodeCheckWorkspaceView view) {
         app = initApp;
         workspace = view;
+    }
+    public void handleLoadRequest() {
+        FileChooser fileChooser = new FileChooser();
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+        fileChooser.setInitialDirectory(new File(props.getProperty(APP_PATH_WORK)));
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(props.getProperty(WORK_FILE_EXT_DESC), "*." + props.getProperty(WORK_FILE_EXT)));
+        File selectedFile = fileChooser.showOpenDialog(app.getGUI().getWindow());
+        if (selectedFile != null) {
+            //try {
+                app.getDataComponent().resetData();
+                //TEMP SET DATA LIKE THIS, FILE COMP WILL DO THIS LATER
+                ((CodeCheckProjectData)app.getDataComponent()).setFile(selectedFile);
+                workspace.resetWorkspace();
+                workspace.reloadWorkspace(app.getDataComponent());
+                workspace.activateWorkspace(app.getGUI().getAppPane());
+            /*    app.getFileComponent().loadData(app.getDataComponent(), selectedFile.getAbsolutePath());
+                
+            } catch (IOException ex) {
+                Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
+            }*/
+
+        }
+
     }
     public void handlePrevStepRequest(){
         int index = Arrays.asList(workspace.stepPanes).indexOf(workspace.getWorkspace());

@@ -22,10 +22,13 @@ public class CodeCheckProjectData implements AppDataComponent{
         return projectFile.getAbsolutePath();
     }
     public String getTitle() {
-        return projectFile.getName();
+        //return projectFile.getName();
+        return projectFile.getName().replaceFirst("[.][^.]+$", "");
+
     }
     @Override
     public void resetData() {
+        //null out all the data
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

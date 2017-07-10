@@ -7,17 +7,23 @@ package cc.startup;
 
 import cc.CodeCheckApp;
 import static cc.CodeCheckProp.APP_PATH_WORK;
+import static cc.CodeCheckProp.NEW_DIALOG_CONTENT_TEXT;
+import static cc.CodeCheckProp.NEW_DIALOG_ERROR_TEXT;
+import static cc.CodeCheckProp.NEW_DIALOG_HEADER_TEXT;
+import static cc.CodeCheckProp.NEW_DIALOG_PROMPT_TEXT;
+import static cc.CodeCheckProp.NEW_DIALOG_TITLE_TEXT;
 import cc.data.CodeCheckProjectData;
+import static djf.settings.AppPropertyType.WORK_FILE_EXT;
+import static djf.settings.AppPropertyType.WORK_FILE_EXT_DESC;
 import java.io.File;
 import javafx.event.ActionEvent;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import properties_manager.PropertiesManager;
 
 /**
@@ -33,21 +39,23 @@ public class CodeCheckWelcomeViewController  {
    }
 
    public void handleNewCodeCheckRequest() {
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
 
         // The Java 8 way to get the response value (with lambda expression).
         
         TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Create New Code Check");
-        dialog.setHeaderText("New Code Check");
-        dialog.setContentText("Please enter Code Check name");
-        dialog.getEditor().setPromptText("Code Check Name");
+        dialog.setTitle(props.getProperty(NEW_DIALOG_TITLE_TEXT));
+        dialog.setHeaderText(props.getProperty(NEW_DIALOG_HEADER_TEXT));
+        dialog.setContentText(props.getProperty(NEW_DIALOG_CONTENT_TEXT));
+        dialog.getEditor().setPromptText(props.getProperty(NEW_DIALOG_PROMPT_TEXT));
         //dialog.getEditor()dialog.getEditor().requestFocus();
         final Button btOk = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
         btOk.addEventFilter(ActionEvent.ACTION, 
             event -> {
                 //DO VALIDITY CHECKS HERE
-                PropertiesManager props = PropertiesManager.getPropertiesManager();
                 String dirPath = props.getProperty(APP_PATH_WORK) + dialog.getEditor().textProperty().get().trim();
+                //ADD CUSTOM FILE EXTENSION
+                dirPath += "." + props.getProperty(WORK_FILE_EXT);
                 File newCheck = new File(dirPath);
                 // Check whether some conditions are fulfilled
                 if (!newCheck.exists()) {
@@ -63,7 +71,7 @@ public class CodeCheckWelcomeViewController  {
                     }
                 }else{
                     //THIS PROJECT/DIR EXISTS
-                    dialog.setHeaderText("Error: file exists");
+                    dialog.setHeaderText(props.getProperty(NEW_DIALOG_ERROR_TEXT));
                     //dialog.getDialogPane().setHeader(btOk);
                     System.out.println("Project already exists");
                     //((Pane)dialog.getDialogPane()).getChildren().add(0, projectError);
@@ -75,8 +83,8 @@ public class CodeCheckWelcomeViewController  {
             }
         );
         dialog.getEditor().textProperty().addListener((observableValue, oldValue, newValue) -> {
-            if(dialog.getHeaderText().equals("Error: file exists")){
-                dialog.setHeaderText("New Code Check");
+            if(!dialog.getHeaderText().equals(props.getProperty(NEW_DIALOG_HEADER_TEXT))){
+                dialog.setHeaderText(props.getProperty(NEW_DIALOG_HEADER_TEXT));
                     GridPane header = (GridPane)dialog.getDialogPane().getChildren().get(0);
                     ((Label)header.getChildren().get(0)).setTextFill(Color.BLACK);
    
@@ -90,8 +98,9 @@ public class CodeCheckWelcomeViewController  {
 
         dialog.showAndWait().ifPresent(response -> {
             //DO MORE VALIDITY CHECKS HERE
-            PropertiesManager props = PropertiesManager.getPropertiesManager();
             String dirPath = props.getProperty(APP_PATH_WORK) + response.trim();
+            //ADD CUSTOM FILE EXTENSION
+            dirPath += "." + props.getProperty(WORK_FILE_EXT);
             File newCheck = new File(dirPath);
 
             if (!newCheck.exists()) {

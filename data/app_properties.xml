@@ -51,6 +51,13 @@
         <property name="FILE_TYPE_3"		value=".js"></property>
         <property name="FILE_TYPE_4"		value=".cs"></property>
         <property name="FILE_TYPE_CUSTOM"		value="Enter source type(s)"></property>
+        <property name="WELCOME_VIEW_RECENTS_HEADER"		value=""></property>
+        <property name="WELCOME_VIEW_NEW_BUTTON_TEXT"		value=""></property>
+        <property name="NEW_DIALOG_TITLE_TEXT"		value="Create New Code Check"></property>
+        <property name="NEW_DIALOG_PROMPT_TEXT"		value="Code Check Name"></property>
+        <property name="NEW_DIALOG_HEADER_TEXT"		value="New Code Check"></property>
+        <property name="NEW_DIALOG_CONTENT_TEXT"		value="Enter Code Check name"></property>
+        <property name="NEW_DIALOG_ERROR_TEXT"		value="Error: file exists"></property>
 
         <!-- ERROR MESSAGES -->
         <property name="CLOSE_BUTTON_TEXT"              value="Close"></property>
@@ -85,8 +92,8 @@
         <property name="SAVE_UNSAVED_WORK_MESSAGE"	value="Do you want to save your unsaved work first?"></property>
     	<property name="SAVE_WORK_TITLE"		value="Save your work"></property>
     	<property name="LOAD_WORK_TITLE"		value="Select file to load"></property>
-    	<property name="WORK_FILE_EXT"			value="json"></property>
-    	<property name="WORK_FILE_EXT_DESC"		value="Slideshow"></property>
+    	<property name="WORK_FILE_EXT"			value="cck"></property>
+    	<property name="WORK_FILE_EXT_DESC"		value="Code Check File"></property>
 
         <!-- WORKSPACE CONTROLS STUFF -->
         <property name="PREV_BUTTON_TEXT"		value="Previous"></property>

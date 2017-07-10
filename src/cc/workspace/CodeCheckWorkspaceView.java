@@ -166,6 +166,11 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
 
     }
     private void setupToolbarAsNeeded(FlowPane toolbar) {
+        //WE NEED CUSTOM NEW/LOAD ACTIONS
+        Button loadButton = (Button)toolbar.getChildren().get(1);
+        loadButton.setOnAction(e -> {
+            controller.handleLoadRequest();
+        });
         toolbar.getChildren().remove(2, 7);
     }
     void changeToWorkspace(int index) {
@@ -176,11 +181,18 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
 
     @Override
     public void resetWorkspace() {
+        setWorkspace(stepPanes[0]);
+        app.getGUI().getAppPane().setCenter(workspace);
+        for(CodeCheckWorkspacePane step : stepPanes){
+            step.actionLog.getChildren().clear();
+        }
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void reloadWorkspace(AppDataComponent dataComponent) {
+        app.updateStageTitle();
+        //fill in data from new data comp
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
