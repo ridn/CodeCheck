@@ -10,9 +10,14 @@ import static cc.CodeCheckProp.APP_PATH_WORK;
 import cc.data.CodeCheckProjectData;
 import java.io.File;
 import javafx.event.ActionEvent;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import properties_manager.PropertiesManager;
 
 /**
@@ -58,14 +63,24 @@ public class CodeCheckWelcomeViewController  {
                     }
                 }else{
                     //THIS PROJECT/DIR EXISTS
+                    dialog.setHeaderText("Error: file exists");
+                    //dialog.getDialogPane().setHeader(btOk);
                     System.out.println("Project already exists");
-                    //dialog.getDialogPane().getChildren().add.();
+                    //((Pane)dialog.getDialogPane()).getChildren().add(0, projectError);
+                    GridPane header = (GridPane)dialog.getDialogPane().getChildren().get(0);
+                    ((Label)header.getChildren().get(0)).setTextFill(Color.RED);
                     event.consume();
 
                 }
             }
         );
-        dialog.getEditor().textProperty().addListener((observableValue, oldValue, newValue) -> { 
+        dialog.getEditor().textProperty().addListener((observableValue, oldValue, newValue) -> {
+            if(dialog.getHeaderText().equals("Error: file exists")){
+                dialog.setHeaderText("New Code Check");
+                    GridPane header = (GridPane)dialog.getDialogPane().getChildren().get(0);
+                    ((Label)header.getChildren().get(0)).setTextFill(Color.BLACK);
+   
+            }
             if (!newValue.matches("[\\w\\d\\s]*")){
                 dialog.getEditor().setText(newValue.replaceAll("[^\\w^\\d^\\s]", ""));
             }else if(newValue.length() > 30) {
