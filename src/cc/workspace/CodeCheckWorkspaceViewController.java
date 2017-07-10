@@ -12,15 +12,9 @@ import cc.filestore.CodeCheckFileStore;
 import static djf.settings.AppPropertyType.WORK_FILE_EXT;
 import static djf.settings.AppPropertyType.WORK_FILE_EXT_DESC;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import properties_manager.PropertiesManager;
@@ -50,38 +44,30 @@ class CodeCheckWorkspaceViewController {
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(props.getProperty(WORK_FILE_EXT_DESC), "*." + props.getProperty(WORK_FILE_EXT)));
         File selectedFile = fileChooser.showOpenDialog(app.getGUI().getWindow());
         if (selectedFile != null) {
-            //try {
-                app.getDataComponent().resetData();
-                //TEMP SET DATA LIKE THIS, FILE COMP WILL DO THIS LATER
-                ((CodeCheckProjectData)app.getDataComponent()).setFile(selectedFile);
-                workspace.resetWorkspace();
-                workspace.reloadWorkspace(app.getDataComponent());
-                workspace.activateWorkspace(app.getGUI().getAppPane());
-            /*    app.getFileComponent().loadData(app.getDataComponent(), selectedFile.getAbsolutePath());
-                
-            } catch (IOException ex) {
-                Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
-            }*/
-
+            ((CodeCheckFileStore)app.getFileComponent()).loadProject(selectedFile);       
         }
+
 
     }
     public void handleNewCheckRequest() {
         //SAVE THE CURRENT STATE OF THIS CHECK THEN CREATE NEW
        CodeCheckFileStore filestore = ((CodeCheckFileStore)app.getFileComponent());
        filestore.handleNewRequest();
-        //try {
-            app.getDataComponent().resetData();
-            //TEMP SET DATA LIKE THIS, FILE COMP WILL DO THIS LATER
-            ((CodeCheckProjectData)app.getDataComponent()).setFile(filestore.getActiveCheckFile());
-            workspace.resetWorkspace();
-            workspace.reloadWorkspace(app.getDataComponent());
-            workspace.activateWorkspace(app.getGUI().getAppPane());
-        /*    app.getFileComponent().loadData(app.getDataComponent(), selectedFile.getAbsolutePath());
+       if(filestore.activeCheckFileChanged() && filestore.getActiveCheckFile() != null) {
+            //try {
+                app.getDataComponent().resetData();
+                //TEMP SET DATA LIKE THIS, FILE COMP WILL DO THIS LATER
+                ((CodeCheckProjectData)app.getDataComponent()).setFile(filestore.getActiveCheckFile());
+                workspace.resetWorkspace();
+                workspace.reloadWorkspace(app.getDataComponent());
+                workspace.activateWorkspace(app.getGUI().getAppPane());
+                filestore.addProjectToRecents((CodeCheckProjectData)app.getDataComponent());
+            /*    app.getFileComponent().loadData(app.getDataComponent(), selectedFile.getAbsolutePath());
 
-        } catch (IOException ex) {
-            Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
+            } catch (IOException ex) {
+                Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
+            }*/
+       }
 
 
     }

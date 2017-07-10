@@ -43,18 +43,27 @@ public class CodeCheckWelcomeViewController  {
        CodeCheckFileStore filestore = ((CodeCheckFileStore)app.getFileComponent());
        filestore.handleNewRequest();
        CodeCheckProjectData newProjectData = new CodeCheckProjectData();
-       newProjectData.setFile(filestore.getActiveCheckFile());
-       app.handleWelcomeViewResponse(newProjectData);
-
+       if(filestore.activeCheckFileChanged() && filestore.getActiveCheckFile() != null) {
+           newProjectData.setFile(filestore.getActiveCheckFile());
+           app.handleWelcomeViewResponse(newProjectData);
+           filestore.addProjectToRecents(newProjectData);
+       }else{
+           //DID NOT MAKE NEW PROJECT
+       }
+       
    }
    public void handleCloseRequest() {
         app.handleWelcomeViewResponse(null);
 
    }
-   public void handleRecentProjectLoadRequest(String projectName) {
-       
+   public void handleRecentProjectLoadRequest(String projectPath) {
+        app.handleWelcomeViewResponse(initDataComponentForCheck(projectPath));
+
+       ((CodeCheckFileStore)app.getFileComponent()).loadProject(new File(projectPath));
    }
    private CodeCheckProjectData initDataComponentForCheck(String filePath) {
-       return new CodeCheckProjectData();
+       CodeCheckProjectData data = new CodeCheckProjectData();
+       data.setFileFromPath(filePath);
+       return data;
    }
 }

@@ -18,6 +18,13 @@ public class CodeCheckProjectData implements AppDataComponent{
     public void setFile(File file){
         projectFile = file;
     }
+    public void setFileFromPath(String path) {
+        File tmp = new File(path);
+        if(tmp.exists())
+            setFile(tmp);
+        else
+            System.out.println("FILE NOT FOUND ERROR");
+    }
     public String getPath(){
         return projectFile.getAbsolutePath();
     }
@@ -30,6 +37,10 @@ public class CodeCheckProjectData implements AppDataComponent{
     public void resetData() {
         //null out all the data
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    @Override
+    public String toString() {
+       return getTitle(); 
     }
     
 }

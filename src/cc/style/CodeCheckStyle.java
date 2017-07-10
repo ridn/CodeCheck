@@ -26,4 +26,10 @@ public class CodeCheckStyle {
     public static String WELCOME_TITLE_BAR_MAC = "welcome_title_bar_mac";
     public static String WELCOME_TITLE_BAR_WIN = "welcome_title_bar_win";
     public static String WELCOME_CLOSE_BUTTON = "welcome_close_button";
+    public static String WELCOME_VIEW_BANNER = "welcome_banner_text";
+    public static String WELCOME_VIEW_BANNER_TITLE = "welcome_banner_title";
+    public static String WELCOME_VIEW_TM = "welcome_banner_tm";
+    public static String WELCOME_VIEW_VERSION = "welcome_banner_version";
+    public static String WELCOME_VIEW_RECENTS_CELL = "welome_view_recents_cell";
+    public static String WELCOME_VIEW_RECENTS_CELL_HOVER = "welome_view_recents_cell_hover";
 }
