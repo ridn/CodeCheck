@@ -33,12 +33,14 @@ import properties_manager.PropertiesManager;
  */
 public class CodeCheckFileStore implements AppFileComponent{
     private CodeCheckApp app;
+    File currentWorkCheck;
     public CodeCheckFileStore(CodeCheckApp initApp) {
         app = initApp;
     }
     
     public void handleNewRequest() {
         PropertiesManager props = PropertiesManager.getPropertiesManager();
+        final File output;
 
         // The Java 8 way to get the response value (with lambda expression).
         
@@ -108,6 +110,7 @@ public class CodeCheckFileStore implements AppFileComponent{
             }else{
                 //CREATE ALL SUB-DIRS
                 String subDIRs[] = new String[4];
+                //I SHOULD USE A ENUM AND READ FROM PROPS
                 subDIRs[0] = "blackboard";
                 subDIRs[1] = "submissions";
                 subDIRs[2] = "projects";
@@ -124,14 +127,13 @@ public class CodeCheckFileStore implements AppFileComponent{
                 }
                 //CREATE NEW PROJECT
                 //SET THE PROJECT TITLE AND OTHER NECESSARY DATA HERE
-                CodeCheckProjectData newProjectData = new CodeCheckProjectData();
-                newProjectData.setFile(newCheck);
-                app.handleWelcomeViewResponse(newProjectData);
-                
+                currentWorkCheck = newCheck;
             }
         });
     }
-
+    public File getActiveCheckFile() {
+        return currentWorkCheck;
+    }
     @Override
     public void saveData(AppDataComponent data, String filePath) throws IOException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

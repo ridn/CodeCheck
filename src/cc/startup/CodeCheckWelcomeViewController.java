@@ -40,7 +40,12 @@ public class CodeCheckWelcomeViewController  {
    }
 
    public void handleNewCodeCheckRequest() {
-       ((CodeCheckFileStore)app.getFileComponent()).handleNewRequest();
+       CodeCheckFileStore filestore = ((CodeCheckFileStore)app.getFileComponent());
+       filestore.handleNewRequest();
+       CodeCheckProjectData newProjectData = new CodeCheckProjectData();
+       newProjectData.setFile(filestore.getActiveCheckFile());
+       app.handleWelcomeViewResponse(newProjectData);
+
    }
    public void handleCloseRequest() {
         app.handleWelcomeViewResponse(null);

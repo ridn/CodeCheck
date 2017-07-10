@@ -68,7 +68,21 @@ class CodeCheckWorkspaceViewController {
     }
     public void handleNewCheckRequest() {
         //SAVE THE CURRENT STATE OF THIS CHECK THEN CREATE NEW
-       ((CodeCheckFileStore)app.getFileComponent()).handleNewRequest();
+       CodeCheckFileStore filestore = ((CodeCheckFileStore)app.getFileComponent());
+       filestore.handleNewRequest();
+        //try {
+            app.getDataComponent().resetData();
+            //TEMP SET DATA LIKE THIS, FILE COMP WILL DO THIS LATER
+            ((CodeCheckProjectData)app.getDataComponent()).setFile(filestore.getActiveCheckFile());
+            workspace.resetWorkspace();
+            workspace.reloadWorkspace(app.getDataComponent());
+            workspace.activateWorkspace(app.getGUI().getAppPane());
+        /*    app.getFileComponent().loadData(app.getDataComponent(), selectedFile.getAbsolutePath());
+
+        } catch (IOException ex) {
+            Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }*/
+
 
     }
     public void handlePrevStepRequest(){
