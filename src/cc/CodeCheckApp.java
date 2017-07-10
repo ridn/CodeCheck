@@ -11,14 +11,20 @@ import cc.startup.CodeCheckWelcomeView;
 import cc.workspace.CodeCheckWorkspaceView;
 import djf.AppTemplate;
 import static djf.settings.AppPropertyType.APP_TITLE;
+import static djf.settings.AppStartupConstants.APP_PROPERTIES_FILE_NAME;
 import java.util.Locale;
+import java.util.Optional;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -60,12 +66,27 @@ public class CodeCheckApp extends AppTemplate {
     }
     @Override
     public void start(Stage primaryStage) {
+
+        primaryStage.setOnCloseRequest(event -> {
+            Alert alert = new Alert(AlertType.CONFIRMATION);
+            alert.setTitle("Quit");
+            alert.setHeaderText("Close Code Check?");
+            alert.setContentText("Are you sure you wish to close this application?");
+
+            alert.showAndWait().ifPresent(result->{
+                if(result.getButtonData().isCancelButton())
+                    event.consume();
+            });
+        });
         appStage = primaryStage;
         welcomeStage = new Stage();
         launchWelcomeView(welcomeStage);
 
     }
     public void launchWelcomeView(Stage stage) {
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+        boolean success = loadProperties(APP_PROPERTIES_FILE_NAME);
+
         //WE NEED THIS NOW FOR PERSISTENT FILE STORE
         fileComponent = new CodeCheckFileStore(this);
 
@@ -89,7 +110,9 @@ public class CodeCheckApp extends AppTemplate {
         appStage.centerOnScreen();
         appStage.setMinWidth(615);
         appStage.setMinHeight(380);
-        appStage.setTitle(PropertiesManager.getPropertiesManager().getProperty(APP_TITLE) + " - " + data.getTitle());
+        String title = PropertiesManager.getPropertiesManager().getProperty(APP_TITLE);
+        title += (data != null)? (" - " + data.getTitle()) : "";
+        appStage.setTitle(title);
         
     }
     private void setDataComponent(CodeCheckProjectData data) {
