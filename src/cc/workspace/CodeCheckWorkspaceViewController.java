@@ -23,6 +23,8 @@ import java.util.Arrays;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -84,6 +86,21 @@ class CodeCheckWorkspaceViewController {
 
 
     }
+    public void handleRenameProjectRequest() {
+       CodeCheckFileStore filestore = ((CodeCheckFileStore)app.getFileComponent());
+       filestore.handleProjectRenameRequest();
+       if(filestore.activeCheckFileChanged() && filestore.getActiveCheckFile() != null) {
+           //UPDATE RECENT PROJECT
+           //System.out.println(filestore.getActiveCheckFile().getPath());
+           CodeCheckProjectData data = ((CodeCheckProjectData)app.getDataComponent());
+           data.setFile(filestore.getActiveCheckFile());
+           filestore.updateRecentProject(data.getTitle(),data.getPath());
+           workspace.reloadWorkspace(app.getDataComponent());
+           workspace.activateWorkspace(app.getGUI().getAppPane());
+        }
+           
+    }
+
     public void displayAboutDialog() {
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         Alert alert = new Alert(AlertType.INFORMATION);
@@ -108,11 +125,23 @@ class CodeCheckWorkspaceViewController {
         int index = Arrays.asList(workspace.stepPanes).indexOf(workspace.getWorkspace());
 
         workspace.changeToWorkspace(index-1);
+        if(index-2 <= 0){
+            workspace.prevButton.setDisable(true);
+            workspace.aboutButton.setDisable(true);
+        }else if(workspace.prevButton.isDisabled() && workspace.aboutButton.isDisabled()) {
+            workspace.prevButton.setDisable(false);
+            workspace.aboutButton.setDisable(false);
+
+        }
     }
     public void handleNextStepRequest(){
         int index = Arrays.asList(workspace.stepPanes).indexOf(workspace.getWorkspace());
 
         workspace.changeToWorkspace(index+1);
+        if(index+2 >= workspace.stepPanes.length)
+            workspace.nextButton.setDisable(true);
+        else if(workspace.nextButton.isDisabled())
+            workspace.nextButton.setDisable(false);
         
     }
     public void handleHomeStepRequest() {
@@ -129,15 +158,6 @@ class CodeCheckWorkspaceViewController {
         
     }
     public void handleStepActionRequest(String action) {
-        
-    }
-    public void handleAboutButtonPressed() {
-        
-    }
-    public void handleRenameProjectRequest() {
-        
-    }
-    public void renameProject(String name) {
         
     }
     public void updateProgressBar() {
@@ -160,6 +180,10 @@ class CodeCheckWorkspaceViewController {
     }
     private void launchViewerWithURL(URL url) {
         
+    }
+    public Button initChildButton(Pane toolbar,String icon, String tooltip,boolean disabled) {
+
+        return app.getGUI().initChildButton(toolbar, icon, tooltip, disabled);
     }
     public void printMessageToLog(String message,MESSAGE_TYPE type) {
         /*

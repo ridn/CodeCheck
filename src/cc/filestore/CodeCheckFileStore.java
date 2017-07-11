@@ -6,14 +6,7 @@
 package cc.filestore;
 
 import cc.CodeCheckApp;
-import static cc.CodeCheckProp.APP_PATH_WORK;
-import static cc.CodeCheckProp.APP_PERSISTENT_DATA;
-import static cc.CodeCheckProp.NEW_DIALOG_CONTENT_TEXT;
-import static cc.CodeCheckProp.NEW_DIALOG_EMPTY_TEXT;
-import static cc.CodeCheckProp.NEW_DIALOG_ERROR_TEXT;
-import static cc.CodeCheckProp.NEW_DIALOG_HEADER_TEXT;
-import static cc.CodeCheckProp.NEW_DIALOG_PROMPT_TEXT;
-import static cc.CodeCheckProp.NEW_DIALOG_TITLE_TEXT;
+import static cc.CodeCheckProp.*;
 import cc.data.CodeCheckProjectData;
 import cc.workspace.CodeCheckWorkspaceView;
 import djf.components.AppDataComponent;
@@ -28,7 +21,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -176,6 +168,85 @@ public class CodeCheckFileStore implements AppFileComponent{
         //NEW PROJECT CREATED/OPENED ADD TO TOP OF RECENTS
         //addProjectToRecents();
     }
+    public void handleProjectRenameRequest() {
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+        
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle(props.getProperty(RENAME_DIALOG_TITLE_TEXT));
+        dialog.setHeaderText(props.getProperty(RENAME_DIALOG_HEADER_TEXT));
+        dialog.setContentText(props.getProperty(RENAME_DIALOG_CONTENT_TEXT));
+        dialog.getEditor().setPromptText(props.getProperty(RENAME_DIALOG_PROMPT_TEXT));
+
+        final Button btOk = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
+        btOk.addEventFilter(ActionEvent.ACTION, 
+            event -> {
+                //DO VALIDITY CHECKS HERE
+                String projName = dialog.getEditor().textProperty().get().trim();
+                String dirPath = props.getProperty(APP_PATH_WORK) + projName;
+                //ADD CUSTOM FILE EXTENSION
+                dirPath += "." + props.getProperty(WORK_FILE_EXT);
+                File newCheck = new File(dirPath);                
+                // Check whether some conditions are fulfilled
+                if (!projName.isEmpty() && !newCheck.exists()) {
+                    //TRY TO MAKE THE PROJECT FOLDER
+                    boolean successful = currentWorkCheck.renameTo(newCheck);
+                    if(successful){
+                        //CONTINUE TO BUTTON ACTION
+                        //PROJECT WAS RENAMED, UPDATE RECENTS
+                        //SET THE PROJECT TITLE AND OTHER NECESSARY DATA HERE
+                        currentWorkCheck = newCheck;
+                        //System.out.println(newCheck.getPath());
+                        //System.out.println(currentWorkCheck.getPath());
+                        checkFileChanged = true;
+
+                    }else{
+                        //FAILED TO MAKE DIR
+                        System.out.println("Failed to make project DIR");
+                        //dialog.getDialogPane().getChildren().add.();
+                        event.consume();
+                    }
+                }else{
+                    if(projName.isEmpty()){
+                        //TEXT IS BLANK OR EFFECTVELY BLANK!
+                        dialog.setHeaderText(props.getProperty(NEW_DIALOG_EMPTY_TEXT));
+                    }else{
+                        //THIS PROJECT/DIR EXISTS
+                        dialog.setHeaderText(props.getProperty(NEW_DIALOG_ERROR_TEXT));
+                        //dialog.getDialogPane().setHeader(btOk);
+                        System.out.println("Project already exists");
+                    }
+                    //((Pane)dialog.getDialogPane()).getChildren().add(0, projectError);
+                    GridPane header = (GridPane)dialog.getDialogPane().getChildren().get(0);
+                    ((Label)header.getChildren().get(0)).setTextFill(Color.RED);
+                    event.consume();
+
+                }
+            }
+        );
+        dialog.getEditor().textProperty().addListener((observableValue, oldValue, newValue) -> {
+            if(!dialog.getHeaderText().equals(props.getProperty(RENAME_DIALOG_HEADER_TEXT))){
+                dialog.setHeaderText(props.getProperty(RENAME_DIALOG_HEADER_TEXT));
+                    GridPane header = (GridPane)dialog.getDialogPane().getChildren().get(0);
+                    ((Label)header.getChildren().get(0)).setTextFill(Color.BLACK);
+   
+            }
+            if (!newValue.matches("[\\w\\d\\s]*")){
+                dialog.getEditor().setText(newValue.replaceAll("[^\\w^\\d^\\s]", ""));
+            }else if(newValue.length() > 30) {
+                dialog.getEditor().setText(oldValue);
+            }
+        });
+
+        dialog.showAndWait();
+    }
+    public void updateRecentProject(String title, String path){
+        /*String[] projectRef = new String[2];
+        projectRef[0] = title;
+        projectRef[1] = path;
+        */
+        recentProjectsArray.remove(0);
+        addProjectToRecents(title,path);
+    }
     public void addProjectToRecents(CodeCheckProjectData data) {
         addProjectToRecents(data.getTitle(),data.getPath(), true);
     }
@@ -301,6 +372,8 @@ public class CodeCheckFileStore implements AppFileComponent{
                 //NEW PROJECT OPENED ADD TO TOP OF RECENTS
                 CodeCheckFileStore filestore = ((CodeCheckFileStore)app.getFileComponent());
                 filestore.addProjectToRecents((CodeCheckProjectData)app.getDataComponent());
+                currentWorkCheck = selectedFile;
+                checkFileChanged = true;
             /*    app.getFileComponent().loadData(app.getDataComponent(), selectedFile.getAbsolutePath());
                 
             } catch (IOException ex) {

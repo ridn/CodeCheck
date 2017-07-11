@@ -12,6 +12,12 @@ import static cc.style.CodeCheckStyle.STEP_TITLE_LABEL;
 import static cc.style.CodeCheckStyle.WORKSPACE_TOOLBAR;
 import djf.components.AppDataComponent;
 import djf.components.AppWorkspaceComponent;
+import java.util.Arrays;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -65,8 +71,8 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
 
         //CUSTOMIZE THE FILE TOOLBAR AS NEEDED
         setupToolbarAsNeeded(fileToolbar);
-        renameButton = app.getGUI().initChildButton(fileToolbar, RENAME_BUTTON_TEXT.toString(),RENAME_BUTTON_TEXT.toString(), false);
-        aboutButton = app.getGUI().initChildButton(fileToolbar, ABOUT_BUTTON_TEXT.toString(),ABOUT_BUTTON_TEXT.toString(), false);
+        renameButton = app.getGUI().initChildButton(fileToolbar, RENAME_BUTTON_ICON.toString(),RENAME_BUTTON_TEXT.toString(), false);
+        aboutButton = app.getGUI().initChildButton(fileToolbar, ABOUT_BUTTON_ICON.toString(),ABOUT_BUTTON_TEXT.toString(), false);
         
         stepPanes = new CodeCheckWorkspacePane[5];
         workspace = stepPanes[0];
@@ -80,11 +86,11 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
             stepPanes[i].setStepProgressLabel(props.getProperty("STEP_"+ (i+1) +"_PROGRESS"));
             
             //ADD THE STEP SPECIFIC BUTTONS
-            Button actionButtonOne = app.getGUI().initChildButton(stepPanes[i].stepActionButtonsPane, "STEP_"+(i+1)+"_BUTTON_1_TEXT","STEP_"+(i+1)+"_BUTTON_1_TEXT", false);
+            Button actionButtonOne = app.getGUI().initChildButton(stepPanes[i].stepActionButtonsPane, "STEP_"+(i+1)+"_BUTTON_1_TEXT","STEP_"+(i+1)+"_BUTTON_1_TEXT", true);
             actionButtonOne.setText(props.getProperty("STEP_"+(i+1)+"_BUTTON_1_TEXT"));
             if(i == 4) {
                 //STEP 5 HAS 2 BUTTONS
-                Button actionButtonTwo = app.getGUI().initChildButton(stepPanes[i].stepActionButtonsPane, "STEP_"+(i+1)+"_BUTTON_2_TEXT","STEP_"+(i+1)+"_BUTTON_2_TEXT", false);
+                Button actionButtonTwo = app.getGUI().initChildButton(stepPanes[i].stepActionButtonsPane, "STEP_"+(i+1)+"_BUTTON_2_TEXT","STEP_"+(i+1)+"_BUTTON_2_TEXT", true);
                 actionButtonTwo.setText(props.getProperty("STEP_"+(i+1)+"_BUTTON_2_TEXT"));
             }
             if(i == 3){
@@ -128,11 +134,11 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         }
 
         //USE THIS FOR BUTTONS WITHOUT ICONS
-        homeButton.setText(props.getProperty(HOME_BUTTON_TEXT.toString()));
-        prevButton.setText(props.getProperty(PREV_BUTTON_TEXT.toString()));
-        nextButton.setText(props.getProperty(NEXT_BUTTON_TEXT.toString()));
-        renameButton.setText(props.getProperty(RENAME_BUTTON_TEXT.toString()));
-        aboutButton.setText(props.getProperty(ABOUT_BUTTON_TEXT.toString()));
+        //homeButton.setText(props.getProperty(HOME_BUTTON_TEXT.toString()));
+        //prevButton.setText(props.getProperty(PREV_BUTTON_TEXT.toString()));
+        //nextButton.setText(props.getProperty(NEXT_BUTTON_TEXT.toString()));
+        //renameButton.setText(props.getProperty(RENAME_BUTTON_TEXT.toString()));
+        //aboutButton.setText(props.getProperty(ABOUT_BUTTON_TEXT.toString()));
 
         app.getGUI().getTopToolbarPane().getChildren().add(progressionToolbar);
         
@@ -158,10 +164,21 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         aboutButton.setOnAction(e -> {
             controller.displayAboutDialog();
         });
+        renameButton.setOnAction(e -> {
+            controller.handleRenameProjectRequest();
+        });
         
     }
     private void initControlBinding() {
+        ObservableList oList = FXCollections.observableArrayList(stepPanes);
         
+        progressionToolbar.disableProperty().bind(app.getGUI().getAppPane().centerProperty().isNull());
+        
+        //homeButton.disableProperty().bind(Bindings.size(oList).multiply(0).isEqualTo(oList.indexOf(getWorkspace())));
+        //prevButton.disableProperty().bind(Bindings.size(oList).multiply(0).isEqualTo(oList.indexOf(getWorkspace())));
+        //nextButton.disableProperty().bind(Bindings.size(oList).lessThan(oList.indexOf(getWorkspace())));
+
+
     }
     private void initStyle() {
         app.getGUI().getTopToolbarPane().getStyleClass().add(WORKSPACE_TOOLBAR);

@@ -5,6 +5,7 @@
  */
 package cc.workspace;
 
+import static cc.CodeCheckProp.*;
 import static cc.style.CodeCheckStyle.STEP_TITLE_LABEL;
 import static cc.style.CodeCheckStyle.WORKSPACE_PANE;
 import javafx.geometry.Insets;
@@ -58,10 +59,14 @@ class CodeCheckWorkspacePane extends HBox{
         VBox.setVgrow(filesView, Priority.ALWAYS);
 
         testButton = new Button("test");
-        removeButton = new Button("remove");
-        refreshButton = new Button("refresh");
-        viewButton = new Button("view");
-        leftActionButtonsPane = new HBox(testButton,removeButton,refreshButton,viewButton);
+
+        //removeButton = new Button("remove");
+        //refreshButton = new Button("refresh");
+        //viewButton = new Button("view");
+        leftActionButtonsPane = new HBox(testButton);//,removeButton,refreshButton,viewButton);
+        removeButton = controller.initChildButton(leftActionButtonsPane, REMOVE_BUTTON_ICON.toString(),REMOVE_BUTTON_TOOLTIP.toString(), true);
+        refreshButton = controller.initChildButton(leftActionButtonsPane, REFRESH_BUTTON_ICON.toString(),REFRESH_BUTTON_TOOLTIP.toString(), true);
+        viewButton = controller.initChildButton(leftActionButtonsPane, VIEW_BUTTON_ICON.toString(),VIEW_BUTTON_TOOLTIP.toString(), true);
         
         leftPaneSpace.getChildren().addAll(stepTitleLabel,hintLabel,filesView,leftActionButtonsPane);
 

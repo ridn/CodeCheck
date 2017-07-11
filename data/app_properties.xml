@@ -10,17 +10,25 @@
     <property_list>
         <property name="APP_TITLE"	    value="Code Check"></property>
     	<property name="APP_LOGO"	    value="CodeCheck.png"></property>
-        <property name="UNTITLED_SHOW_TEXT"	    value="Untitled CodeCheck"></property>
+        <property name="UNTITLED_CHECK_TEXT"	    value="Untitled CodeCheck"></property>
     	<property name="APP_PATH_CSS"	    value="style/"></property>
     	<property name="APP_CSS"	    value="cc_style.css"></property>
         <property name="APP_PATH_WORK"      value="work/"></property>
+        <property name="APP_TM_TEXT"		value="TM"></property>
+        <property name="APP_VERSION"		value="0.0.1-1a (build 1)"></property>
+        <property name="APP_PERSISTENT_DATA"		value="persistentData.json"></property>
 
         <!-- PROGRAM ICON FILES -->
         <property name="NEW_ICON"	    value="New.png"></property>
-        <property name="LOAD_ICON"	    value="Load.png"></property>
+        <property name="LOAD_ICON"	    value="load.png"></property>
         <property name="PREV_BUTTON_ICON"	    value="prev.png"></property>
         <property name="NEXT_BUTTON_ICON"	    value="next.png"></property>
         <property name="HOME_BUTTON_ICON"	    value="home.png"></property>
+        <property name="ABOUT_BUTTON_ICON"	    value="about.png"></property>
+        <property name="RENAME_BUTTON_ICON"	    value="rename.png"></property>
+        <property name="REFRESH_BUTTON_ICON"	    value="refresh.png"></property>
+        <property name="VIEW_BUTTON_ICON"	    value="view.png"></property>
+        <property name="REMOVE_BUTTON_ICON"	    value="remove.png"></property>
 
         <!-- TOOLTIPS FOR BUTTONS -->
         <property name="NEW_TOOLTIP"		value="Create new Code Check"></property>
@@ -28,6 +36,9 @@
         <property name="PREV_BUTTON_TOOLTIP"		value="Go to previous step"></property>
         <property name="NEXT_BUTTON_TOOLTIP"		value="Go to next step"></property>
         <property name="HOME_BUTTON_TOOLTIP"		value="Go to first step"></property>
+        <property name="REMOVE_BUTTON_TOOLTIP"		value="Remove selected file"></property>
+        <property name="VIEW_BUTTON_TOOLTIP"		value="View selected file"></property>
+        <property name="REFRESH_BUTTON_TOOLTIP"		value="Refresh list"></property>
 
         <!-- LABELS -->
         <property name="STEP_1_TITLE"		value="Step 1: Extract Submissions"></property>
@@ -51,13 +62,23 @@
         <property name="FILE_TYPE_3"		value=".js"></property>
         <property name="FILE_TYPE_4"		value=".cs"></property>
         <property name="FILE_TYPE_CUSTOM"		value="Enter source type(s)"></property>
-        <property name="WELCOME_VIEW_RECENTS_HEADER"		value=""></property>
+        <property name="WELCOME_VIEW_RECENTS_HEADER_TEXT"		value="Recent Work"></property>
         <property name="WELCOME_VIEW_NEW_BUTTON_TEXT"		value=""></property>
         <property name="NEW_DIALOG_TITLE_TEXT"		value="Create New Code Check"></property>
         <property name="NEW_DIALOG_PROMPT_TEXT"		value="Code Check Name"></property>
         <property name="NEW_DIALOG_HEADER_TEXT"		value="New Code Check"></property>
         <property name="NEW_DIALOG_CONTENT_TEXT"		value="Enter Code Check name"></property>
         <property name="NEW_DIALOG_ERROR_TEXT"		value="Error: file exists"></property>
+        <property name="NEW_DIALOG_EMPTY_TEXT"		value="Name cannot be blank"></property>
+        <property name="RENAME_DIALOG_TITLE_TEXT"		value="Rename"></property>
+        <property name="RENAME_DIALOG_PROMPT_TEXT"		value="Code Check Name"></property>
+        <property name="RENAME_DIALOG_HEADER_TEXT"		value="Rename Code Check"></property>
+        <property name="RENAME_DIALOG_CONTENT_TEXT"		value="Enter new name"></property>
+        <property name="WELCOME_TO_TEXT"		value="Welcome to"></property>
+        <property name="ABOUT_LABEL_TEXT"		value="About"></property>
+        <property name="VERSION_TEXT"		value="Version"></property>
+        <property name="LEGAL_NOTICE"		value="Copyright © 2017"></property>
+        <property name="AUTHOR_TEXT"		value="Created By Daniel Niyazov"></property>
 
         <!-- ERROR MESSAGES -->
         <property name="CLOSE_BUTTON_TEXT"              value="Close"></property>
