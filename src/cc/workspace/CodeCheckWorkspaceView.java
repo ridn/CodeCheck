@@ -65,8 +65,8 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         progressionToolbar.setPadding(new Insets(5, 5, 5, 5));
         progressionToolbar.setAlignment(Pos.BASELINE_RIGHT);
         
-        homeButton = app.getGUI().initChildButton(progressionToolbar, HOME_BUTTON_ICON.toString(),HOME_BUTTON_TEXT.toString(), false);
-        prevButton = app.getGUI().initChildButton(progressionToolbar, PREV_BUTTON_ICON.toString(),PREV_BUTTON_TEXT.toString(), false);
+        homeButton = app.getGUI().initChildButton(progressionToolbar, HOME_BUTTON_ICON.toString(),HOME_BUTTON_TEXT.toString(), true);
+        prevButton = app.getGUI().initChildButton(progressionToolbar, PREV_BUTTON_ICON.toString(),PREV_BUTTON_TEXT.toString(), true);
         nextButton = app.getGUI().initChildButton(progressionToolbar, NEXT_BUTTON_ICON.toString(),NEXT_BUTTON_TEXT.toString(), false);
 
         //CUSTOMIZE THE FILE TOOLBAR AS NEEDED
@@ -200,6 +200,20 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
     void changeToWorkspace(int index) {
         setWorkspace(stepPanes[index]);
         app.getGUI().getAppPane().setCenter(workspace);
+        System.out.println(index);
+        if(index >= stepPanes.length-1){
+            nextButton.setDisable(true);
+        }else if(index <= 0) {
+            homeButton.setDisable(true);
+            prevButton.setDisable(true);
+        }else if(index > 0){
+            homeButton.setDisable(false);
+            prevButton.setDisable(false);
+        }
+        if(index < stepPanes.length-1){
+            nextButton.setDisable(false);
+        }
+
         
     }
 

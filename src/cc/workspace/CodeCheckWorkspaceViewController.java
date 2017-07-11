@@ -125,23 +125,11 @@ class CodeCheckWorkspaceViewController {
         int index = Arrays.asList(workspace.stepPanes).indexOf(workspace.getWorkspace());
 
         workspace.changeToWorkspace(index-1);
-        if(index-2 <= 0){
-            workspace.prevButton.setDisable(true);
-            workspace.aboutButton.setDisable(true);
-        }else if(workspace.prevButton.isDisabled() && workspace.aboutButton.isDisabled()) {
-            workspace.prevButton.setDisable(false);
-            workspace.aboutButton.setDisable(false);
-
-        }
     }
     public void handleNextStepRequest(){
         int index = Arrays.asList(workspace.stepPanes).indexOf(workspace.getWorkspace());
 
         workspace.changeToWorkspace(index+1);
-        if(index+2 >= workspace.stepPanes.length)
-            workspace.nextButton.setDisable(true);
-        else if(workspace.nextButton.isDisabled())
-            workspace.nextButton.setDisable(false);
         
     }
     public void handleHomeStepRequest() {
