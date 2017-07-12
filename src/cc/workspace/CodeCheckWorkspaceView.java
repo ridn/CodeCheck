@@ -13,12 +13,6 @@ import static cc.style.CodeCheckStyle.STEP_TITLE_LABEL;
 import static cc.style.CodeCheckStyle.WORKSPACE_TOOLBAR;
 import djf.components.AppDataComponent;
 import djf.components.AppWorkspaceComponent;
-import java.util.Arrays;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -28,6 +22,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import properties_manager.PropertiesManager;
 
@@ -57,14 +52,20 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
 
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         
-        //HERE'S A NASTY WAY TO RIGHT ALIGN A TOOLBAR IN FLOWPANE
         FlowPane fileToolbar = app.getGUI().getFileToolbar();
         Region spacer = new Region();
-        app.getGUI().getTopToolbarPane().getChildren().add(spacer);
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        HBox newTopToolbar = new HBox(fileToolbar,spacer);
+        app.getGUI().getAppPane().setTop(newTopToolbar);
+
         progressionToolbar = new HBox();
-        spacer.prefWidthProperty().bind(app.getGUI().getTopToolbarPane().widthProperty().subtract(fileToolbar.widthProperty()).subtract(progressionToolbar.widthProperty()).subtract(20));        
         progressionToolbar.setPadding(new Insets(5, 5, 5, 5));
         progressionToolbar.setAlignment(Pos.BASELINE_RIGHT);
+
+        //HERE'S A NASTY WAY TO RIGHT ALIGN A TOOLBAR IN FLOWPANE        
+        //app.getGUI().getTopToolbarPane().getChildren().add(spacer);
+        //spacer.prefWidthProperty().bind(app.getGUI().getTopToolbarPane().widthProperty().subtract(fileToolbar.widthProperty()).subtract(progressionToolbar.widthProperty()).subtract(20));
         
         homeButton = app.getGUI().initChildButton(progressionToolbar, HOME_BUTTON_ICON.toString(),HOME_BUTTON_TEXT.toString(), true);
         prevButton = app.getGUI().initChildButton(progressionToolbar, PREV_BUTTON_ICON.toString(),PREV_BUTTON_TEXT.toString(), true);
@@ -141,8 +142,8 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         //renameButton.setText(props.getProperty(RENAME_BUTTON_TEXT.toString()));
         //aboutButton.setText(props.getProperty(ABOUT_BUTTON_TEXT.toString()));
 
-        app.getGUI().getTopToolbarPane().getChildren().add(progressionToolbar);
-        
+        //app.getGUI().getTopToolbarPane().getChildren().add(progressionToolbar);
+        newTopToolbar.getChildren().add(progressionToolbar);
         setWorkspace(stepPanes[0]);
         if(activateOnLoad)
             this.activateWorkspace(app.getGUI().getAppPane());
@@ -171,9 +172,10 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         
     }
     private void initControlBinding() {
-        ObservableList oList = FXCollections.observableArrayList(stepPanes);
+        //ObservableList oList = FXCollections.observableArrayList(stepPanes);
         
         progressionToolbar.disableProperty().bind(app.getGUI().getAppPane().centerProperty().isNull());
+        renameButton.disableProperty().bind(app.getGUI().getAppPane().centerProperty().isNull());
         
         //homeButton.disableProperty().bind(Bindings.size(oList).multiply(0).isEqualTo(oList.indexOf(getWorkspace())));
         //prevButton.disableProperty().bind(Bindings.size(oList).multiply(0).isEqualTo(oList.indexOf(getWorkspace())));
@@ -182,7 +184,8 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
 
     }
     private void initStyle() {
-        app.getGUI().getTopToolbarPane().getStyleClass().add(WORKSPACE_TOOLBAR);
+        //app.getGUI().getTopToolbarPane().getStyleClass().add(WORKSPACE_TOOLBAR);
+        app.getGUI().getAppPane().getTop().getStyleClass().add(WORKSPACE_TOOLBAR);
         progressionToolbar.getStyleClass().add(WORKSPACE_TOOLBAR);
 
     }
