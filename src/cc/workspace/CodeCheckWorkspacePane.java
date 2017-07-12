@@ -15,7 +15,9 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -36,6 +38,7 @@ class CodeCheckWorkspacePane extends HBox{
     Button testButton, removeButton, refreshButton,viewButton;
     TextFlow actionLog;
     Label stepTitleLabel, hintLabel, progressLabel;
+    ProgressBar stepProgress;
     
     public CodeCheckWorkspacePane(CodeCheckWorkspaceViewController initController) {
         controller = initController;
@@ -49,14 +52,15 @@ class CodeCheckWorkspacePane extends HBox{
         leftPaneSpace = new VBox();
         leftPaneSpace.setSpacing(10);
         leftPaneSpace.setPadding(new Insets(10, 10, 10, 10));
-        stepTitleLabel = new Label("Step Title: " + paneIndex);
-        hintLabel = new Label("");
+        stepTitleLabel = new Label();
+        hintLabel = new Label();
         hintLabel.setWrapText(true);
         hintLabel.setPadding(new Insets(5, 5, 5, 5));
         VBox.setVgrow(hintLabel, Priority.ALWAYS);
         
         filesView = new ListView();
         filesView.setOrientation(Orientation.VERTICAL);
+        filesView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         VBox.setVgrow(filesView, Priority.ALWAYS);
 
         testButton = new Button("test");
@@ -78,6 +82,9 @@ class CodeCheckWorkspacePane extends HBox{
         rightPaneSpace.setPadding(new Insets(10, 10, 10, 10));
 
         progressLabel = new Label("Step " + paneIndex+ " progress");
+        stepProgress = new ProgressBar();
+        HBox progressBox = new HBox(progressLabel,stepProgress);
+        progressBox.setSpacing(10);
         stepActionButtonsPane =  new HBox();
         ScrollPane logScrollArea = new ScrollPane();
         actionLog = new TextFlow();
@@ -91,7 +98,7 @@ class CodeCheckWorkspacePane extends HBox{
         logScrollArea.setFitToHeight(true);
         VBox.setVgrow(logScrollArea, Priority.ALWAYS);
         
-        rightPaneSpace.getChildren().addAll(progressLabel,stepActionButtonsPane,logScrollArea);
+        rightPaneSpace.getChildren().addAll(progressBox,stepActionButtonsPane,logScrollArea);
 
         HBox.setHgrow(leftPaneSpace, Priority.ALWAYS);
         HBox.setHgrow(rightPaneSpace, Priority.ALWAYS);
