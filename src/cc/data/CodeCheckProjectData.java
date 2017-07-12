@@ -43,6 +43,7 @@ public class CodeCheckProjectData implements AppDataComponent{
 
     }
     public ObservableList<String> getListing(int step) {
+        //TODO: IMPLEMENT LIST RETREVIAL FOR REMAINING STEPS
         switch(step){
             case 0:
                 if(bbSubmissionsList == null){
@@ -60,6 +61,7 @@ public class CodeCheckProjectData implements AppDataComponent{
 
     }
     private ObservableList<String> initListing(String path) {
+        //TODO: IMPLEMENT STEP SPECIFIC FILTER
         ObservableList tmpCollection = FXCollections.observableArrayList();
         Path folder = Paths.get(projectFile.getAbsolutePath() + "/" + path);
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(folder,"*.zip")) {            
@@ -67,12 +69,13 @@ public class CodeCheckProjectData implements AppDataComponent{
                 tmpCollection.add(entry);
             }
         } catch (IOException ex) {
-        // An I/O problem has occurred
-            ex.printStackTrace();
+            // An I/O problem has occurred
+
         }
         return (tmpCollection.isEmpty()) ? null : tmpCollection;
     }
     public void refreshList(int step) {
+        //TODO: IMPLEMENT REFRESH FOR REMAINING STEPS
          switch(step){
             case 0:
                 bbSubmissionsList = null;
@@ -86,6 +89,7 @@ public class CodeCheckProjectData implements AppDataComponent{
     }
     @Override
     public void resetData() {
+        //TODO: IMPLEMENT DATA RESET
         //null out all the data
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
