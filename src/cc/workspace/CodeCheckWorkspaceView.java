@@ -8,16 +8,19 @@ package cc.workspace;
 
 import cc.CodeCheckApp;
 import static cc.CodeCheckProp.*;
+import cc.data.CodeCheckProjectData;
 import static cc.style.CodeCheckStyle.CUSTOM_SOURCE_FIELD;
 import static cc.style.CodeCheckStyle.STEP_TITLE_LABEL;
 import static cc.style.CodeCheckStyle.WORKSPACE_TOOLBAR;
 import djf.components.AppDataComponent;
 import djf.components.AppWorkspaceComponent;
+import java.nio.file.Path;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
@@ -87,8 +90,24 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
             stepPanes[i].setStepHint(props.getProperty("STEP_"+ (i+1) +"_HINT"));
             stepPanes[i].setStepProgressLabel(props.getProperty("STEP_"+ (i+1) +"_PROGRESS"));
             
+            //CONNECT TABLES TO THEIR DATA HERE
+            stepPanes[i].filesView.setItems(((CodeCheckProjectData)app.getDataComponent()).getListing(i));
+            stepPanes[i].filesView.setCellFactory((e->{
+
+                  ListCell<Path> cell = new ListCell<Path>() {
+                    @Override
+                    public void updateItem(Path item, boolean empty) {
+                      super.updateItem(item, empty);
+                      if (item != null) {
+                        setText(item.getFileName().toString());
+                      }
+                    }
+                  };
+                  return cell;
+            }));
+            
             //ADD THE STEP SPECIFIC BUTTONS
-            Button actionButtonOne = app.getGUI().initChildButton(stepPanes[i].stepActionButtonsPane, "STEP_"+(i+1)+"_BUTTON_1_TEXT","STEP_"+(i+1)+"_BUTTON_1_TEXT", true);
+            Button actionButtonOne = app.getGUI().initChildButton(stepPanes[i].stepActionButtonsPane, "STEP_"+(i+1)+"_BUTTON_1_TEXT","STEP_"+(i+1)+"_BUTTON_1_TEXT", false);
             actionButtonOne.setText(props.getProperty("STEP_"+(i+1)+"_BUTTON_1_TEXT"));
             if(i == 4) {
                 //STEP 5 HAS 2 BUTTONS
@@ -169,6 +188,13 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         renameButton.setOnAction(e -> {
             controller.handleRenameProjectRequest();
         });
+        for(int i = 0; i < stepPanes.length; i++) {
+            Button actionButton = (Button)stepPanes[i].stepActionButtonsPane.getChildren().get(0);
+            final int index = i;
+            actionButton.setOnAction(e -> {
+                controller.handleStepActionRequest(index);
+            });
+        }
         
     }
     private void initControlBinding() {
@@ -204,7 +230,6 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
     void changeToWorkspace(int index) {
         setWorkspace(stepPanes[index]);
         app.getGUI().getAppPane().setCenter(workspace);
-        System.out.println(index);
         if(index >= stepPanes.length-1){
             nextButton.setDisable(true);
         }else if(index <= 0) {
