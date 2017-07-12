@@ -8,6 +8,13 @@ package cc.data;
 
 import djf.components.AppDataComponent;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  *
@@ -16,6 +23,7 @@ import java.io.File;
 public class CodeCheckProjectData implements AppDataComponent{
     private File projectFile;
     private String projectPath, projectTitle;
+    private ObservableList bbSubmissionsList, studentSubmissionList;
     public void setFile(File file){
         projectFile = file;
     }
@@ -33,6 +41,48 @@ public class CodeCheckProjectData implements AppDataComponent{
         //return projectFile.getName();
         return projectFile.getName().replaceFirst("[.][^.]+$", "");
 
+    }
+    public ObservableList<String> getListing(int step) {
+        switch(step){
+            case 0:
+                if(bbSubmissionsList == null){
+                    bbSubmissionsList = initListing("blackboard");                    
+                }
+                return bbSubmissionsList;
+            case 1:
+                if(studentSubmissionList == null){
+                    studentSubmissionList = initListing("submissions");
+                }
+                return studentSubmissionList;
+        }
+        
+        return null;
+
+    }
+    private ObservableList<String> initListing(String path) {
+        ObservableList tmpCollection = FXCollections.observableArrayList();
+        Path folder = Paths.get(projectFile.getAbsolutePath() + "/" + path);
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(folder,"*.zip")) {            
+            for (Path entry : stream) {
+                tmpCollection.add(entry);
+            }
+        } catch (IOException ex) {
+        // An I/O problem has occurred
+            ex.printStackTrace();
+        }
+        return (tmpCollection.isEmpty()) ? null : tmpCollection;
+    }
+    public void refreshList(int step) {
+         switch(step){
+            case 0:
+                bbSubmissionsList = null;
+                bbSubmissionsList = getListing(step);                    
+                break;
+            case 1:
+                studentSubmissionList = null;
+                studentSubmissionList = getListing(step);
+                break;
+        }
     }
     @Override
     public void resetData() {
