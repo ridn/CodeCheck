@@ -19,8 +19,12 @@ import static djf.settings.AppPropertyType.APP_TITLE;
 import static djf.settings.AppPropertyType.WORK_FILE_EXT;
 import static djf.settings.AppPropertyType.WORK_FILE_EXT_DESC;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -63,13 +67,13 @@ class CodeCheckWorkspaceViewController {
             ((CodeCheckFileStore)app.getFileComponent()).loadProject(selectedFile);       
         }
 
-
     }
     public void handleNewCheckRequest() {
         //SAVE THE CURRENT STATE OF THIS CHECK THEN CREATE NEW
        CodeCheckFileStore filestore = ((CodeCheckFileStore)app.getFileComponent());
        filestore.handleNewRequest();
        if(filestore.activeCheckFileChanged() && filestore.getActiveCheckFile() != null) {
+           //TODO: READ DATA FROM FILE USING DATA COMP?
             //try {
                 app.getDataComponent().resetData();
                 //TEMP SET DATA LIKE THIS, FILE COMP WILL DO THIS LATER
@@ -85,14 +89,13 @@ class CodeCheckWorkspaceViewController {
             }*/
        }
 
-
     }
     public void handleRenameProjectRequest() {
        CodeCheckFileStore filestore = ((CodeCheckFileStore)app.getFileComponent());
        filestore.handleProjectRenameRequest();
        if(filestore.activeCheckFileChanged() && filestore.getActiveCheckFile() != null) {
            //UPDATE RECENT PROJECT
-           //System.out.println(filestore.getActiveCheckFile().getPath());
+
            CodeCheckProjectData data = ((CodeCheckProjectData)app.getDataComponent());
            data.setFile(filestore.getActiveCheckFile());
            filestore.updateRecentProject(data.getTitle(),data.getPath());
@@ -124,12 +127,10 @@ class CodeCheckWorkspaceViewController {
     }
     public void handlePrevStepRequest(){
         int index = Arrays.asList(workspace.stepPanes).indexOf(workspace.getWorkspace());
-
         workspace.changeToWorkspace(index-1);
     }
     public void handleNextStepRequest(){
         int index = Arrays.asList(workspace.stepPanes).indexOf(workspace.getWorkspace());
-
         workspace.changeToWorkspace(index+1);
         
     }
@@ -138,30 +139,85 @@ class CodeCheckWorkspaceViewController {
 
     }
     public void handleRemoveRequest() {
+        //TODO: IMPLEMENT REMOVE FILE
         
     }
     public void handleRefreshRequest() {
+        //TODO: IMPLEMENT REFRESH LIST VIEW
         
     }
     public void handleViewRequest() {
+        //TODO: IMPLEMENT FILE VIEW
         
     }
-    public void handleStepActionRequest(String action) {
+    public void handleStepActionRequest(int actionIndex) {
+        switch(CodeCheckStepActions.values()[actionIndex]) {
+            case EXTRACT_SUBMISSIONS:
+                extractSubmissions();
+                break;
+            case RENAME_SUBMISSIONS:
+                renameSubmissions();
+                break;
+            case UNZIP_SUBMISSIONS:
+                unzipSubmissions();
+                break;
+            case EXTRACT_CODE:
+                extractSubmissionCode();
+                break;
+            case CODE_CHECK:
+                break;
+            case VIEW_RESULTS:
+                break;
+        }
+            renameSubmissions();
         
     }
     public void updateProgressBar() {
+        //TODO: IMPLEMENT PROGRESS BAR UPDATES
         
     }
     private void extractSubmissions() {
-        
+        //TODO: IMPLEMENT SUBMISSION EXTRACTION
+
     }
+
     private void renameSubmissions() {
-        
+        //TODO: DO ASYNC IN NEW THREAD
+        CodeCheckProjectData dataManager = (CodeCheckProjectData)app.getDataComponent();
+        //ObservableList unzipList = dataManager.getListing(1);
+        CodeCheckWorkspacePane currentPane = (CodeCheckWorkspacePane)workspace.getWorkspace();
+        ObservableList<Path> renameList = currentPane.filesView.getSelectionModel().getSelectedItems();
+        renameList.forEach((file) -> {
+            try {
+                int firstIndex = file.getFileName().toString().indexOf("_");
+                if(firstIndex >= 0){
+                    String newName = file.getFileName().toString().substring(++firstIndex, file.getFileName().toString().indexOf("_", firstIndex)) + ".zip";
+                    Files.move(file, file.resolveSibling(newName));
+                    printMessageToLog("Successfully renamed file:", MESSAGE_TYPE.MESSAGE_SUCCESS);
+                    printMessageToLog(file.getFileName().toString(), MESSAGE_TYPE.MESSAGE_NORMAL);
+                }else{
+                    //INVALID NAMING SCHEME
+                    //ALREADY RENAMED?
+                    //TODO HANDLE INVALID NAME SCHEME
+                }
+            } catch (IOException ex) {
+                //TODO DONT PRINT AFTER EVERY ATTEMPT
+                printMessageToLog("Failed to rename file:", MESSAGE_TYPE.MESSAGE_ERROR);
+                printMessageToLog(file.getFileName().toString(), MESSAGE_TYPE.MESSAGE_NORMAL);
+                //Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        //NOW REFRESH THE LIST
+        dataManager.refreshList(1);
+        currentPane.filesView.setItems(dataManager.getListing(1));
+        currentPane.filesView.refresh();
+
     }
     private void unzipSubmissions() {
-        
+        //TODO: IMPLEMENTS UNZIP
     }
     private void extractSubmissionCode() {
+        //TODO: IMPLEMENTS CODE EXTRACTION
         
     }
     private URL codeCheckWithResults() {
@@ -198,7 +254,6 @@ class CodeCheckWorkspaceViewController {
                 logText.setFill(Color.RED); 
                 //text.setStyle("-fx-text-inner-color: red;");
                 break;
-
         }
         activePane.actionLog.getChildren().addAll(logText);
     }
