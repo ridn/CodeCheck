@@ -97,9 +97,7 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
                     @Override
                     public void updateItem(Path item, boolean empty) {
                       super.updateItem(item, empty);
-                      if (item != null) {
-                        setText(item.getFileName().toString());
-                      }
+                      setText((empty || item == null) ? null : item.getFileName().toString());
                     }
                   };
                   return cell;
