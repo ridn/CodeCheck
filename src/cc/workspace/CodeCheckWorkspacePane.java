@@ -35,7 +35,7 @@ class CodeCheckWorkspacePane extends HBox{
     private VBox leftPaneSpace, rightPaneSpace;
     HBox leftActionButtonsPane, stepActionButtonsPane;
     ListView filesView;
-    Button testButton, removeButton, refreshButton,viewButton;
+    Button removeButton, refreshButton,viewButton;
     TextFlow actionLog;
     Label stepTitleLabel, hintLabel, progressLabel;
     ProgressBar stepProgress;
@@ -63,12 +63,11 @@ class CodeCheckWorkspacePane extends HBox{
         filesView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         VBox.setVgrow(filesView, Priority.ALWAYS);
 
-        testButton = new Button("test");
 
         //removeButton = new Button("remove");
         //refreshButton = new Button("refresh");
         //viewButton = new Button("view");
-        leftActionButtonsPane = new HBox(testButton);//,removeButton,refreshButton,viewButton);
+        leftActionButtonsPane = new HBox();//removeButton,refreshButton,viewButton);
         removeButton = controller.initChildButton(leftActionButtonsPane, REMOVE_BUTTON_ICON.toString(),REMOVE_BUTTON_TOOLTIP.toString(), true);
         refreshButton = controller.initChildButton(leftActionButtonsPane, REFRESH_BUTTON_ICON.toString(),REFRESH_BUTTON_TOOLTIP.toString(), true);
         viewButton = controller.initChildButton(leftActionButtonsPane, VIEW_BUTTON_ICON.toString(),VIEW_BUTTON_TOOLTIP.toString(), true);
@@ -81,7 +80,8 @@ class CodeCheckWorkspacePane extends HBox{
         rightPaneSpace.setSpacing(10);
         rightPaneSpace.setPadding(new Insets(10, 10, 10, 10));
 
-        progressLabel = new Label("Step " + paneIndex+ " progress");
+        //TODO: ADD PROGRESS PERCENTAGE LABEL
+        progressLabel = new Label();
         stepProgress = new ProgressBar();
         HBox progressBox = new HBox(progressLabel,stepProgress);
         progressBox.setSpacing(10);
@@ -111,11 +111,7 @@ class CodeCheckWorkspacePane extends HBox{
 
     }
     private void initControllers() {
-        testButton.setOnAction(e-> {
-            controller.printMessageToLog("Test Message",CodeCheckWorkspaceViewController.MESSAGE_TYPE.MESSAGE_NORMAL);
-            controller.printMessageToLog("ERROR Message",CodeCheckWorkspaceViewController.MESSAGE_TYPE.MESSAGE_ERROR);
-            controller.printMessageToLog("SUCCESS Message",CodeCheckWorkspaceViewController.MESSAGE_TYPE.MESSAGE_SUCCESS);
-        });
+
     }
     private void initStyle() {
         getStyleClass().add(WORKSPACE_PANE);
@@ -123,10 +119,7 @@ class CodeCheckWorkspacePane extends HBox{
         progressLabel.getStyleClass().add(STEP_TITLE_LABEL);
         setPadding(new Insets(10, 10, 10, 10));
 }
-    public void setStepNumber(int step){
-        paneIndex = step;
-        testButton.setText("Step " + paneIndex);
-    }
+
     public void setStepTitle(String title) {
         stepTitleLabel.setText(title);
     }

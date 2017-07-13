@@ -50,6 +50,15 @@ import javax.json.stream.JsonGenerator;
  * @author danniyazov
  */
 public class CodeCheckFileStore implements AppFileComponent{
+    public enum CodeCheckFolder {
+        BLACKBOARD,
+        CODE,
+        SUBMISSIONS,
+        PROJECTS;
+        public String toString() {
+            return this.name().toLowerCase();
+        }
+    }
     static final String JSON_RECENTS = "recents";
     static final String JSON_PROJECT_TITLE = "title";
     static final String JSON_PROJECT_PATH = "path";
@@ -64,14 +73,13 @@ public class CodeCheckFileStore implements AppFileComponent{
         try {
             loadPersistentData();
         } catch (IOException ex) {
+            //TODO: HANDLE LOAD DATA FAIL
             Logger.getLogger(CodeCheckFileStore.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+    //TODO: DONT REPEAT THIS
     public void handleNewRequest() {
         PropertiesManager props = PropertiesManager.getPropertiesManager();
-
-        // The Java 8 way to get the response value (with lambda expression).
         
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle(props.getProperty(NEW_DIALOG_TITLE_TEXT));
@@ -142,21 +150,16 @@ public class CodeCheckFileStore implements AppFileComponent{
             if (!newCheck.exists()) {
                 System.out.println("Project doesn't exist?");
                 //ERROR PROJECT DOESNT EXIST
+                //TODO: HANDLE PROJECT DNE ERROR
             }else{
                 //CREATE ALL SUB-DIRS
-                String subDIRs[] = new String[4];
-                //I SHOULD USE A ENUM AND READ FROM PROPS
-                subDIRs[0] = "blackboard";
-                subDIRs[1] = "submissions";
-                subDIRs[2] = "projects";
-                subDIRs[3] = "code";
-                
-                for(String folder : subDIRs){
-                    File subDIR = new File(newCheck.getPath()+ "/" + folder);
+                for(CodeCheckFolder folder : CodeCheckFolder.values()) {                
+                    File subDIR = new File(newCheck.getPath()+ File.separator + folder.toString());
                     if (!subDIR.exists()) {
                         boolean success = subDIR.mkdir();
                         if(!success){
                             //WE FAILED TO CREATE A DIR
+                            //TODO: HANDLE SUB-DIR SETUP FAIL
                         }
                     }
                 }
@@ -181,7 +184,7 @@ public class CodeCheckFileStore implements AppFileComponent{
         final Button btOk = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
         btOk.addEventFilter(ActionEvent.ACTION, 
             event -> {
-                //DO VALIDITY CHECKS HERE
+                //TODO: DO VALIDITY CHECKS HERE
                 String projName = dialog.getEditor().textProperty().get().trim();
                 String dirPath = props.getProperty(APP_PATH_WORK) + projName;
                 //ADD CUSTOM FILE EXTENSION
@@ -202,6 +205,7 @@ public class CodeCheckFileStore implements AppFileComponent{
 
                     }else{
                         //FAILED TO MAKE DIR
+                        //TODO: HANDLE PROJECT RENAME FAILED
                         System.out.println("Failed to make project DIR");
                         //dialog.getDialogPane().getChildren().add.();
                         event.consume();
@@ -271,6 +275,7 @@ public class CodeCheckFileStore implements AppFileComponent{
         try {
             initPersistentData(filePath);
         } catch (FileNotFoundException ex) {
+            //TODO: HANDLE MAKE PERSISTENT DATA FAIL
             Logger.getLogger(CodeCheckFileStore.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -365,7 +370,7 @@ public class CodeCheckFileStore implements AppFileComponent{
         //try {
                 CodeCheckWorkspaceView workspace = (CodeCheckWorkspaceView)app.getWorkspaceComponent();
                 app.getDataComponent().resetData();
-                //TEMP SET DATA LIKE THIS, FILE COMP WILL DO THIS LATER
+                //TODO: TEMP SET DATA LIKE THIS, FILE COMP WILL DO THIS LATER?
                 ((CodeCheckProjectData)app.getDataComponent()).setFile(selectedFile);
                 workspace.resetWorkspace();
                 workspace.reloadWorkspace(app.getDataComponent());

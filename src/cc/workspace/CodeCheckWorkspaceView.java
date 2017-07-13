@@ -83,7 +83,6 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         workspace = stepPanes[0];
         for(int i = 0; i < stepPanes.length; i++) {
             stepPanes[i] = new CodeCheckWorkspacePane(controller);
-            stepPanes[i].setStepNumber(i+1);
             
             //STEP SPECIFIC LABELS
             stepPanes[i].setStepTitle(props.getProperty("STEP_"+ (i+1) +"_TITLE"));

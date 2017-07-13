@@ -6,6 +6,7 @@
  */
 package cc.data;
 
+import cc.filestore.CodeCheckFileStore.CodeCheckFolder;
 import djf.components.AppDataComponent;
 import java.io.File;
 import java.io.IOException;
@@ -46,13 +47,13 @@ public class CodeCheckProjectData implements AppDataComponent{
         //TODO: IMPLEMENT LIST RETREVIAL FOR REMAINING STEPS
         switch(step){
             case 0:
-                if(bbSubmissionsList == null){
-                    bbSubmissionsList = initListing("blackboard");                    
+                if(bbSubmissionsList == null){                    
+                    bbSubmissionsList = initListing(CodeCheckFolder.BLACKBOARD.toString());                    
                 }
                 return bbSubmissionsList;
             case 1:
                 if(studentSubmissionList == null){
-                    studentSubmissionList = initListing("submissions");
+                    studentSubmissionList = initListing(CodeCheckFolder.SUBMISSIONS.toString());
                 }
                 return studentSubmissionList;
         }

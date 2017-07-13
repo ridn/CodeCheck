@@ -7,26 +7,9 @@
 package cc.startup;
 
 import cc.CodeCheckApp;
-import static cc.CodeCheckProp.APP_PATH_WORK;
-import static cc.CodeCheckProp.NEW_DIALOG_CONTENT_TEXT;
-import static cc.CodeCheckProp.NEW_DIALOG_ERROR_TEXT;
-import static cc.CodeCheckProp.NEW_DIALOG_HEADER_TEXT;
-import static cc.CodeCheckProp.NEW_DIALOG_PROMPT_TEXT;
-import static cc.CodeCheckProp.NEW_DIALOG_TITLE_TEXT;
 import cc.data.CodeCheckProjectData;
 import cc.filestore.CodeCheckFileStore;
-import static djf.settings.AppPropertyType.WORK_FILE_EXT;
-import static djf.settings.AppPropertyType.WORK_FILE_EXT_DESC;
 import java.io.File;
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
-import javafx.stage.FileChooser;
-import properties_manager.PropertiesManager;
 
 /**
  *
@@ -49,13 +32,12 @@ public class CodeCheckWelcomeViewController  {
            app.handleWelcomeViewResponse(newProjectData);
            filestore.addProjectToRecents(newProjectData);
        }else{
-           //DID NOT MAKE NEW PROJECT
+           //TODO: HANDLE DID NOT MAKE NEW PROJECT
        }
        
    }
    public void handleCloseRequest() {
         app.handleWelcomeViewResponse(null);
-
    }
    public void handleRecentProjectLoadRequest(String projectPath) {
         app.handleWelcomeViewResponse(initDataComponentForCheck(projectPath));

@@ -15,6 +15,7 @@ import static cc.CodeCheckProp.LEGAL_NOTICE;
 import static cc.CodeCheckProp.VERSION_TEXT;
 import cc.data.CodeCheckProjectData;
 import cc.filestore.CodeCheckFileStore;
+import cc.filestore.CodeCheckFileStore.CodeCheckFolder;
 import static djf.settings.AppPropertyType.APP_TITLE;
 import static djf.settings.AppPropertyType.WORK_FILE_EXT;
 import static djf.settings.AppPropertyType.WORK_FILE_EXT_DESC;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -50,8 +52,8 @@ class CodeCheckWorkspaceViewController {
         MESSAGE_ERROR
     }
     
-    private CodeCheckApp app;
-    private CodeCheckWorkspaceView workspace;
+    final private CodeCheckApp app;
+    final private CodeCheckWorkspaceView workspace;
     
     public CodeCheckWorkspaceViewController(CodeCheckApp initApp,CodeCheckWorkspaceView view) {
         app = initApp;
@@ -64,9 +66,26 @@ class CodeCheckWorkspaceViewController {
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(props.getProperty(WORK_FILE_EXT_DESC), "*." + props.getProperty(WORK_FILE_EXT)));
         File selectedFile = fileChooser.showOpenDialog(app.getGUI().getWindow());
         if (selectedFile != null) {
-            ((CodeCheckFileStore)app.getFileComponent()).loadProject(selectedFile);       
+            //TODO: INTEGRITY CHECK
+            if(isValidCodeCheckFile(selectedFile.getAbsolutePath())){
+                ((CodeCheckFileStore)app.getFileComponent()).loadProject(selectedFile);       
+            }else{
+                //TODO: THROW ERROR THIS IS A 'CORRUPT' CODE CHECK
+                System.out.println("Corrupt code check file, did not open");
+            }
         }
 
+    }
+    private boolean isValidCodeCheckFile(String path) {
+        if(Files.isDirectory(Paths.get(path))){
+            for(CodeCheckFolder folder : CodeCheckFolder.values()) {
+                Path pathToCheck = Paths.get(path + File.separator +  folder.toString());
+                if(!Files.exists(pathToCheck) || !Files.isDirectory(pathToCheck))
+                    return false;
+            }
+            return true;
+        }
+        return false;
     }
     public void handleNewCheckRequest() {
         //SAVE THE CURRENT STATE OF THIS CHECK THEN CREATE NEW
@@ -147,7 +166,7 @@ class CodeCheckWorkspaceViewController {
         
     }
     public void handleViewRequest() {
-        //TODO: IMPLEMENT FILE VIEW
+        //TODO: IMPLEMENT FILE VIEW REQUEST
         
     }
     public void handleStepActionRequest(int actionIndex) {
@@ -169,7 +188,6 @@ class CodeCheckWorkspaceViewController {
             case VIEW_RESULTS:
                 break;
         }
-            renameSubmissions();
         
     }
     public void updateProgressBar() {
@@ -193,6 +211,8 @@ class CodeCheckWorkspaceViewController {
                 if(firstIndex >= 0){
                     String newName = file.getFileName().toString().substring(++firstIndex, file.getFileName().toString().indexOf("_", firstIndex)) + ".zip";
                     Files.move(file, file.resolveSibling(newName));
+                    //TODO: READ MESSAGE FROM PROPS
+                    //TODO: DONT PRINT AFTER EVERY ATTEMPT
                     printMessageToLog("Successfully renamed file:", MESSAGE_TYPE.MESSAGE_SUCCESS);
                     printMessageToLog(file.getFileName().toString(), MESSAGE_TYPE.MESSAGE_NORMAL);
                 }else{
@@ -201,7 +221,8 @@ class CodeCheckWorkspaceViewController {
                     //TODO HANDLE INVALID NAME SCHEME
                 }
             } catch (IOException ex) {
-                //TODO DONT PRINT AFTER EVERY ATTEMPT
+                //TODO: READ MESSAGE FROM PROPS
+                //TODO: DONT PRINT AFTER EVERY ATTEMPT
                 printMessageToLog("Failed to rename file:", MESSAGE_TYPE.MESSAGE_ERROR);
                 printMessageToLog(file.getFileName().toString(), MESSAGE_TYPE.MESSAGE_NORMAL);
                 //Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
