@@ -111,6 +111,10 @@ class CodeCheckWorkspacePane extends HBox{
 
     }
     private void initControllers() {
+        refreshButton.setOnAction(e -> {
+            controller.handleRefreshRequest();
+        });
+        //refreshButton.disableProperty().bind(filesView.itemsProperty().isNull());
 
     }
     private void initStyle() {
