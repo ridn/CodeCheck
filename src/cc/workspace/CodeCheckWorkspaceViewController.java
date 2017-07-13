@@ -20,12 +20,19 @@ import static djf.settings.AppPropertyType.APP_TITLE;
 import static djf.settings.AppPropertyType.WORK_FILE_EXT;
 import static djf.settings.AppPropertyType.WORK_FILE_EXT_DESC;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
@@ -39,6 +46,10 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.io.ZipInputStream;
+import net.lingala.zip4j.model.FileHeader;
 import properties_manager.PropertiesManager;
 
 /**
@@ -162,7 +173,13 @@ class CodeCheckWorkspaceViewController {
         
     }
     public void handleRefreshRequest() {
-        //TODO: IMPLEMENT REFRESH LIST VIEW
+        //NOW REFRESH THE LIST
+        CodeCheckWorkspacePane currentPane = (CodeCheckWorkspacePane)workspace.getWorkspace();
+        int currentStep = Arrays.asList(workspace.stepPanes).indexOf(currentPane);
+        CodeCheckProjectData dataManager = (CodeCheckProjectData)app.getDataComponent();
+        dataManager.refreshList(currentStep);
+        currentPane.filesView.setItems(dataManager.getListing(currentStep));
+        currentPane.filesView.refresh();
         
     }
     public void handleViewRequest() {
@@ -196,6 +213,45 @@ class CodeCheckWorkspaceViewController {
     }
     private void extractSubmissions() {
         //TODO: IMPLEMENT SUBMISSION EXTRACTION
+        //TODO: DO ASYNC IN NEW THREAD
+        CodeCheckProjectData dataManager = (CodeCheckProjectData)app.getDataComponent();
+        //ObservableList unzipList = dataManager.getListing(1);
+        CodeCheckWorkspacePane currentPane = (CodeCheckWorkspacePane)workspace.getWorkspace();
+        ObservableList<Path> unzipList = currentPane.filesView.getSelectionModel().getSelectedItems();
+        unzipList.forEach((file) -> {
+            ZipInputStream input;
+            OutputStream output;
+            try {
+                ZipFile zip = new ZipFile(file.toString());
+                for(FileHeader header : (List<FileHeader>)zip.getFileHeaders()) {
+                    if(header.getFileName().endsWith(".zip")){
+                        
+                        input = zip.getInputStream(header);
+                        output = new FileOutputStream(file.getParent().resolveSibling(CodeCheckFolder.SUBMISSIONS.toString()+File.separator+header.getFileName()).toFile());
+                        
+                        int length = -1;
+                        byte[] buffer = new  byte[4096];
+                        while((length = input.read(buffer)) != -1)
+                            output.write(buffer,0,length);
+                        output.close();
+                        input.close();
+                    }
+                }
+            } catch (ZipException ex) {
+                //TODO: HANDLE UNZIP ERROR
+                Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        });
+        int paneToRefresh = CodeCheckFolder.SUBMISSIONS.ordinal();
+        dataManager.refreshList(paneToRefresh);
+        workspace.stepPanes[paneToRefresh].filesView.getItems().clear();
+        workspace.stepPanes[paneToRefresh].filesView.setItems(dataManager.getListing(paneToRefresh));
+        workspace.stepPanes[paneToRefresh].filesView.refresh();
 
     }
 
@@ -229,13 +285,27 @@ class CodeCheckWorkspaceViewController {
             }
         });
         //NOW REFRESH THE LIST
-        dataManager.refreshList(1);
-        currentPane.filesView.setItems(dataManager.getListing(1));
-        currentPane.filesView.refresh();
+        handleRefreshRequest();
 
     }
     private void unzipSubmissions() {
         //TODO: IMPLEMENTS UNZIP
+        //TODO: DO ASYNC IN NEW THREAD
+        CodeCheckProjectData dataManager = (CodeCheckProjectData)app.getDataComponent();
+        //ObservableList unzipList = dataManager.getListing(1);
+        CodeCheckWorkspacePane currentPane = (CodeCheckWorkspacePane)workspace.getWorkspace();
+        ObservableList<Path> unzipList = currentPane.filesView.getSelectionModel().getSelectedItems();
+        unzipList.forEach((file) -> {
+            try {
+                ZipFile zip = new ZipFile(file.toString());
+                System.out.println(zip.getFileHeaders().toString());
+            } catch (ZipException ex) {
+                //TODO: HANDLE UNZIP ERROR
+                Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        });
+        
     }
     private void extractSubmissionCode() {
         //TODO: IMPLEMENTS CODE EXTRACTION
@@ -252,31 +322,33 @@ class CodeCheckWorkspaceViewController {
         return app.getGUI().initChildButton(toolbar, icon, tooltip, disabled);
     }
     public void printMessageToLog(String message,MESSAGE_TYPE type) {
-        /*
-        TextField text = new TextField(message);
-        text.setEditable(false);
-        text.setBackground(Background.EMPTY);
-        text.setFocusTraversable(false);
-        */
-        CodeCheckWorkspacePane activePane = (CodeCheckWorkspacePane)workspace.getWorkspace();
-        Text logText = new Text(message + "\n"); 
-        //logText.setFont(new Font(15)); 
-        
-        switch(type){
-            case MESSAGE_NORMAL:
-                logText.setFill(Color.BLACK); 
-                //text.setStyle("-fx-text-inner-color: black;");
-                break;
-            case MESSAGE_SUCCESS:
-                logText.setFill(Color.GREEN); 
-                //text.setStyle("-fx-text-inner-color: green;");
-                break;
-            case MESSAGE_ERROR:
-                logText.setFill(Color.RED); 
-                //text.setStyle("-fx-text-inner-color: red;");
-                break;
-        }
-        activePane.actionLog.getChildren().addAll(logText);
+        Platform.runLater( () -> {
+            /*
+            TextField text = new TextField(message);
+            text.setEditable(false);
+            text.setBackground(Background.EMPTY);
+            text.setFocusTraversable(false);
+            */
+            CodeCheckWorkspacePane activePane = (CodeCheckWorkspacePane)workspace.getWorkspace();
+            Text logText = new Text(message + "\n"); 
+            //logText.setFont(new Font(15)); 
+
+            switch(type){
+                case MESSAGE_NORMAL:
+                    logText.setFill(Color.BLACK); 
+                    //text.setStyle("-fx-text-inner-color: black;");
+                    break;
+                case MESSAGE_SUCCESS:
+                    logText.setFill(Color.GREEN); 
+                    //text.setStyle("-fx-text-inner-color: green;");
+                    break;
+                case MESSAGE_ERROR:
+                    logText.setFill(Color.RED); 
+                    //text.setStyle("-fx-text-inner-color: red;");
+                    break;
+            }
+            activePane.actionLog.getChildren().addAll(logText);
+        });
     }
 
 }
