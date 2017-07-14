@@ -248,8 +248,7 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
 
     @Override
     public void resetWorkspace() {
-        setWorkspace(stepPanes[0]);
-        app.getGUI().getAppPane().setCenter(workspace);
+        changeToWorkspace(0);
         for(CodeCheckWorkspacePane step : stepPanes){
             step.actionLog.getChildren().clear();
             if(step.filesView.getItems() != null )

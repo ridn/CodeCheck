@@ -28,10 +28,12 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -324,6 +326,29 @@ class CodeCheckWorkspaceViewController {
     }
     private void extractSubmissionCode() {
         //TODO: IMPLEMENTS CODE EXTRACTION
+        CodeCheckProjectData dataManager = (CodeCheckProjectData)app.getDataComponent();
+        CodeCheckWorkspacePane currentPane = (CodeCheckWorkspacePane)workspace.getWorkspace();
+        ObservableList<Path> studentList = currentPane.filesView.getSelectionModel().getSelectedItems();
+        studentList.forEach((file) -> {
+            //Files.find(file, 5, matcher, options);
+            Stream<Path> matches;
+            try {
+                matches = Files.find(file,5,(path, basicFileAttributes) -> String.valueOf(path).endsWith(".java"));
+                matches.forEach((path)->{
+                    try {
+                        Path outfile = file.getParent().resolveSibling(CodeCheckFolder.CODE.toString()+File.separator+file.getFileName());
+                        if(Files.notExists(outfile))
+                            Files.createDirectories(outfile);
+                        Files.copy(path, outfile.resolve(path.getFileName()),REPLACE_EXISTING);
+                    } catch (IOException ex) {
+                        Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+            });
+            } catch (IOException ex) {
+                Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+
         
     }
     private URL codeCheckWithResults() {

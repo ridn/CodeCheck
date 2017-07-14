@@ -24,7 +24,7 @@ import javafx.collections.ObservableList;
 public class CodeCheckProjectData implements AppDataComponent{
     private File projectFile;
     private String projectPath, projectTitle;
-    private ObservableList bbSubmissionsList, studentSubmissionList, projectsList;
+    private ObservableList bbSubmissionsList, studentSubmissionList, projectsList, codeList;
     public void setFile(File file){
         projectFile = file;
     }
@@ -72,6 +72,14 @@ public class CodeCheckProjectData implements AppDataComponent{
                         projectsList = initListing(CodeCheckFolder.PROJECTS.toString(),filter);
                     }
                     return projectsList;
+                case 4:
+                    filter = e-> {
+                                return Files.isDirectory(e);
+                    };
+                    if(codeList == null){                        
+                        codeList = initListing(CodeCheckFolder.CODE.toString(),filter);
+                    }
+                    return codeList;
             }
         
         return null;
@@ -103,6 +111,14 @@ public class CodeCheckProjectData implements AppDataComponent{
                 studentSubmissionList = null;
                 studentSubmissionList = getListing(step);
                 break;
+            case 3:
+                projectsList = null;
+                projectsList = getListing(step);
+                break;
+            case 4:
+                codeList = null;
+                codeList = getListing(step);
+                break; 
         }
     }
     @Override
