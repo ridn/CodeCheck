@@ -24,7 +24,7 @@ import javafx.collections.ObservableList;
 public class CodeCheckProjectData implements AppDataComponent{
     private File projectFile;
     private String projectPath, projectTitle;
-    private ObservableList bbSubmissionsList, studentSubmissionList;
+    private ObservableList bbSubmissionsList, studentSubmissionList, projectsList;
     public void setFile(File file){
         projectFile = file;
     }
@@ -45,27 +45,43 @@ public class CodeCheckProjectData implements AppDataComponent{
     }
     public ObservableList<String> getListing(int step) {
         //TODO: IMPLEMENT LIST RETREVIAL FOR REMAINING STEPS
-        switch(step){
-            case 0:
-                if(bbSubmissionsList == null){                    
-                    bbSubmissionsList = initListing(CodeCheckFolder.BLACKBOARD.toString());                    
-                }
-                return bbSubmissionsList;
-            case 1:
-                if(studentSubmissionList == null){
-                    studentSubmissionList = initListing(CodeCheckFolder.SUBMISSIONS.toString());
-                }
-                return studentSubmissionList;
-        }
+        DirectoryStream.Filter<Path> filter = e-> {
+                                return !Files.isHidden(e);
+                        };
+        if(projectFile != null)
+            switch(step){
+                case 0:
+                    if(bbSubmissionsList == null){
+                        filter = e-> {
+                                return e.getFileName().toString().endsWith(".zip");
+                        };
+                        bbSubmissionsList = initListing(CodeCheckFolder.BLACKBOARD.toString(),filter);                    
+                    }
+                    return bbSubmissionsList;
+                case 1:
+                case 2:
+                    if(studentSubmissionList == null){
+                        studentSubmissionList = initListing(CodeCheckFolder.SUBMISSIONS.toString(),filter);
+                    }
+                    return studentSubmissionList;
+                case 3:
+                    filter = e-> {
+                                return Files.isDirectory(e);
+                    };
+                    if(projectsList == null){                        
+                        projectsList = initListing(CodeCheckFolder.PROJECTS.toString(),filter);
+                    }
+                    return projectsList;
+            }
         
         return null;
 
     }
-    private ObservableList<String> initListing(String path) {
+    private ObservableList<String> initListing(String path,DirectoryStream.Filter filter) {
         //TODO: IMPLEMENT STEP SPECIFIC FILTER
         ObservableList tmpCollection = FXCollections.observableArrayList();
         Path folder = Paths.get(projectFile.getAbsolutePath() + "/" + path);
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(folder,"*.zip")) {            
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(folder,filter)) {            
             for (Path entry : stream) {
                 tmpCollection.add(entry);
             }
@@ -83,6 +99,7 @@ public class CodeCheckProjectData implements AppDataComponent{
                 bbSubmissionsList = getListing(step);                    
                 break;
             case 1:
+            case 2:
                 studentSubmissionList = null;
                 studentSubmissionList = getListing(step);
                 break;
@@ -96,7 +113,7 @@ public class CodeCheckProjectData implements AppDataComponent{
     }
     @Override
     public String toString() {
-       return getTitle(); 
+       return (projectFile != null) ? getTitle() : super.toString(); 
     }
     
 }
