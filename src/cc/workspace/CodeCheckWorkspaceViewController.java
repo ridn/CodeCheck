@@ -71,10 +71,11 @@ class CodeCheckWorkspaceViewController {
         workspace = view;
     }
     public void handleLoadRequest() {
+        //TODO: SUPPORT WINDOWS SELECTION :SIGH:
         FileChooser fileChooser = new FileChooser();
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         fileChooser.setInitialDirectory(new File(props.getProperty(APP_PATH_WORK)));
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(props.getProperty(WORK_FILE_EXT_DESC), "*." + props.getProperty(WORK_FILE_EXT)));
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(props.getProperty(WORK_FILE_EXT_DESC), "*." + props.getProperty(WORK_FILE_EXT), "*.cck.folder"));
         File selectedFile = fileChooser.showOpenDialog(app.getGUI().getWindow());
         if (selectedFile != null) {
             //TODO: INTEGRITY CHECK
@@ -177,10 +178,15 @@ class CodeCheckWorkspaceViewController {
         CodeCheckWorkspacePane currentPane = (CodeCheckWorkspacePane)workspace.getWorkspace();
         int currentStep = Arrays.asList(workspace.stepPanes).indexOf(currentPane);
         CodeCheckProjectData dataManager = (CodeCheckProjectData)app.getDataComponent();
-        dataManager.refreshList(currentStep);
+        //dataManager.refreshList(currentStep);
         currentPane.filesView.setItems(dataManager.getListing(currentStep));
         currentPane.filesView.refresh();
         
+        if(++currentStep < workspace.stepPanes.length){
+        //dataManager.refreshList(currentStep);
+        workspace.stepPanes[currentStep].filesView.setItems(dataManager.getListing(currentStep));
+        //workspace.stepPanes[currentStep].filesView.refresh();
+        }
     }
     public void handleViewRequest() {
         //TODO: IMPLEMENT FILE VIEW REQUEST
@@ -205,53 +211,16 @@ class CodeCheckWorkspaceViewController {
             case VIEW_RESULTS:
                 break;
         }
-        
+        handleRefreshRequest();
+     
     }
     public void updateProgressBar() {
         //TODO: IMPLEMENT PROGRESS BAR UPDATES
         
     }
     private void extractSubmissions() {
-        //TODO: IMPLEMENT SUBMISSION EXTRACTION
         //TODO: DO ASYNC IN NEW THREAD
-        CodeCheckProjectData dataManager = (CodeCheckProjectData)app.getDataComponent();
-        //ObservableList unzipList = dataManager.getListing(1);
-        CodeCheckWorkspacePane currentPane = (CodeCheckWorkspacePane)workspace.getWorkspace();
-        ObservableList<Path> unzipList = currentPane.filesView.getSelectionModel().getSelectedItems();
-        unzipList.forEach((file) -> {
-            ZipInputStream input;
-            OutputStream output;
-            try {
-                ZipFile zip = new ZipFile(file.toString());
-                for(FileHeader header : (List<FileHeader>)zip.getFileHeaders()) {
-                    if(header.getFileName().endsWith(".zip")){
-                        
-                        input = zip.getInputStream(header);
-                        output = new FileOutputStream(file.getParent().resolveSibling(CodeCheckFolder.SUBMISSIONS.toString()+File.separator+header.getFileName()).toFile());
-                        
-                        int length = -1;
-                        byte[] buffer = new  byte[4096];
-                        while((length = input.read(buffer)) != -1)
-                            output.write(buffer,0,length);
-                        output.close();
-                        input.close();
-                    }
-                }
-            } catch (ZipException ex) {
-                //TODO: HANDLE UNZIP ERROR
-                Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (FileNotFoundException ex) {
-                Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-        });
-        int paneToRefresh = CodeCheckFolder.SUBMISSIONS.ordinal();
-        dataManager.refreshList(paneToRefresh);
-        workspace.stepPanes[paneToRefresh].filesView.getItems().clear();
-        workspace.stepPanes[paneToRefresh].filesView.setItems(dataManager.getListing(paneToRefresh));
-        workspace.stepPanes[paneToRefresh].filesView.refresh();
+        unarchiveFilesForSection(CodeCheckFolder.SUBMISSIONS,".zip",false);
 
     }
 
@@ -267,6 +236,8 @@ class CodeCheckWorkspaceViewController {
                 if(firstIndex >= 0){
                     String newName = file.getFileName().toString().substring(++firstIndex, file.getFileName().toString().indexOf("_", firstIndex)) + ".zip";
                     Files.move(file, file.resolveSibling(newName));
+                    int old = currentPane.filesView.getItems().indexOf(file);
+                    currentPane.filesView.getItems().set(old, file.resolveSibling(newName));
                     //TODO: READ MESSAGE FROM PROPS
                     //TODO: DONT PRINT AFTER EVERY ATTEMPT
                     printMessageToLog("Successfully renamed file:", MESSAGE_TYPE.MESSAGE_SUCCESS);
@@ -274,7 +245,7 @@ class CodeCheckWorkspaceViewController {
                 }else{
                     //INVALID NAMING SCHEME
                     //ALREADY RENAMED?
-                    //TODO HANDLE INVALID NAME SCHEME
+                    //TODO: HANDLE INVALID NAME SCHEME
                 }
             } catch (IOException ex) {
                 //TODO: READ MESSAGE FROM PROPS
@@ -285,27 +256,71 @@ class CodeCheckWorkspaceViewController {
             }
         });
         //NOW REFRESH THE LIST
-        handleRefreshRequest();
+       // handleRefreshRequest();
 
     }
     private void unzipSubmissions() {
-        //TODO: IMPLEMENTS UNZIP
+        //TODO: DO ASYNC IN NEW THREAD
+        unarchiveFilesForSection(CodeCheckFolder.PROJECTS,"all", true);
+        
+    }
+    private void unarchiveFilesForSection(CodeCheckFolder section,String extension, boolean needsExtraParent) {
         //TODO: DO ASYNC IN NEW THREAD
         CodeCheckProjectData dataManager = (CodeCheckProjectData)app.getDataComponent();
         //ObservableList unzipList = dataManager.getListing(1);
         CodeCheckWorkspacePane currentPane = (CodeCheckWorkspacePane)workspace.getWorkspace();
         ObservableList<Path> unzipList = currentPane.filesView.getSelectionModel().getSelectedItems();
         unzipList.forEach((file) -> {
+            ZipInputStream input;
+            OutputStream output;
+            String sectionDir;
             try {
+                sectionDir = section.toString()+File.separator;
+                if(needsExtraParent){
+                    sectionDir += file.getFileName().toString().replaceFirst("[.][^.]+$", "") + File.separator;
+                    Path parent = file.getParent().resolveSibling(sectionDir);
+                    if(Files.notExists(parent))Files.createDirectories(parent);
+                }
                 ZipFile zip = new ZipFile(file.toString());
-                System.out.println(zip.getFileHeaders().toString());
+                for(FileHeader header : (List<FileHeader>)zip.getFileHeaders()) {
+                    if(extension.equals("all") || header.getFileName().endsWith(extension)){
+                        
+                        Path outfile = file.getParent().resolveSibling(sectionDir+header.getFileName());
+                        if(header.isDirectory()) {
+                            Files.createDirectory(outfile);
+                            
+                        }else{
+                        if(!Files.exists(outfile.getParent())) {
+                            Files.createDirectories(outfile.getParent());
+                        }
+                            input = zip.getInputStream(header);
+                            output = new FileOutputStream(outfile.toFile());
+                            int length = -1;
+                            byte[] buffer = new  byte[4096];
+                            while((length = input.read(buffer)) != -1)
+                                output.write(buffer,0,length);
+                            output.close();
+                            input.close();
+                        }
+                    }
+                }
             } catch (ZipException ex) {
                 //TODO: HANDLE UNZIP ERROR
+                Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
                 Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
             }
             
         });
-        
+        /*        
+        int paneToRefresh = section.ordinal();
+        dataManager.refreshList(paneToRefresh);
+        //workspace.stepPanes[paneToRefresh].filesView.getItems().clear();
+        workspace.stepPanes[paneToRefresh].filesView.setItems(dataManager.getListing(paneToRefresh));
+        workspace.stepPanes[paneToRefresh].filesView.refresh();
+        */
     }
     private void extractSubmissionCode() {
         //TODO: IMPLEMENTS CODE EXTRACTION

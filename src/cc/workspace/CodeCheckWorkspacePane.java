@@ -69,7 +69,7 @@ class CodeCheckWorkspacePane extends HBox{
         //viewButton = new Button("view");
         leftActionButtonsPane = new HBox();//removeButton,refreshButton,viewButton);
         removeButton = controller.initChildButton(leftActionButtonsPane, REMOVE_BUTTON_ICON.toString(),REMOVE_BUTTON_TOOLTIP.toString(), true);
-        refreshButton = controller.initChildButton(leftActionButtonsPane, REFRESH_BUTTON_ICON.toString(),REFRESH_BUTTON_TOOLTIP.toString(), true);
+        refreshButton = controller.initChildButton(leftActionButtonsPane, REFRESH_BUTTON_ICON.toString(),REFRESH_BUTTON_TOOLTIP.toString(), false);
         viewButton = controller.initChildButton(leftActionButtonsPane, VIEW_BUTTON_ICON.toString(),VIEW_BUTTON_TOOLTIP.toString(), true);
         
         leftPaneSpace.getChildren().addAll(stepTitleLabel,hintLabel,filesView,leftActionButtonsPane);

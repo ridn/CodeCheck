@@ -106,7 +106,7 @@ public class CodeCheckApp extends AppTemplate {
         appStage.setMinWidth(615);
         appStage.setMinHeight(380);
         String title = PropertiesManager.getPropertiesManager().getProperty(APP_TITLE);
-        title += (data != null) ? (" - " + data.getTitle()) : "";
+        title += (data != null)? (" - " + data.getTitle()) : "";
         appStage.setTitle(title);
         
     }

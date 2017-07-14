@@ -52,9 +52,9 @@ import javax.json.stream.JsonGenerator;
 public class CodeCheckFileStore implements AppFileComponent{
     public enum CodeCheckFolder {
         BLACKBOARD,
-        CODE,
         SUBMISSIONS,
-        PROJECTS;
+        PROJECTS,
+        CODE;
         public String toString() {
             return this.name().toLowerCase();
         }

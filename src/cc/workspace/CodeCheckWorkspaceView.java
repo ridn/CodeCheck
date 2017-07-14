@@ -239,6 +239,9 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         if(index < stepPanes.length-1){
             nextButton.setDisable(false);
         }
+        if(((CodeCheckWorkspacePane)workspace).filesView.getItems() == null){
+            controller.handleRefreshRequest();
+        }
 
         
     }
@@ -249,15 +252,19 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         app.getGUI().getAppPane().setCenter(workspace);
         for(CodeCheckWorkspacePane step : stepPanes){
             step.actionLog.getChildren().clear();
+            if(step.filesView.getItems() != null )
+                step.filesView.getItems().clear();
         }
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void reloadWorkspace(AppDataComponent dataComponent) {
         app.updateStageTitle();
+        for(int i = 0; i < stepPanes.length; i++){
+            ((CodeCheckProjectData)dataComponent).refreshList(i);
+            stepPanes[i].filesView.setItems(((CodeCheckProjectData)dataComponent).getListing(i));
+        }
         //fill in data from new data comp
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }
