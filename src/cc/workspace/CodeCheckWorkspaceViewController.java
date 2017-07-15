@@ -313,6 +313,7 @@ class CodeCheckWorkspaceViewController {
         //ObservableList unzipList = dataManager.getListing(1);
         CodeCheckWorkspacePane currentPane = (CodeCheckWorkspacePane)workspace.getWorkspace();
         ObservableList<Path> unzipList = currentPane.filesView.getSelectionModel().getSelectedItems();
+        final double stepSize = unzipList.size();
         unzipList.forEach((file) -> {
             ZipInputStream input;
             OutputStream output;
@@ -347,12 +348,20 @@ class CodeCheckWorkspaceViewController {
                         }
                     }
                 }
+                Platform.runLater(()-> {
+                    int stepIndex = currentPane.filesView.getItems().indexOf(file);
+                    this.updateProgressBar((stepIndex+1)/stepSize);
+                });
+                Thread.sleep(10);
+
             } catch (ZipException ex) {
                 //TODO: HANDLE UNZIP ERROR
                 Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
+                Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InterruptedException ex) {
                 Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
             }
             
