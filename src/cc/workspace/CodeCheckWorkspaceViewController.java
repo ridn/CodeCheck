@@ -177,7 +177,14 @@ class CodeCheckWorkspaceViewController {
 
     }
     public void handleRemoveRequest() {
-        //TODO: IMPLEMENT REMOVE FILE
+        //TODO: ASK CONFIRMATION TO DELETE
+        CodeCheckWorkspacePane currentPane = (CodeCheckWorkspacePane)workspace.getWorkspace();
+        Path pathToRemove = (Path)currentPane.filesView.getSelectionModel().getSelectedItems().get(0);
+        CodeCheckProjectData dataManager = (CodeCheckProjectData)app.getDataComponent();
+        dataManager.handleFileDeletion(pathToRemove);  
+        currentPane.filesView.getItems().remove(pathToRemove);
+        //handleRefreshRequest();
+
         
     }
     public void handleRefreshRequest(boolean clearFirst) {
@@ -208,27 +215,25 @@ class CodeCheckWorkspaceViewController {
             @Override
             protected Void call() throws Exception {
                 try {
-                    System.out.print("two");
                     stepProgressLock.lock();
-                        System.out.print("three");
-                        switch(CodeCheckStepActions.values()[actionIndex]) {
-                            case EXTRACT_SUBMISSIONS:
-                                extractSubmissions();
-                                break;
-                            case RENAME_SUBMISSIONS:
-                                renameSubmissions();
-                                break;
-                            case UNZIP_SUBMISSIONS:
-                                unzipSubmissions();
-                                break;
-                            case EXTRACT_CODE:
-                                extractSubmissionCode();
-                                break;
-                            case CODE_CHECK:
-                                break;
-                            case VIEW_RESULTS:
-                                break;
-                        }
+                    switch(CodeCheckStepActions.values()[actionIndex]) {
+                        case EXTRACT_SUBMISSIONS:
+                            extractSubmissions();
+                            break;
+                        case RENAME_SUBMISSIONS:
+                            renameSubmissions();
+                            break;
+                        case UNZIP_SUBMISSIONS:
+                            unzipSubmissions();
+                            break;
+                        case EXTRACT_CODE:
+                            extractSubmissionCode();
+                            break;
+                        case CODE_CHECK:
+                            break;
+                        case VIEW_RESULTS:
+                            break;
+                    }
                     Platform.runLater(()-> {
                         handleRefreshRequest();
                     });
@@ -245,7 +250,6 @@ class CodeCheckWorkspaceViewController {
 
     }
     public void updateProgressBar(double progress) {
-        //TODO: IMPLEMENT PROGRESS BAR UPDATES
         ((CodeCheckWorkspacePane)workspace.getWorkspace()).stepProgress.setProgress(progress);
         ((CodeCheckWorkspacePane)workspace.getWorkspace()).progressPerc.setText((int)(progress*100) + "%");
     }
@@ -323,12 +327,12 @@ class CodeCheckWorkspaceViewController {
                         
                         Path outfile = file.getParent().resolveSibling(sectionDir+header.getFileName());
                         if(header.isDirectory()) {
-                            Files.createDirectory(outfile);
+                            Files.createDirectories(outfile);
                             
                         }else{
-                        if(!Files.exists(outfile.getParent())) {
-                            Files.createDirectories(outfile.getParent());
-                        }
+                            if(Files.notExists(outfile.getParent())) {
+                                Files.createDirectories(outfile.getParent());
+                            }
                             input = zip.getInputStream(header);
                             output = new FileOutputStream(outfile.toFile());
                             int length = -1;

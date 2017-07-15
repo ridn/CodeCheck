@@ -9,6 +9,8 @@ package cc.workspace;
 import static cc.CodeCheckProp.*;
 import static cc.style.CodeCheckStyle.STEP_TITLE_LABEL;
 import static cc.style.CodeCheckStyle.WORKSPACE_PANE;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
@@ -44,6 +46,7 @@ class CodeCheckWorkspacePane extends HBox{
         controller = initController;
         initLayout();
         initControllers();
+        initControlBinding();
         initStyle();
     }
     private void initLayout() {
@@ -116,8 +119,19 @@ class CodeCheckWorkspacePane extends HBox{
         refreshButton.setOnAction(e -> {
             controller.handleRefreshRequest(true);
         });
-        //refreshButton.disableProperty().bind(filesView.itemsProperty().isNull());
+        removeButton.setOnAction(e->{
+            controller.handleRemoveRequest();
+        });
 
+    }
+    private void initControlBinding() {
+        BooleanBinding disableButton = Bindings.size(filesView.getSelectionModel().getSelectedItems()).isNotEqualTo(1);
+        
+        //refreshButton.disableProperty().bind(filesView.itemsProperty().isNull());
+        viewButton.disableProperty().bind(disableButton);
+        removeButton.disableProperty().bind(disableButton);
+        //nextButton.disableProperty().bind(Bindings.size(oList).lessThan(oList.indexOf(getWorkspace())));
+        
     }
     private void initStyle() {
         getStyleClass().add(WORKSPACE_PANE);

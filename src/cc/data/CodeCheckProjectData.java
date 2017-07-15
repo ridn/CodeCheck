@@ -14,6 +14,8 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -117,6 +119,23 @@ public class CodeCheckProjectData implements AppDataComponent{
                 codeList = null;
                 codeList = getListing(step);
                 break; 
+        }
+    }
+    public void handleFileDeletion(Path file){
+        try {
+            if(!Files.isDirectory(file))
+                Files.deleteIfExists(file);
+            else{
+                Files.list(file).forEach(e->{
+                    handleFileDeletion(e);
+                });
+                Files.deleteIfExists(file);
+
+            }
+
+            
+        } catch (IOException ex) {
+            Logger.getLogger(CodeCheckProjectData.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     @Override
