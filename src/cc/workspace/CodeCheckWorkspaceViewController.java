@@ -379,6 +379,7 @@ class CodeCheckWorkspaceViewController {
         CodeCheckProjectData dataManager = (CodeCheckProjectData)app.getDataComponent();
         CodeCheckWorkspacePane currentPane = (CodeCheckWorkspacePane)workspace.getWorkspace();
         ObservableList<Path> studentList = currentPane.filesView.getSelectionModel().getSelectedItems();
+        final double stepSize = studentList.size();
         studentList.forEach((file) -> {
             //Files.find(file, 5, matcher, options);
             Stream<Path> matches;
@@ -390,6 +391,11 @@ class CodeCheckWorkspaceViewController {
                         if(Files.notExists(outfile))
                             Files.createDirectories(outfile);
                         Files.copy(path, outfile.resolve(path.getFileName()),REPLACE_EXISTING);
+                        Platform.runLater(()-> {
+                            int stepIndex = currentPane.filesView.getItems().indexOf(file);
+                            this.updateProgressBar((stepIndex+1)/stepSize);
+                        });
+
                     } catch (IOException ex) {
                         Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
                     }
