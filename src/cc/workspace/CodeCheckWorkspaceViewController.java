@@ -31,15 +31,18 @@ import java.nio.file.Paths;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -67,10 +70,13 @@ class CodeCheckWorkspaceViewController {
     
     final private CodeCheckApp app;
     final private CodeCheckWorkspaceView workspace;
+    private ReentrantLock stepProgressLock;
     
     public CodeCheckWorkspaceViewController(CodeCheckApp initApp,CodeCheckWorkspaceView view) {
         app = initApp;
         workspace = view;
+        stepProgressLock = new ReentrantLock();
+
     }
     public void handleLoadRequest() {
         //TODO: SUPPORT WINDOWS SELECTION :SIGH:
@@ -175,12 +181,12 @@ class CodeCheckWorkspaceViewController {
         //TODO: IMPLEMENT REMOVE FILE
         
     }
-    public void handleRefreshRequest() {
+    public void handleRefreshRequest(boolean clearFirst) {
         //NOW REFRESH THE LIST
         CodeCheckWorkspacePane currentPane = (CodeCheckWorkspacePane)workspace.getWorkspace();
         int currentStep = Arrays.asList(workspace.stepPanes).indexOf(currentPane);
         CodeCheckProjectData dataManager = (CodeCheckProjectData)app.getDataComponent();
-        //dataManager.refreshList(currentStep);
+        if(clearFirst)dataManager.refreshList(currentStep);
         currentPane.filesView.setItems(dataManager.getListing(currentStep));
         currentPane.filesView.refresh();
         
@@ -190,35 +196,62 @@ class CodeCheckWorkspaceViewController {
         //workspace.stepPanes[currentStep].filesView.refresh();
         }
     }
+    public void handleRefreshRequest() {
+        //NOW REFRESH THE LIST
+        handleRefreshRequest(false);
+    }
     public void handleViewRequest() {
         //TODO: IMPLEMENT FILE VIEW REQUEST
         
     }
     public void handleStepActionRequest(int actionIndex) {
-        switch(CodeCheckStepActions.values()[actionIndex]) {
-            case EXTRACT_SUBMISSIONS:
-                extractSubmissions();
-                break;
-            case RENAME_SUBMISSIONS:
-                renameSubmissions();
-                break;
-            case UNZIP_SUBMISSIONS:
-                unzipSubmissions();
-                break;
-            case EXTRACT_CODE:
-                extractSubmissionCode();
-                break;
-            case CODE_CHECK:
-                break;
-            case VIEW_RESULTS:
-                break;
-        }
-        handleRefreshRequest();
-     
+        System.out.print("one");
+        Task<Void> task = new Task<Void>() {                    
+            @Override
+            protected Void call() throws Exception {
+                try {
+                    System.out.print("two");
+                    stepProgressLock.lock();
+                        System.out.print("three");
+                        switch(CodeCheckStepActions.values()[actionIndex]) {
+                            case EXTRACT_SUBMISSIONS:
+                                extractSubmissions();
+                                break;
+                            case RENAME_SUBMISSIONS:
+                                renameSubmissions();
+                                break;
+                            case UNZIP_SUBMISSIONS:
+                                unzipSubmissions();
+                                break;
+                            case EXTRACT_CODE:
+                                extractSubmissionCode();
+                                break;
+                            case CODE_CHECK:
+                                break;
+                            case VIEW_RESULTS:
+                                break;
+                        }
+                    Platform.runLater(()-> {
+                        handleRefreshRequest();
+                    });
+                    //Thread.sleep(10);
+                    }
+                    finally {
+                        stepProgressLock.unlock();
+                    }
+                return null;
+            }
+         };
+        System.out.print("four");
+        Thread thread = new Thread(task);
+        thread.start();            
+        System.out.print("five");
+
     }
-    public void updateProgressBar() {
+    public void updateProgressBar(double progress) {
         //TODO: IMPLEMENT PROGRESS BAR UPDATES
-        
+        System.out.println(progress);
+        ((CodeCheckWorkspacePane)workspace.getWorkspace()).stepProgress.setProgress(progress);
     }
     private void extractSubmissions() {
         //TODO: DO ASYNC IN NEW THREAD
@@ -232,14 +265,20 @@ class CodeCheckWorkspaceViewController {
         //ObservableList unzipList = dataManager.getListing(1);
         CodeCheckWorkspacePane currentPane = (CodeCheckWorkspacePane)workspace.getWorkspace();
         ObservableList<Path> renameList = currentPane.filesView.getSelectionModel().getSelectedItems();
+        final double stepSize = renameList.size();
         renameList.forEach((file) -> {
             try {
                 int firstIndex = file.getFileName().toString().indexOf("_");
                 if(firstIndex >= 0){
                     String newName = file.getFileName().toString().substring(++firstIndex, file.getFileName().toString().indexOf("_", firstIndex)) + ".zip";
                     Files.move(file, file.resolveSibling(newName));
-                    int old = currentPane.filesView.getItems().indexOf(file);
-                    currentPane.filesView.getItems().set(old, file.resolveSibling(newName));
+                    Platform.runLater(()-> {
+                        int old = currentPane.filesView.getItems().indexOf(file);
+                        currentPane.filesView.getItems().set(old, file.resolveSibling(newName));
+                        this.updateProgressBar((old+1)/stepSize);
+                    });
+                    Thread.sleep(10);
+
                     //TODO: READ MESSAGE FROM PROPS
                     //TODO: DONT PRINT AFTER EVERY ATTEMPT
                     printMessageToLog("Successfully renamed file:", MESSAGE_TYPE.MESSAGE_SUCCESS);
@@ -255,6 +294,8 @@ class CodeCheckWorkspaceViewController {
                 printMessageToLog("Failed to rename file:", MESSAGE_TYPE.MESSAGE_ERROR);
                 printMessageToLog(file.getFileName().toString(), MESSAGE_TYPE.MESSAGE_NORMAL);
                 //Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
         //NOW REFRESH THE LIST

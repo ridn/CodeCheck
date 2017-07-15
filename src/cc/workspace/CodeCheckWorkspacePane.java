@@ -83,6 +83,7 @@ class CodeCheckWorkspacePane extends HBox{
         //TODO: ADD PROGRESS PERCENTAGE LABEL
         progressLabel = new Label();
         stepProgress = new ProgressBar();
+        stepProgress.setProgress(0);
         HBox progressBox = new HBox(progressLabel,stepProgress);
         progressBox.setSpacing(10);
         stepActionButtonsPane =  new HBox();
@@ -112,7 +113,7 @@ class CodeCheckWorkspacePane extends HBox{
     }
     private void initControllers() {
         refreshButton.setOnAction(e -> {
-            controller.handleRefreshRequest();
+            controller.handleRefreshRequest(true);
         });
         //refreshButton.disableProperty().bind(filesView.itemsProperty().isNull());
 
