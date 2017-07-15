@@ -86,7 +86,6 @@ class CodeCheckWorkspaceViewController {
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(props.getProperty(WORK_FILE_EXT_DESC), "*." + props.getProperty(WORK_FILE_EXT), "*.cck.folder"));
         File selectedFile = fileChooser.showOpenDialog(app.getGUI().getWindow());
         if (selectedFile != null) {
-            //TODO: INTEGRITY CHECK
             if(isValidCodeCheckFile(selectedFile.getAbsolutePath())){
                 ((CodeCheckFileStore)app.getFileComponent()).loadProject(selectedFile);       
             }else{
@@ -205,7 +204,6 @@ class CodeCheckWorkspaceViewController {
         
     }
     public void handleStepActionRequest(int actionIndex) {
-        System.out.print("one");
         Task<Void> task = new Task<Void>() {                    
             @Override
             protected Void call() throws Exception {
@@ -242,25 +240,21 @@ class CodeCheckWorkspaceViewController {
                 return null;
             }
          };
-        System.out.print("four");
         Thread thread = new Thread(task);
         thread.start();            
-        System.out.print("five");
 
     }
     public void updateProgressBar(double progress) {
         //TODO: IMPLEMENT PROGRESS BAR UPDATES
-        System.out.println(progress);
         ((CodeCheckWorkspacePane)workspace.getWorkspace()).stepProgress.setProgress(progress);
+        ((CodeCheckWorkspacePane)workspace.getWorkspace()).progressPerc.setText((int)(progress*100) + "%");
     }
     private void extractSubmissions() {
-        //TODO: DO ASYNC IN NEW THREAD
         unarchiveFilesForSection(CodeCheckFolder.SUBMISSIONS,".zip",false);
 
     }
 
     private void renameSubmissions() {
-        //TODO: DO ASYNC IN NEW THREAD
         CodeCheckProjectData dataManager = (CodeCheckProjectData)app.getDataComponent();
         //ObservableList unzipList = dataManager.getListing(1);
         CodeCheckWorkspacePane currentPane = (CodeCheckWorkspacePane)workspace.getWorkspace();
@@ -303,12 +297,10 @@ class CodeCheckWorkspaceViewController {
 
     }
     private void unzipSubmissions() {
-        //TODO: DO ASYNC IN NEW THREAD
         unarchiveFilesForSection(CodeCheckFolder.PROJECTS,"all", true);
         
     }
     private void unarchiveFilesForSection(CodeCheckFolder section,String extension, boolean needsExtraParent) {
-        //TODO: DO ASYNC IN NEW THREAD
         CodeCheckProjectData dataManager = (CodeCheckProjectData)app.getDataComponent();
         //ObservableList unzipList = dataManager.getListing(1);
         CodeCheckWorkspacePane currentPane = (CodeCheckWorkspacePane)workspace.getWorkspace();

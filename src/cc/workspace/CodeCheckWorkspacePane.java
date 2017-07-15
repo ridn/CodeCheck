@@ -37,7 +37,7 @@ class CodeCheckWorkspacePane extends HBox{
     ListView filesView;
     Button removeButton, refreshButton,viewButton;
     TextFlow actionLog;
-    Label stepTitleLabel, hintLabel, progressLabel;
+    Label stepTitleLabel, hintLabel, progressLabel, progressPerc;
     ProgressBar stepProgress;
     
     public CodeCheckWorkspacePane(CodeCheckWorkspaceViewController initController) {
@@ -82,9 +82,10 @@ class CodeCheckWorkspacePane extends HBox{
 
         //TODO: ADD PROGRESS PERCENTAGE LABEL
         progressLabel = new Label();
+        progressPerc = new Label();
         stepProgress = new ProgressBar();
         stepProgress.setProgress(0);
-        HBox progressBox = new HBox(progressLabel,stepProgress);
+        HBox progressBox = new HBox(progressLabel,stepProgress,progressPerc);
         progressBox.setSpacing(10);
         stepActionButtonsPane =  new HBox();
         ScrollPane logScrollArea = new ScrollPane();

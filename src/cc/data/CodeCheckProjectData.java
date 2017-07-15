@@ -44,7 +44,6 @@ public class CodeCheckProjectData implements AppDataComponent{
 
     }
     public ObservableList<String> getListing(int step) {
-        //TODO: IMPLEMENT LIST RETREVIAL FOR REMAINING STEPS
         DirectoryStream.Filter<Path> filter = e-> {
                                 return !Files.isHidden(e);
                         };
@@ -100,7 +99,6 @@ public class CodeCheckProjectData implements AppDataComponent{
         return (tmpCollection.isEmpty()) ? null : tmpCollection;
     }
     public void refreshList(int step) {
-        //TODO: IMPLEMENT REFRESH FOR REMAINING STEPS
          switch(step){
             case 0:
                 bbSubmissionsList = null;
