@@ -62,7 +62,6 @@ import properties_manager.PropertiesManager;
  * @author danniyazov
  */
 public class CodeCheckWelcomeView extends BorderPane {
-    public static String OS = System.getProperty("os.name").toLowerCase();
     private static double xOrigin = 0;
     private static double yOrigin = 0;
 
@@ -112,7 +111,7 @@ public class CodeCheckWelcomeView extends BorderPane {
         closeWindowButton.setPadding(new Insets(0, 10, 5, 10));
         titleBar = new HBox(closeWindowButton);
         
-        if(OS.contains("mac")){
+        if(app.OS.contains("mac")){
             titleBar.setMaxWidth(300);
             titleBar.setAlignment(Pos.BASELINE_LEFT);
         }else{
@@ -161,7 +160,7 @@ public class CodeCheckWelcomeView extends BorderPane {
         VBox.setVgrow(welcomePanel, Priority.ALWAYS);
         welcomePanel.setAlignment(Pos.CENTER);
         VBox container = new VBox(welcomePanel);
-        if(OS.contains("mac")){
+        if(app.OS.contains("mac")){
             container.getStyleClass().add(WELCOME_PANEL_MAC);
         }else{
             container.getStyleClass().add(WELCOME_PANEL_WIN);            
@@ -213,7 +212,7 @@ public class CodeCheckWelcomeView extends BorderPane {
         setPadding(new Insets(7,7,7,7));
         //primaryScene.getRoot().setEffect(new DropShadow());
         
-        if(OS.contains("mac")){
+        if(app.OS.contains("mac")){
             //getStyleClass().add(WELCOME_PANEL_MAC);
             titleBar.getStyleClass().add(WELCOME_TITLE_BAR_MAC);
             recentsPanel.getStyleClass().add(WELCOME_VIEW_RECENTS_PANEL_MAC);

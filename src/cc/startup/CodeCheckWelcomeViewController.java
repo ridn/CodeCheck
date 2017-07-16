@@ -32,7 +32,7 @@ public class CodeCheckWelcomeViewController  {
            app.handleWelcomeViewResponse(newProjectData);
            filestore.addProjectToRecents(newProjectData);
        }else{
-           //TODO: HANDLE DID NOT MAKE NEW PROJECT
+           //--TODO--: HANDLE DID NOT MAKE NEW PROJECT
        }
        
    }

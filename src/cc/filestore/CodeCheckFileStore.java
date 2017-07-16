@@ -12,7 +12,10 @@ import cc.data.CodeCheckProjectData;
 import cc.workspace.CodeCheckWorkspaceView;
 import djf.components.AppDataComponent;
 import djf.components.AppFileComponent;
+import static djf.settings.AppPropertyType.NEW_ERROR_MESSAGE;
+import static djf.settings.AppPropertyType.NEW_ERROR_TITLE;
 import static djf.settings.AppPropertyType.WORK_FILE_EXT;
+import djf.ui.AppMessageDialogSingleton;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -150,7 +153,7 @@ public class CodeCheckFileStore implements AppFileComponent{
             if (!newCheck.exists()) {
                 System.out.println("Project doesn't exist?");
                 //ERROR PROJECT DOESNT EXIST
-                //TODO: HANDLE PROJECT DNE ERROR
+                AppMessageDialogSingleton.getSingleton().show(props.getProperty(NEW_ERROR_TITLE), props.getProperty(NEW_ERROR_MESSAGE));
             }else{
                 //CREATE ALL SUB-DIRS
                 for(CodeCheckFolder folder : CodeCheckFolder.values()) {                
@@ -158,8 +161,8 @@ public class CodeCheckFileStore implements AppFileComponent{
                     if (!subDIR.exists()) {
                         boolean success = subDIR.mkdir();
                         if(!success){
+                            AppMessageDialogSingleton.getSingleton().show(props.getProperty(NEW_ERROR_TITLE), props.getProperty(NEW_ERROR_MESSAGE));
                             //WE FAILED TO CREATE A DIR
-                            //TODO: HANDLE SUB-DIR SETUP FAIL
                         }
                     }
                 }
@@ -184,7 +187,6 @@ public class CodeCheckFileStore implements AppFileComponent{
         final Button btOk = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
         btOk.addEventFilter(ActionEvent.ACTION, 
             event -> {
-                //TODO: DO VALIDITY CHECKS HERE
                 String projName = dialog.getEditor().textProperty().get().trim();
                 String dirPath = props.getProperty(APP_PATH_WORK) + projName;
                 //ADD CUSTOM FILE EXTENSION

@@ -47,8 +47,8 @@ public class CodeCheckProjectData implements AppDataComponent{
     }
     public ObservableList<String> getListing(int step) {
         DirectoryStream.Filter<Path> filter = e-> {
-                                return !Files.isHidden(e);
-                        };
+            return !Files.isHidden(e);
+        };
         if(projectFile != null)
             switch(step){
                 case 0:
@@ -62,6 +62,10 @@ public class CodeCheckProjectData implements AppDataComponent{
                 case 1:
                 case 2:
                     if(studentSubmissionList == null){
+                        //TODO: SHOW ALL FILES???
+                        filter = e-> {
+                                return e.getFileName().toString().endsWith(".zip");
+                        };
                         studentSubmissionList = initListing(CodeCheckFolder.SUBMISSIONS.toString(),filter);
                     }
                     return studentSubmissionList;
@@ -87,7 +91,6 @@ public class CodeCheckProjectData implements AppDataComponent{
 
     }
     private ObservableList<String> initListing(String path,DirectoryStream.Filter filter) {
-        //TODO: IMPLEMENT STEP SPECIFIC FILTER
         ObservableList tmpCollection = FXCollections.observableArrayList();
         Path folder = Paths.get(projectFile.getAbsolutePath() + "/" + path);
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(folder,filter)) {            
