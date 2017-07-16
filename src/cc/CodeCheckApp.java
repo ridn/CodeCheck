@@ -6,6 +6,9 @@
  */
 package cc;
 
+import static cc.CodeCheckProp.QUIT_DIALOG_CONTENT_TEXT;
+import static cc.CodeCheckProp.QUIT_DIALOG_HEADER_TEXT;
+import static cc.CodeCheckProp.QUIT_DIALOG_TITLE_TEXT;
 import cc.data.CodeCheckProjectData;
 import cc.filestore.CodeCheckFileStore;
 import cc.startup.CodeCheckWelcomeView;
@@ -29,6 +32,8 @@ import properties_manager.PropertiesManager;
  * @author danniyazov
  */
 public class CodeCheckApp extends AppTemplate {
+    public static String OS = System.getProperty("os.name").toLowerCase();
+
     CodeCheckWelcomeView appWelcomeComponent;
     private Stage appStage;
     private Stage welcomeStage;
@@ -62,11 +67,10 @@ public class CodeCheckApp extends AppTemplate {
     public void start(Stage primaryStage) {
 
         primaryStage.setOnCloseRequest(event -> {
-            //TODO: READ FROM PROPS
             Alert alert = new Alert(AlertType.CONFIRMATION);
-            alert.setTitle("Quit");
-            alert.setHeaderText("Close Code Check?");
-            alert.setContentText("Are you sure you wish to close this application?");
+            alert.setTitle(PropertiesManager.getPropertiesManager().getProperty(QUIT_DIALOG_TITLE_TEXT));
+            alert.setHeaderText(PropertiesManager.getPropertiesManager().getProperty(QUIT_DIALOG_HEADER_TEXT));
+            alert.setContentText(PropertiesManager.getPropertiesManager().getProperty(QUIT_DIALOG_CONTENT_TEXT));
 
             alert.showAndWait().ifPresent(result->{
                 if(result.getButtonData().isCancelButton())
