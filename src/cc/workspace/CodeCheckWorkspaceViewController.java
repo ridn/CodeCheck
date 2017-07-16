@@ -11,22 +11,30 @@ import static cc.CodeCheckProp.ABOUT_LABEL_TEXT;
 import static cc.CodeCheckProp.APP_PATH_WORK;
 import static cc.CodeCheckProp.APP_VERSION;
 import static cc.CodeCheckProp.AUTHOR_TEXT;
+import static cc.CodeCheckProp.CORRUPT_CHECK_HEADER;
+import static cc.CodeCheckProp.CORRUPT_CHECK_MESSAGE;
+import static cc.CodeCheckProp.FAIL_RENAME_MESSAGE;
 import static cc.CodeCheckProp.LEGAL_NOTICE;
+import static cc.CodeCheckProp.SUCCESS_RENAME_MESSAGE;
 import static cc.CodeCheckProp.VERSION_TEXT;
+import static cc.CodeCheckProp.ZIP_ERROR_MESSAGE;
+import static cc.CodeCheckProp.ZIP_ERROR_TITLE;
 import cc.data.CodeCheckProjectData;
 import cc.filestore.CodeCheckFileStore;
 import cc.filestore.CodeCheckFileStore.CodeCheckFolder;
 import static djf.settings.AppPropertyType.APP_TITLE;
 import static djf.settings.AppPropertyType.WORK_FILE_EXT;
 import static djf.settings.AppPropertyType.WORK_FILE_EXT_DESC;
+import djf.ui.AppMessageDialogSingleton;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.util.Arrays;
@@ -39,10 +47,12 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -50,9 +60,9 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.io.ZipInputStream;
 import net.lingala.zip4j.model.FileHeader;
 import properties_manager.PropertiesManager;
@@ -80,17 +90,30 @@ class CodeCheckWorkspaceViewController {
     }
     public void handleLoadRequest() {
         //TODO: SUPPORT WINDOWS SELECTION :SIGH:
-        FileChooser fileChooser = new FileChooser();
+        File selectedFile;
         PropertiesManager props = PropertiesManager.getPropertiesManager();
-        fileChooser.setInitialDirectory(new File(props.getProperty(APP_PATH_WORK)));
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(props.getProperty(WORK_FILE_EXT_DESC), "*." + props.getProperty(WORK_FILE_EXT), "*.cck.folder"));
-        File selectedFile = fileChooser.showOpenDialog(app.getGUI().getWindow());
+        if(CodeCheckApp.OS.contains("mac")){ 
+            FileChooser fileChooser = new FileChooser();
+            //fileChooser.setTitle();
+            fileChooser.setInitialDirectory(new File(props.getProperty(APP_PATH_WORK)));
+            fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(props.getProperty(WORK_FILE_EXT_DESC), "*." + props.getProperty(WORK_FILE_EXT), "*.cck.folder"));
+            selectedFile = fileChooser.showOpenDialog(app.getGUI().getWindow());
+        }else{
+            DirectoryChooser dirChooser = new DirectoryChooser();
+            dirChooser.setInitialDirectory(new File(props.getProperty(APP_PATH_WORK)));
+            selectedFile = dirChooser.showDialog(app.getGUI().getWindow());
+        }
         if (selectedFile != null) {
             if(isValidCodeCheckFile(selectedFile.getAbsolutePath())){
                 ((CodeCheckFileStore)app.getFileComponent()).loadProject(selectedFile);       
             }else{
-                //TODO: THROW ERROR THIS IS A 'CORRUPT' CODE CHECK
-                System.out.println("Corrupt code check file, did not open");
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle(props.getProperty(APP_TITLE));        
+                alert.setHeaderText(props.getProperty(CORRUPT_CHECK_HEADER));
+                alert.setContentText(props.getProperty(CORRUPT_CHECK_MESSAGE));
+                alert.showAndWait().ifPresent(response -> {
+                    handleLoadRequest();
+                });
             }
         }
 
@@ -215,6 +238,7 @@ class CodeCheckWorkspaceViewController {
             @Override
             protected Void call() throws Exception {
                 try {
+                    //TODO: FILE ACTIONS NOT WORKING ON WINDOWS?
                     stepProgressLock.lock();
                     switch(CodeCheckStepActions.values()[actionIndex]) {
                         case EXTRACT_SUBMISSIONS:
@@ -262,7 +286,8 @@ class CodeCheckWorkspaceViewController {
         CodeCheckProjectData dataManager = (CodeCheckProjectData)app.getDataComponent();
         //ObservableList unzipList = dataManager.getListing(1);
         CodeCheckWorkspacePane currentPane = (CodeCheckWorkspacePane)workspace.getWorkspace();
-        ObservableList<Path> renameList = currentPane.filesView.getSelectionModel().getSelectedItems();
+        //ObservableList<Path> renameList = currentPane.filesView.getSelectionModel().getSelectedItems();
+        ObservableList<Path> renameList = currentPane.filesView.getItems();
         final double stepSize = renameList.size();
         renameList.forEach((file) -> {
             try {
@@ -272,26 +297,33 @@ class CodeCheckWorkspaceViewController {
                     Files.move(file, file.resolveSibling(newName));
                     Platform.runLater(()-> {
                         int old = currentPane.filesView.getItems().indexOf(file);
-                        currentPane.filesView.getItems().set(old, file.resolveSibling(newName));
                         this.updateProgressBar((old+1)/stepSize);
+                        currentPane.filesView.getItems().set(old, file.resolveSibling(newName));
                     });
                     Thread.sleep(10);
 
-                    //TODO: READ MESSAGE FROM PROPS
                     //TODO: DONT PRINT AFTER EVERY ATTEMPT
-                    printMessageToLog("Successfully renamed file:", MESSAGE_TYPE.MESSAGE_SUCCESS);
+                    printMessageToLog(PropertiesManager.getPropertiesManager().getProperty(SUCCESS_RENAME_MESSAGE), MESSAGE_TYPE.MESSAGE_SUCCESS);
                     printMessageToLog(file.getFileName().toString(), MESSAGE_TYPE.MESSAGE_NORMAL);
                 }else{
                     //INVALID NAMING SCHEME
                     //ALREADY RENAMED?
                     //TODO: HANDLE INVALID NAME SCHEME
+                    Platform.runLater(()-> {
+                        int old = currentPane.filesView.getItems().indexOf(file);
+                        this.updateProgressBar((old+1)/stepSize);
+                    });
+                    Thread.sleep(10);
+
                 }
             } catch (IOException ex) {
-                //TODO: READ MESSAGE FROM PROPS
                 //TODO: DONT PRINT AFTER EVERY ATTEMPT
-                printMessageToLog("Failed to rename file:", MESSAGE_TYPE.MESSAGE_ERROR);
+                printMessageToLog(PropertiesManager.getPropertiesManager().getProperty(FAIL_RENAME_MESSAGE), MESSAGE_TYPE.MESSAGE_ERROR);
                 printMessageToLog(file.getFileName().toString(), MESSAGE_TYPE.MESSAGE_NORMAL);
-                //Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
+                Platform.runLater(()-> {
+                    int old = currentPane.filesView.getItems().indexOf(file);
+                    this.updateProgressBar((old+1)/stepSize);
+                });
             } catch (InterruptedException ex) {
                 Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -323,12 +355,18 @@ class CodeCheckWorkspaceViewController {
                 }
                 ZipFile zip = new ZipFile(file.toString());
                 for(FileHeader header : (List<FileHeader>)zip.getFileHeaders()) {
-                    if(extension.equals("all") || header.getFileName().endsWith(extension)){
-                        
-                        Path outfile = file.getParent().resolveSibling(sectionDir+header.getFileName());
+                    if(!header.getFileName().endsWith(".txt") && !Files.isHidden(file.resolve(header.getFileName()))){
+                        Path outfile;
+                        if(extension.equals("all") || header.getFileName().endsWith(extension)){
+                            outfile = file.getParent().resolveSibling(sectionDir+header.getFileName());
+                        }else{
+                            outfile = file.getParent().resolveSibling(sectionDir+"invalid"+File.separator+header.getFileName());
+                            System.out.println(outfile.getFileName());
+                        }
+
                         if(header.isDirectory()) {
                             Files.createDirectories(outfile);
-                            
+
                         }else{
                             if(Files.notExists(outfile.getParent())) {
                                 Files.createDirectories(outfile.getParent());
@@ -345,20 +383,17 @@ class CodeCheckWorkspaceViewController {
                     }
                 }
                 Platform.runLater(()-> {
-                    int stepIndex = currentPane.filesView.getItems().indexOf(file);
+                    int stepIndex = unzipList.indexOf(file);
                     this.updateProgressBar((stepIndex+1)/stepSize);
                 });
                 Thread.sleep(10);
 
-            } catch (ZipException ex) {
+            } catch (Exception ex) {
                 //TODO: HANDLE UNZIP ERROR
-                Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (FileNotFoundException ex) {
-                Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
+               // Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
+                AppMessageDialogSingleton.getSingleton().show(PropertiesManager.getPropertiesManager().getProperty(ZIP_ERROR_TITLE),
+                        PropertiesManager.getPropertiesManager().getProperty(ZIP_ERROR_MESSAGE) + file.getFileName());
+
             }
             
         });
@@ -370,32 +405,65 @@ class CodeCheckWorkspaceViewController {
         workspace.stepPanes[paneToRefresh].filesView.refresh();
         */
     }
+    private String compileFileExtractorTypes() {
+        StringBuilder comp = new StringBuilder(30);
+        comp.append("glob:*.{");
+        CodeCheckWorkspacePane extractPane = (CodeCheckWorkspacePane)workspace.stepPanes[3];
+        Pane checkboxes = (Pane)extractPane.getExtras(0,1);
+        for(Node box: checkboxes.getChildren()){
+            if(checkboxes.getChildren().indexOf(box) == checkboxes.getChildren().size()-1){
+                //CUSTOM CHECKBOX
+                List container = ((Pane)box).getChildren();
+                if(((CheckBox)container.get(0)).isSelected()){
+                    String entry = ((TextField)container.get(1)).getText();
+                    if(comp.indexOf("{") != comp.length()-1)
+                        comp.append( ",");
+                    entry = entry.replaceAll("\\.|\\s", "");
+                    comp.append(entry);
+                }
+            }else{
+                if(((CheckBox)box).isSelected()){
+                    if(comp.indexOf("{") != comp.length()-1)
+                        comp.append( ",");
+                    comp.append(((CheckBox)box).getText().replaceAll("(\\.|\\s)", ""));
+                }
+            }
+            
+        };
+        comp.append("}");
+        return comp.toString();
+    }
     private void extractSubmissionCode() {
-        //TODO: IMPLEMENTS CODE EXTRACTION
+        //TODO: DISABLE BUTTON UNLESS BOX IS CHECKED
         CodeCheckProjectData dataManager = (CodeCheckProjectData)app.getDataComponent();
         CodeCheckWorkspacePane currentPane = (CodeCheckWorkspacePane)workspace.getWorkspace();
         ObservableList<Path> studentList = currentPane.filesView.getSelectionModel().getSelectedItems();
         final double stepSize = studentList.size();
         studentList.forEach((file) -> {
-            //Files.find(file, 5, matcher, options);
             Stream<Path> matches;
             try {
-                matches = Files.find(file,5,(path, basicFileAttributes) -> String.valueOf(path).endsWith(".java"));
-                matches.forEach((path)->{
-                    try {
-                        Path outfile = file.getParent().resolveSibling(CodeCheckFolder.CODE.toString()+File.separator+file.getFileName());
-                        if(Files.notExists(outfile))
-                            Files.createDirectories(outfile);
-                        Files.copy(path, outfile.resolve(path.getFileName()),REPLACE_EXISTING);
-                        Platform.runLater(()-> {
-                            int stepIndex = currentPane.filesView.getItems().indexOf(file);
-                            this.updateProgressBar((stepIndex+1)/stepSize);
-                        });
+                PathMatcher matcher = FileSystems.getDefault().getPathMatcher(compileFileExtractorTypes());
+                matches = Files.find(file,5,(path, basicFileAttributes) ->   matcher.matches(path.getFileName()));//String.valueOf(path).endsWith(".java"));                
+                //if(matches.count() > 0)
+                    matches.forEach((path)->{
+                        try {
+                            Path outfile = file.getParent().resolveSibling(CodeCheckFolder.CODE.toString()+File.separator+file.getFileName());
+                            if(Files.notExists(outfile))
+                                Files.createDirectories(outfile);
+                            Files.copy(path, outfile.resolve(path.getFileName()),REPLACE_EXISTING);
+                            Platform.runLater(()-> {
+                                int stepIndex = studentList.indexOf(file);
+                                this.updateProgressBar((stepIndex+1)/stepSize);
+                            });
 
-                    } catch (IOException ex) {
-                        Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-            });
+                        } catch (IOException ex) {
+                            Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    });
+                /*else{
+                    //NO FILES FOUND TO EXTRACT
+                    //TODO: DISPLAY NO FILES MESSAGE
+                }*/
             } catch (IOException ex) {
                 Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -440,6 +508,7 @@ class CodeCheckWorkspaceViewController {
                     break;
             }
             activePane.actionLog.getChildren().addAll(logText);
+            activePane.scrollToBottom();
         });
     }
 
