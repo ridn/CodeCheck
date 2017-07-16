@@ -35,6 +35,7 @@ class CodeCheckWorkspacePane extends HBox{
     private CodeCheckWorkspaceViewController controller;
     private int paneIndex;
     private VBox leftPaneSpace, rightPaneSpace;
+    private ScrollPane logScrollArea;
     HBox leftActionButtonsPane, stepActionButtonsPane;
     ListView filesView;
     Button removeButton, refreshButton,viewButton;
@@ -83,7 +84,6 @@ class CodeCheckWorkspacePane extends HBox{
         rightPaneSpace.setSpacing(10);
         rightPaneSpace.setPadding(new Insets(10, 10, 10, 10));
 
-        //TODO: ADD PROGRESS PERCENTAGE LABEL
         progressLabel = new Label();
         progressPerc = new Label();
         stepProgress = new ProgressBar();
@@ -91,7 +91,7 @@ class CodeCheckWorkspacePane extends HBox{
         HBox progressBox = new HBox(progressLabel,stepProgress,progressPerc);
         progressBox.setSpacing(10);
         stepActionButtonsPane =  new HBox();
-        ScrollPane logScrollArea = new ScrollPane();
+        logScrollArea = new ScrollPane();
         actionLog = new TextFlow();
         actionLog.setTextAlignment(TextAlignment.LEFT);
         actionLog.setPrefSize(300, 100);
@@ -158,5 +158,20 @@ class CodeCheckWorkspacePane extends HBox{
             //RIGHT SIDE
             rightPaneSpace.getChildren().add(node);
         }
+    }
+    public Node getExtras(int side, int index){
+        int indexOffset;
+        if(side == 0){
+            indexOffset = leftPaneSpace.getChildren().indexOf(leftActionButtonsPane);
+            return leftPaneSpace.getChildren().get(indexOffset+index+1);
+        }else if(side == 1){
+            indexOffset = leftPaneSpace.getChildren().indexOf(filesView);
+            return leftPaneSpace.getChildren().get(indexOffset+index);            
+        }
+        return null;
+    }
+    public void scrollToBottom() {
+            logScrollArea.layout();
+            logScrollArea.setVvalue(1.0f);
     }
 }
