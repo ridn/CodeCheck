@@ -254,13 +254,9 @@ class CodeCheckWorkspaceViewController {
         handleRefreshRequest(false);
     }
     public void handleViewRequest() {
-        //TODO: IMPLEMENT FILE VIEW REQUEST
         CodeCheckWorkspacePane currentPane = (CodeCheckWorkspacePane)workspace.getWorkspace();
         Path file = (Path)currentPane.filesView.getSelectionModel().getSelectedItems().get(0);
-        Stage stage = new Stage();
-        CodeCheckFileViewer viewer = new CodeCheckFileViewer(stage,file);
-        //stage.setScene(new Scene(viewer));
-        //stage.show();
+        CodeCheckFileViewer.getFileViewer().viewFile(file);
 
         
     }
