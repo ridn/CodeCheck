@@ -16,6 +16,7 @@ import djf.components.AppDataComponent;
 import djf.components.AppWorkspaceComponent;
 import java.net.URL;
 import java.nio.file.Path;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
@@ -196,6 +197,8 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
             actionButton.setOnAction(e -> {
                 controller.handleStepActionRequest(index);
             });
+            if(i != 1)actionButton.disableProperty().bind(stepPanes[i].filesView.getSelectionModel().selectedItemProperty().isNull());
+            else actionButton.disableProperty().bind(Bindings.isNull(stepPanes[i].filesView.itemsProperty()));
             if(stepPanes[i].stepActionButtonsPane.getChildren().size() > 1){
                 actionButton = (Button)stepPanes[i].stepActionButtonsPane.getChildren().get(1);
                 actionButton.setOnAction(e -> {

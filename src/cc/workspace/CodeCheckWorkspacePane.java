@@ -122,6 +122,9 @@ class CodeCheckWorkspacePane extends HBox{
         removeButton.setOnAction(e->{
             controller.handleRemoveRequest();
         });
+        viewButton.setOnAction(e->{
+            controller.handleViewRequest();
+        });
 
     }
     private void initControlBinding() {

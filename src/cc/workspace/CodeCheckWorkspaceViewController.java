@@ -16,16 +16,17 @@ import static cc.CodeCheckProp.CORRUPT_CHECK_HEADER;
 import static cc.CodeCheckProp.CORRUPT_CHECK_MESSAGE;
 import static cc.CodeCheckProp.DELETE_PROMPT_HEADER;
 import static cc.CodeCheckProp.DELETE_PROMPT_MESSAGE;
-import static cc.CodeCheckProp.FAIL_RENAME_MESSAGE;
 import static cc.CodeCheckProp.LEGAL_NOTICE;
+import static cc.CodeCheckProp.NO_SELECTION_MESSAGE;
+import static cc.CodeCheckProp.NO_SELECTION_TITLE;
 import static cc.CodeCheckProp.SUCCESS_EXTRACT_MESSAGE;
-import static cc.CodeCheckProp.SUCCESS_RENAME_MESSAGE;
 import static cc.CodeCheckProp.VERSION_TEXT;
 import static cc.CodeCheckProp.ZIP_ERROR_MESSAGE;
 import static cc.CodeCheckProp.ZIP_ERROR_TITLE;
 import cc.data.CodeCheckProjectData;
 import cc.filestore.CodeCheckFileStore;
 import cc.filestore.CodeCheckFileStore.CodeCheckFolder;
+import cc.viewer.CodeCheckFileViewer;
 import cc.viewer.CodeCheckResultsViewer;
 import static djf.settings.AppPropertyType.APP_TITLE;
 import static djf.settings.AppPropertyType.WORK_FILE_EXT;
@@ -99,8 +100,8 @@ class CodeCheckWorkspaceViewController {
         app = initApp;
         workspace = view;
         stepProgressLock = new ReentrantLock();
-        successMessages = new ArrayList<String>();
-        failMessages = new ArrayList<String>();
+        successMessages = new ArrayList<>();
+        failMessages = new ArrayList<>();
 
     }
     public void handleLoadRequest() {
@@ -254,6 +255,13 @@ class CodeCheckWorkspaceViewController {
     }
     public void handleViewRequest() {
         //TODO: IMPLEMENT FILE VIEW REQUEST
+        CodeCheckWorkspacePane currentPane = (CodeCheckWorkspacePane)workspace.getWorkspace();
+        Path file = (Path)currentPane.filesView.getSelectionModel().getSelectedItems().get(0);
+        Stage stage = new Stage();
+        CodeCheckFileViewer viewer = new CodeCheckFileViewer(stage,file);
+        //stage.setScene(new Scene(viewer));
+        //stage.show();
+
         
     }
     public void handleStepActionRequest(int actionIndex) {
@@ -407,6 +415,8 @@ class CodeCheckWorkspaceViewController {
                                 output.write(buffer,0,length);
                             output.close();
                             input.close();
+                            if(!needsExtraParent && !header.isDirectory() && !outfile.toString().contains("invalid"))
+                                successMessages.add("-" + header.getFileName());
                         }
                     }
                 }
@@ -415,7 +425,7 @@ class CodeCheckWorkspaceViewController {
                     this.updateProgressBar((stepIndex+1)/stepSize);
                 });
                 Thread.sleep(10);
-                successMessages.add("-" + file.getFileName().toString());
+                if(needsExtraParent)successMessages.add("-" + file.getFileName().toString());
             } catch (Exception ex) {
                 failMessages.add("-" + file.getFileName().toString());
                 AppMessageDialogSingleton.getSingleton().show(PropertiesManager.getPropertiesManager().getProperty(ZIP_ERROR_TITLE),
@@ -460,43 +470,50 @@ class CodeCheckWorkspaceViewController {
         return comp.toString();
     }
     private void extractSubmissionCode() {
-        //TODO: DISABLE BUTTON UNLESS BOX IS CHECKED
-        CodeCheckProjectData dataManager = (CodeCheckProjectData)app.getDataComponent();
-        CodeCheckWorkspacePane currentPane = (CodeCheckWorkspacePane)workspace.getWorkspace();
-        ObservableList<Path> studentList = currentPane.filesView.getSelectionModel().getSelectedItems();
-        final double stepSize = studentList.size();
-        studentList.forEach((file) -> {
-            successMessages.add("-" + file.getFileName().toString());
+        final String fileTypes = compileFileExtractorTypes();
+        if(fileTypes.length() <= 9){
+            Platform.runLater(()-> {
+                AppMessageDialogSingleton.getSingleton().show(PropertiesManager.getPropertiesManager().getProperty(NO_SELECTION_TITLE),
+                        PropertiesManager.getPropertiesManager().getProperty(NO_SELECTION_MESSAGE));
+            });
+        }else{
+            CodeCheckProjectData dataManager = (CodeCheckProjectData)app.getDataComponent();
+            CodeCheckWorkspacePane currentPane = (CodeCheckWorkspacePane)workspace.getWorkspace();
+            ObservableList<Path> studentList = currentPane.filesView.getSelectionModel().getSelectedItems();
+            final double stepSize = studentList.size();
+            studentList.forEach((file) -> {
+                successMessages.add("-" + file.getFileName().toString());
 
-            Stream<Path> matches;
-            try {
-                PathMatcher matcher = FileSystems.getDefault().getPathMatcher(compileFileExtractorTypes());
-                matches = Files.find(file,5,(path, basicFileAttributes) ->   matcher.matches(path.getFileName()));//String.valueOf(path).endsWith(".java"));                
-                //if(matches.count() > 0)
-                    matches.forEach((path)->{
-                        try {
-                            Path outfile = file.getParent().resolveSibling(CodeCheckFolder.CODE.toString()+File.separator+file.getFileName());
-                            if(Files.notExists(outfile))
-                                Files.createDirectories(outfile);
-                            Files.copy(path, outfile.resolve(path.getFileName()),REPLACE_EXISTING);
-                            Platform.runLater(()-> {
-                                int stepIndex = studentList.indexOf(file);
-                                this.updateProgressBar((stepIndex+1)/stepSize);
-                            });
-                            successMessages.add("---" + path.getFileName().toString());
-                        } catch (IOException ex) {
-                            failMessages.add("---" + path.getFileName().toString());
-                            //Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    });
-                /*else{
-                    //NO FILES FOUND TO EXTRACT
-                    //TODO: DISPLAY NO FILES MESSAGE
-                }*/
-            } catch (IOException ex) {
-                Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
+                Stream<Path> matches;
+                try {
+                    PathMatcher matcher = FileSystems.getDefault().getPathMatcher(fileTypes);
+                    matches = Files.find(file,5,(path, basicFileAttributes) ->   matcher.matches(path.getFileName()));//String.valueOf(path).endsWith(".java"));                
+                    //if(matches.count() > 0)
+                        matches.forEach((path)->{
+                            try {
+                                Path outfile = file.getParent().resolveSibling(CodeCheckFolder.CODE.toString()+File.separator+file.getFileName());
+                                if(Files.notExists(outfile))
+                                    Files.createDirectories(outfile);
+                                Files.copy(path, outfile.resolve(path.getFileName()),REPLACE_EXISTING);
+                                Platform.runLater(()-> {
+                                    int stepIndex = studentList.indexOf(file);
+                                    this.updateProgressBar((stepIndex+1)/stepSize);
+                                });
+                                successMessages.add("---" + path.getFileName().toString());
+                            } catch (IOException ex) {
+                                failMessages.add("---" + path.getFileName().toString());
+                                //Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        });
+                    /*else{
+                        //NO FILES FOUND TO EXTRACT
+                        //TODO: DISPLAY NO FILES MESSAGE
+                    }*/
+                } catch (IOException ex) {
+                    Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
+        }
 
         
     }
@@ -539,22 +556,26 @@ class CodeCheckWorkspaceViewController {
     private void printAllMessages() {
         //UGLY HAX YO
         int textIndex = (2*Arrays.asList(workspace.stepPanes).indexOf(workspace.getWorkspace())) + SUCCESS_EXTRACT_MESSAGE.ordinal();
+        StringBuilder sb = new StringBuilder();
         
         if(!successMessages.isEmpty())
             printMessageToLog(PropertiesManager.getPropertiesManager().getProperty(CodeCheckProp.values()[textIndex]), MESSAGE_TYPE.MESSAGE_SUCCESS);
-
         for(String message : successMessages){
-            printMessageToLog(message,MESSAGE_TYPE.MESSAGE_NORMAL);
+            sb.append(message+"\n");
         }
+        printMessageToLog(sb.toString().trim(),MESSAGE_TYPE.MESSAGE_NORMAL);
+        if(sb.length() > 0)sb.delete(0,sb.length()-1);
         if(!failMessages.isEmpty())
             printMessageToLog(PropertiesManager.getPropertiesManager().getProperty(CodeCheckProp.values()[textIndex+1]), MESSAGE_TYPE.MESSAGE_ERROR);
         for(String message : failMessages){
-            printMessageToLog(message,MESSAGE_TYPE.MESSAGE_NORMAL);
+            sb.append(message+"\n");
         }
+        printMessageToLog(sb.toString().trim(),MESSAGE_TYPE.MESSAGE_NORMAL);
         successMessages.clear();
         failMessages.clear();
     }
     private void printMessageToLog(String message,MESSAGE_TYPE type) {
+        if(!message.isEmpty())
         Platform.runLater( () -> {
             /*
             TextField text = new TextField(message);
