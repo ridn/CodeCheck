@@ -14,7 +14,10 @@ import static cc.style.CodeCheckStyle.STEP_TITLE_LABEL;
 import static cc.style.CodeCheckStyle.WORKSPACE_TOOLBAR;
 import djf.components.AppDataComponent;
 import djf.components.AppWorkspaceComponent;
+import java.net.URL;
 import java.nio.file.Path;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -34,6 +37,7 @@ import properties_manager.PropertiesManager;
  * @author danniyazov
  */
 public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
+    private StringProperty checkResults;
     public static boolean activateOnLoad = false;
     final private CodeCheckApp app;
     final private CodeCheckWorkspaceViewController controller;
@@ -41,11 +45,12 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
     protected Button prevButton, nextButton, homeButton;
     protected Button renameButton, aboutButton;
     CodeCheckWorkspacePane stepPanes[];
+    URL codeCheckURL;
+    private String urlAsString;
     
     public CodeCheckWorkspaceView(CodeCheckApp initApp) {
         app = initApp;
         controller = new CodeCheckWorkspaceViewController(app,this);
-        
         initLayout();
         initControllers();
         initControlBinding();
@@ -191,6 +196,16 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
             actionButton.setOnAction(e -> {
                 controller.handleStepActionRequest(index);
             });
+            if(stepPanes[i].stepActionButtonsPane.getChildren().size() > 1){
+                actionButton = (Button)stepPanes[i].stepActionButtonsPane.getChildren().get(1);
+                actionButton.setOnAction(e -> {
+                    controller.handleStepActionRequest(index+1);
+                });
+                
+                checkResults = new SimpleStringProperty(urlAsString);
+                actionButton.disableProperty().bind(checkResults.isEmpty());
+                
+            }
         }
         
     }
@@ -203,7 +218,6 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         //homeButton.disableProperty().bind(Bindings.size(oList).multiply(0).isEqualTo(oList.indexOf(getWorkspace())));
         //prevButton.disableProperty().bind(Bindings.size(oList).multiply(0).isEqualTo(oList.indexOf(getWorkspace())));
         //nextButton.disableProperty().bind(Bindings.size(oList).lessThan(oList.indexOf(getWorkspace())));
-
 
     }
     private void initStyle() {
@@ -245,11 +259,17 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
 
         
     }
-
+    public void setCheckResults(URL url){
+        checkResults.setValue((url == null) ? "" : url.toString());
+        codeCheckURL = url;
+    }
     @Override
     public void resetWorkspace() {
         changeToWorkspace(0);
+        setCheckResults(null);
         for(CodeCheckWorkspacePane step : stepPanes){
+            step.stepProgress.setProgress(0.0);
+            step.progressPerc.setText("");
             step.actionLog.getChildren().clear();
             if(step.filesView.getItems() != null )
                 step.filesView.getItems().clear();

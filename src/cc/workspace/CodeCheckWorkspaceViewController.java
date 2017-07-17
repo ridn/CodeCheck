@@ -7,14 +7,18 @@
 package cc.workspace;
 
 import cc.CodeCheckApp;
+import cc.CodeCheckProp;
 import static cc.CodeCheckProp.ABOUT_LABEL_TEXT;
 import static cc.CodeCheckProp.APP_PATH_WORK;
 import static cc.CodeCheckProp.APP_VERSION;
 import static cc.CodeCheckProp.AUTHOR_TEXT;
 import static cc.CodeCheckProp.CORRUPT_CHECK_HEADER;
 import static cc.CodeCheckProp.CORRUPT_CHECK_MESSAGE;
+import static cc.CodeCheckProp.DELETE_PROMPT_HEADER;
+import static cc.CodeCheckProp.DELETE_PROMPT_MESSAGE;
 import static cc.CodeCheckProp.FAIL_RENAME_MESSAGE;
 import static cc.CodeCheckProp.LEGAL_NOTICE;
+import static cc.CodeCheckProp.SUCCESS_EXTRACT_MESSAGE;
 import static cc.CodeCheckProp.SUCCESS_RENAME_MESSAGE;
 import static cc.CodeCheckProp.VERSION_TEXT;
 import static cc.CodeCheckProp.ZIP_ERROR_MESSAGE;
@@ -22,6 +26,7 @@ import static cc.CodeCheckProp.ZIP_ERROR_TITLE;
 import cc.data.CodeCheckProjectData;
 import cc.filestore.CodeCheckFileStore;
 import cc.filestore.CodeCheckFileStore.CodeCheckFolder;
+import cc.viewer.CodeCheckResultsViewer;
 import static djf.settings.AppPropertyType.APP_TITLE;
 import static djf.settings.AppPropertyType.WORK_FILE_EXT;
 import static djf.settings.AppPropertyType.WORK_FILE_EXT_DESC;
@@ -30,6 +35,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -37,6 +43,7 @@ import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
@@ -51,6 +58,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
@@ -66,6 +74,9 @@ import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.io.ZipInputStream;
 import net.lingala.zip4j.model.FileHeader;
 import properties_manager.PropertiesManager;
+import java.util.concurrent.ThreadLocalRandom;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 /**
  *
@@ -75,21 +86,24 @@ class CodeCheckWorkspaceViewController {
     static enum MESSAGE_TYPE {
         MESSAGE_NORMAL,
         MESSAGE_SUCCESS,
-        MESSAGE_ERROR
+        MESSAGE_ERROR,
+        MESSAGE_URL
     }
     
     final private CodeCheckApp app;
     final private CodeCheckWorkspaceView workspace;
     private ReentrantLock stepProgressLock;
+    private ArrayList<String> successMessages,failMessages;
     
     public CodeCheckWorkspaceViewController(CodeCheckApp initApp,CodeCheckWorkspaceView view) {
         app = initApp;
         workspace = view;
         stepProgressLock = new ReentrantLock();
+        successMessages = new ArrayList<String>();
+        failMessages = new ArrayList<String>();
 
     }
     public void handleLoadRequest() {
-        //TODO: SUPPORT WINDOWS SELECTION :SIGH:
         File selectedFile;
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         if(CodeCheckApp.OS.contains("mac")){ 
@@ -200,12 +214,21 @@ class CodeCheckWorkspaceViewController {
 
     }
     public void handleRemoveRequest() {
-        //TODO: ASK CONFIRMATION TO DELETE
         CodeCheckWorkspacePane currentPane = (CodeCheckWorkspacePane)workspace.getWorkspace();
         Path pathToRemove = (Path)currentPane.filesView.getSelectionModel().getSelectedItems().get(0);
-        CodeCheckProjectData dataManager = (CodeCheckProjectData)app.getDataComponent();
-        dataManager.handleFileDeletion(pathToRemove);  
-        currentPane.filesView.getItems().remove(pathToRemove);
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle(props.getProperty(APP_TITLE));        
+        alert.setHeaderText(props.getProperty(DELETE_PROMPT_HEADER)+pathToRemove.getFileName() );
+        alert.setContentText(props.getProperty(DELETE_PROMPT_MESSAGE));
+        alert.showAndWait().ifPresent(response -> {
+            if(response == ButtonType.OK){
+                CodeCheckProjectData dataManager = (CodeCheckProjectData)app.getDataComponent();
+                dataManager.handleFileDeletion(pathToRemove);  
+                currentPane.filesView.getItems().remove(pathToRemove);                
+            }
+        });
+
         //handleRefreshRequest();
 
         
@@ -254,12 +277,15 @@ class CodeCheckWorkspaceViewController {
                             extractSubmissionCode();
                             break;
                         case CODE_CHECK:
+                            workspace.setCheckResults(codeCheckWithResults());
                             break;
                         case VIEW_RESULTS:
+                            launchViewerWithURL(workspace.codeCheckURL);
                             break;
-                    }
+                    }                    
                     Platform.runLater(()-> {
                         handleRefreshRequest();
+                        printAllMessages();
                     });
                     //Thread.sleep(10);
                     }
@@ -302,9 +328,9 @@ class CodeCheckWorkspaceViewController {
                     });
                     Thread.sleep(10);
 
-                    //TODO: DONT PRINT AFTER EVERY ATTEMPT
-                    printMessageToLog(PropertiesManager.getPropertiesManager().getProperty(SUCCESS_RENAME_MESSAGE), MESSAGE_TYPE.MESSAGE_SUCCESS);
-                    printMessageToLog(file.getFileName().toString(), MESSAGE_TYPE.MESSAGE_NORMAL);
+                    successMessages.add(file.getFileName().toString());
+                    //printMessageToLog(PropertiesManager.getPropertiesManager().getProperty(SUCCESS_RENAME_MESSAGE), MESSAGE_TYPE.MESSAGE_SUCCESS);
+                    //printMessageToLog(file.getFileName().toString(), MESSAGE_TYPE.MESSAGE_NORMAL);
                 }else{
                     //INVALID NAMING SCHEME
                     //ALREADY RENAMED?
@@ -317,9 +343,9 @@ class CodeCheckWorkspaceViewController {
 
                 }
             } catch (IOException ex) {
-                //TODO: DONT PRINT AFTER EVERY ATTEMPT
-                printMessageToLog(PropertiesManager.getPropertiesManager().getProperty(FAIL_RENAME_MESSAGE), MESSAGE_TYPE.MESSAGE_ERROR);
-                printMessageToLog(file.getFileName().toString(), MESSAGE_TYPE.MESSAGE_NORMAL);
+                //printMessageToLog(PropertiesManager.getPropertiesManager().getProperty(FAIL_RENAME_MESSAGE), MESSAGE_TYPE.MESSAGE_ERROR);
+                //printMessageToLog(file.getFileName().toString(), MESSAGE_TYPE.MESSAGE_NORMAL);
+                failMessages.add(file.getFileName().toString());
                 Platform.runLater(()-> {
                     int old = currentPane.filesView.getItems().indexOf(file);
                     this.updateProgressBar((old+1)/stepSize);
@@ -361,7 +387,9 @@ class CodeCheckWorkspaceViewController {
                             outfile = file.getParent().resolveSibling(sectionDir+header.getFileName());
                         }else{
                             outfile = file.getParent().resolveSibling(sectionDir+"invalid"+File.separator+header.getFileName());
-                            System.out.println(outfile.getFileName());
+                            //System.out.println(outfile.getFileName());
+                            if(!header.isDirectory())
+                            failMessages.add("-" + header.getFileName());
                         }
 
                         if(header.isDirectory()) {
@@ -387,13 +415,11 @@ class CodeCheckWorkspaceViewController {
                     this.updateProgressBar((stepIndex+1)/stepSize);
                 });
                 Thread.sleep(10);
-
+                successMessages.add("-" + file.getFileName().toString());
             } catch (Exception ex) {
-                //TODO: HANDLE UNZIP ERROR
-               // Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
+                failMessages.add("-" + file.getFileName().toString());
                 AppMessageDialogSingleton.getSingleton().show(PropertiesManager.getPropertiesManager().getProperty(ZIP_ERROR_TITLE),
                         PropertiesManager.getPropertiesManager().getProperty(ZIP_ERROR_MESSAGE) + file.getFileName());
-
             }
             
         });
@@ -440,6 +466,8 @@ class CodeCheckWorkspaceViewController {
         ObservableList<Path> studentList = currentPane.filesView.getSelectionModel().getSelectedItems();
         final double stepSize = studentList.size();
         studentList.forEach((file) -> {
+            successMessages.add("-" + file.getFileName().toString());
+
             Stream<Path> matches;
             try {
                 PathMatcher matcher = FileSystems.getDefault().getPathMatcher(compileFileExtractorTypes());
@@ -455,9 +483,10 @@ class CodeCheckWorkspaceViewController {
                                 int stepIndex = studentList.indexOf(file);
                                 this.updateProgressBar((stepIndex+1)/stepSize);
                             });
-
+                            successMessages.add("---" + path.getFileName().toString());
                         } catch (IOException ex) {
-                            Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
+                            failMessages.add("---" + path.getFileName().toString());
+                            //Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     });
                 /*else{
@@ -472,16 +501,60 @@ class CodeCheckWorkspaceViewController {
         
     }
     private URL codeCheckWithResults() {
+        try {
+            URL url = new URL("https://ridn.me");
+            for(int i = 0; i < 100; i++){
+                double perc = (i+1)/100.0;
+                Platform.runLater( () -> {
+                    updateProgressBar(perc);
+                });
+            int sleepTime = ThreadLocalRandom.current().nextInt(10, 120 + 1);
+            Thread.sleep(sleepTime);
+            }
+            printMessageToLog("Student Plagiarism results can be found at",MESSAGE_TYPE.MESSAGE_NORMAL);
+            printMessageToLog(url.toString(),MESSAGE_TYPE.MESSAGE_URL);
+
+            return url;
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return null;
     }
     private void launchViewerWithURL(URL url) {
+        Platform.runLater( () -> {
+            System.out.println("Launched viewer with url: " + url);
+            Stage stage = new Stage();
+            CodeCheckResultsViewer viewer = new CodeCheckResultsViewer(stage,url);
+            stage.setScene(new Scene(viewer));
+            stage.show();
+        });
         
     }
     public Button initChildButton(Pane toolbar,String icon, String tooltip,boolean disabled) {
 
         return app.getGUI().initChildButton(toolbar, icon, tooltip, disabled);
     }
-    public void printMessageToLog(String message,MESSAGE_TYPE type) {
+    private void printAllMessages() {
+        //UGLY HAX YO
+        int textIndex = (2*Arrays.asList(workspace.stepPanes).indexOf(workspace.getWorkspace())) + SUCCESS_EXTRACT_MESSAGE.ordinal();
+        
+        if(!successMessages.isEmpty())
+            printMessageToLog(PropertiesManager.getPropertiesManager().getProperty(CodeCheckProp.values()[textIndex]), MESSAGE_TYPE.MESSAGE_SUCCESS);
+
+        for(String message : successMessages){
+            printMessageToLog(message,MESSAGE_TYPE.MESSAGE_NORMAL);
+        }
+        if(!failMessages.isEmpty())
+            printMessageToLog(PropertiesManager.getPropertiesManager().getProperty(CodeCheckProp.values()[textIndex+1]), MESSAGE_TYPE.MESSAGE_ERROR);
+        for(String message : failMessages){
+            printMessageToLog(message,MESSAGE_TYPE.MESSAGE_NORMAL);
+        }
+        successMessages.clear();
+        failMessages.clear();
+    }
+    private void printMessageToLog(String message,MESSAGE_TYPE type) {
         Platform.runLater( () -> {
             /*
             TextField text = new TextField(message);
@@ -504,6 +577,11 @@ class CodeCheckWorkspaceViewController {
                     break;
                 case MESSAGE_ERROR:
                     logText.setFill(Color.RED); 
+                    //text.setStyle("-fx-text-inner-color: red;");
+                    break;
+                case MESSAGE_URL:
+                    logText.setFill(Color.BLUE);
+                    logText.setUnderline(true);
                     //text.setStyle("-fx-text-inner-color: red;");
                     break;
             }
