@@ -76,14 +76,14 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         //app.getGUI().getTopToolbarPane().getChildren().add(spacer);
         //spacer.prefWidthProperty().bind(app.getGUI().getTopToolbarPane().widthProperty().subtract(fileToolbar.widthProperty()).subtract(progressionToolbar.widthProperty()).subtract(20));
         
-        homeButton = app.getGUI().initChildButton(progressionToolbar, HOME_BUTTON_ICON.toString(),HOME_BUTTON_TEXT.toString(), true);
-        prevButton = app.getGUI().initChildButton(progressionToolbar, PREV_BUTTON_ICON.toString(),PREV_BUTTON_TEXT.toString(), true);
-        nextButton = app.getGUI().initChildButton(progressionToolbar, NEXT_BUTTON_ICON.toString(),NEXT_BUTTON_TEXT.toString(), false);
+        homeButton = controller.initChildButton(progressionToolbar, HOME_BUTTON_ICON.toString(),HOME_BUTTON_TEXT.toString(), true);
+        prevButton = controller.initChildButton(progressionToolbar, PREV_BUTTON_ICON.toString(),PREV_BUTTON_TEXT.toString(), true);
+        nextButton = controller.initChildButton(progressionToolbar, NEXT_BUTTON_ICON.toString(),NEXT_BUTTON_TEXT.toString(), false);
 
         //CUSTOMIZE THE FILE TOOLBAR AS NEEDED
         setupToolbarAsNeeded(fileToolbar);
-        renameButton = app.getGUI().initChildButton(fileToolbar, RENAME_BUTTON_ICON.toString(),RENAME_BUTTON_TEXT.toString(), false);
-        aboutButton = app.getGUI().initChildButton(fileToolbar, ABOUT_BUTTON_ICON.toString(),ABOUT_BUTTON_TEXT.toString(), false);
+        renameButton = controller.initChildButton(fileToolbar, RENAME_BUTTON_ICON.toString(),RENAME_BUTTON_TEXT.toString(), false);
+        aboutButton = controller.initChildButton(fileToolbar, ABOUT_BUTTON_ICON.toString(),ABOUT_BUTTON_TEXT.toString(), false);
         
         stepPanes = new CodeCheckWorkspacePane[5];
         workspace = stepPanes[0];
@@ -249,7 +249,8 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
         }else if(index <= 0) {
             homeButton.setDisable(true);
             prevButton.setDisable(true);
-        }else if(index > 0){
+        }
+        if(index > 0){
             homeButton.setDisable(false);
             prevButton.setDisable(false);
         }

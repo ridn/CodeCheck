@@ -19,6 +19,7 @@ import static cc.CodeCheckProp.DELETE_PROMPT_MESSAGE;
 import static cc.CodeCheckProp.LEGAL_NOTICE;
 import static cc.CodeCheckProp.NO_SELECTION_MESSAGE;
 import static cc.CodeCheckProp.NO_SELECTION_TITLE;
+import static cc.CodeCheckProp.STEP_COMPLETE_TEXT;
 import static cc.CodeCheckProp.SUCCESS_EXTRACT_MESSAGE;
 import static cc.CodeCheckProp.VERSION_TEXT;
 import static cc.CodeCheckProp.ZIP_ERROR_MESSAGE;
@@ -77,6 +78,8 @@ import net.lingala.zip4j.model.FileHeader;
 import properties_manager.PropertiesManager;
 import java.util.concurrent.ThreadLocalRandom;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 /**
@@ -93,6 +96,7 @@ class CodeCheckWorkspaceViewController {
     
     final private CodeCheckApp app;
     final private CodeCheckWorkspaceView workspace;
+    private int currentRunningStep;
     private ReentrantLock stepProgressLock;
     private ArrayList<String> successMessages,failMessages;
     
@@ -107,6 +111,7 @@ class CodeCheckWorkspaceViewController {
     public void handleLoadRequest() {
         File selectedFile;
         PropertiesManager props = PropertiesManager.getPropertiesManager();
+        new File(props.getProperty(APP_PATH_WORK)).mkdir();
         if(CodeCheckApp.OS.contains("mac")){ 
             FileChooser fileChooser = new FileChooser();
             //fileChooser.setTitle();
@@ -265,10 +270,10 @@ class CodeCheckWorkspaceViewController {
             @Override
             protected Void call() throws Exception {
                 try {
-                    //TODO: FILE ACTIONS NOT WORKING ON WINDOWS?
                     stepProgressLock.lock();
+                    currentRunningStep = actionIndex;
                     switch(CodeCheckStepActions.values()[actionIndex]) {
-                        case EXTRACT_SUBMISSIONS:
+                        case EXTRACT_SUBMISSIONS: 
                             extractSubmissions();
                             break;
                         case RENAME_SUBMISSIONS:
@@ -285,6 +290,7 @@ class CodeCheckWorkspaceViewController {
                             break;
                         case VIEW_RESULTS:
                             launchViewerWithURL(workspace.codeCheckURL);
+                            currentRunningStep = actionIndex-1;
                             break;
                     }                    
                     Platform.runLater(()-> {
@@ -304,8 +310,12 @@ class CodeCheckWorkspaceViewController {
 
     }
     public void updateProgressBar(double progress) {
-        ((CodeCheckWorkspacePane)workspace.getWorkspace()).stepProgress.setProgress(progress);
-        ((CodeCheckWorkspacePane)workspace.getWorkspace()).progressPerc.setText((int)(progress*100) + "%");
+        //int visibleWorkspace = Arrays.asList(workspace.stepPanes).indexOf(workspace.getWorkspace());
+        //if(currentRunningStep == visibleWorkspace){
+
+            ((CodeCheckWorkspacePane)workspace.stepPanes[currentRunningStep]).stepProgress.setProgress(progress);
+            ((CodeCheckWorkspacePane)workspace.stepPanes[currentRunningStep]).progressPerc.setText((int)(progress*100) + "%");
+        //}
     }
     private void extractSubmissions() {
         unarchiveFilesForSection(CodeCheckFolder.SUBMISSIONS,".zip",false);
@@ -359,14 +369,14 @@ class CodeCheckWorkspaceViewController {
             }
         });
         //NOW REFRESH THE LIST
-       // handleRefreshRequest();
+        handleRefreshRequest();
 
     }
     private void unzipSubmissions() {
         unarchiveFilesForSection(CodeCheckFolder.PROJECTS,"all", true);
         
     }
-    private void unarchiveFilesForSection(CodeCheckFolder section,String extension, boolean needsExtraParent) {
+    private void unarchiveFilesForSection(CodeCheckFolder section,String extension, boolean needsExtraParent) {   
         CodeCheckProjectData dataManager = (CodeCheckProjectData)app.getDataComponent();
         //ObservableList unzipList = dataManager.getListing(1);
         CodeCheckWorkspacePane currentPane = (CodeCheckWorkspacePane)workspace.getWorkspace();
@@ -385,8 +395,9 @@ class CodeCheckWorkspaceViewController {
                 }
                 ZipFile zip = new ZipFile(file.toString());
                 for(FileHeader header : (List<FileHeader>)zip.getFileHeaders()) {
-                    if(!header.getFileName().endsWith(".txt") && !Files.isHidden(file.resolve(header.getFileName()))){
-                        Path outfile;
+                    boolean isHidden = ( CodeCheckApp.OS.contains("mac") ) ? Files.isHidden(file.resolve(header.getFileName())) : false;
+                    if(!header.getFileName().endsWith(".txt") && !isHidden){
+                        Path outfile;                    
                         if(extension.equals("all") || header.getFileName().endsWith(extension)){
                             outfile = file.getParent().resolveSibling(sectionDir+header.getFileName());
                         }else{
@@ -395,7 +406,7 @@ class CodeCheckWorkspaceViewController {
                             if(!header.isDirectory())
                             failMessages.add("-" + header.getFileName());
                         }
-
+                        
                         if(header.isDirectory()) {
                             Files.createDirectories(outfile);
 
@@ -424,8 +435,12 @@ class CodeCheckWorkspaceViewController {
                 if(needsExtraParent)successMessages.add("-" + file.getFileName().toString());
             } catch (Exception ex) {
                 failMessages.add("-" + file.getFileName().toString());
-                AppMessageDialogSingleton.getSingleton().show(PropertiesManager.getPropertiesManager().getProperty(ZIP_ERROR_TITLE),
-                        PropertiesManager.getPropertiesManager().getProperty(ZIP_ERROR_MESSAGE) + file.getFileName());
+                Platform.runLater(()-> {
+
+                    AppMessageDialogSingleton.getSingleton().show(ex.getMessage(),ex.getCause().getMessage());
+                    AppMessageDialogSingleton.getSingleton().show(PropertiesManager.getPropertiesManager().getProperty(ZIP_ERROR_TITLE),
+                            PropertiesManager.getPropertiesManager().getProperty(ZIP_ERROR_MESSAGE) + file.getFileName());
+                });
             }
             
         });
@@ -537,7 +552,6 @@ class CodeCheckWorkspaceViewController {
     }
     private void launchViewerWithURL(URL url) {
         Platform.runLater( () -> {
-            System.out.println("Launched viewer with url: " + url);
             Stage stage = new Stage();
             CodeCheckResultsViewer viewer = new CodeCheckResultsViewer(stage,url);
             stage.setScene(new Scene(viewer));
@@ -546,10 +560,32 @@ class CodeCheckWorkspaceViewController {
         
     }
     public Button initChildButton(Pane toolbar,String icon, String tooltip,boolean disabled) {
+        Button temp = app.getGUI().initChildButton(toolbar, "", tooltip, disabled);
+        //return app.getGUI().initChildButton(toolbar, icon, tooltip, disabled);
+        Image buttonImage = new Image(CodeCheckApp.class.getResource(File.separator+PropertiesManager.getPropertiesManager().getProperty(icon)).toString());
+        temp.setGraphic(new ImageView(buttonImage));
+        return temp;
 
-        return app.getGUI().initChildButton(toolbar, icon, tooltip, disabled);
+    }
+    private void spaceCheckBeforeUpdate() {
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+        int visibleWorkspace = Arrays.asList(workspace.stepPanes).indexOf(workspace.getWorkspace());
+        if(currentRunningStep != visibleWorkspace){
+            Alert alert = new Alert(AlertType.INFORMATION);
+                alert.setTitle(props.getProperty(APP_TITLE));        
+                alert.setHeaderText(props.getProperty("STEP_"+(currentRunningStep+1)+"_BUTTON_1_TEXT"));
+                alert.setContentText(props.getProperty("STEP_"+(currentRunningStep+1)+"_BUTTON_1_TEXT") + props.getProperty(STEP_COMPLETE_TEXT));
+                alert.showAndWait().ifPresent(response -> {
+                    workspace.changeToWorkspace(currentRunningStep);
+                    //PROCESS MUST BE DONE TO PRINT
+                    //updateProgressBar(1.0);
+            });
+            
+        }
+
     }
     private void printAllMessages() {
+        spaceCheckBeforeUpdate();
         //UGLY HAX YO
         int textIndex = (2*Arrays.asList(workspace.stepPanes).indexOf(workspace.getWorkspace())) + SUCCESS_EXTRACT_MESSAGE.ordinal();
         StringBuilder sb = new StringBuilder();
@@ -579,7 +615,7 @@ class CodeCheckWorkspaceViewController {
             text.setBackground(Background.EMPTY);
             text.setFocusTraversable(false);
             */
-            CodeCheckWorkspacePane activePane = (CodeCheckWorkspacePane)workspace.getWorkspace();
+            CodeCheckWorkspacePane activePane = (CodeCheckWorkspacePane)workspace.stepPanes[currentRunningStep];
             Text logText = new Text(message + "\n"); 
             //logText.setFont(new Font(15)); 
 
