@@ -5,6 +5,10 @@
  */
 package cc.viewer;
 
+import static cc.CodeCheckProp.FILE_TYPE_DIRECTORY;
+import static cc.CodeCheckProp.FILE_TYPE_ZIP;
+import static cc.CodeCheckProp.FILE_VIEWER_HEADER;
+import static cc.CodeCheckProp.FILE_VIEWER_TITLE;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,6 +24,7 @@ import javafx.scene.layout.Region;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.FileHeader;
+import properties_manager.PropertiesManager;
 /**
  *
  * @author danniyazov
@@ -61,21 +66,21 @@ public class CodeCheckFileViewer {
         return singleton;
     }
     public void viewFile(Path file){
-        //TODO: READ FROM PROPS
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
         path = file;
         content.setLength(0);
         if(Files.isDirectory(path)){
             enumerateDirectory();
-           alert.setContentText("Type: Directory");
+           alert.setContentText(props.getProperty(FILE_TYPE_DIRECTORY));
         }
         else if(path.getFileName().toString().endsWith(".zip")){
             enumerateArchive();
-            alert.setContentText("Type: Zip Archive");
+            alert.setContentText(props.getProperty(FILE_TYPE_ZIP));
 
         }
         textArea.setText(content.toString());
-        alert.setTitle("File Viewer");
-        alert.setHeaderText("Contents of " + path.getFileName().toString());
+        alert.setTitle(props.getProperty(FILE_VIEWER_TITLE));
+        alert.setHeaderText(props.getProperty(FILE_VIEWER_HEADER) + path.getFileName().toString());
         alert.showAndWait();
 
 
@@ -118,7 +123,9 @@ public class CodeCheckFileViewer {
                         content.append("\n");
                     }
                 } catch (IOException ex) {
-                    Logger.getLogger(CodeCheckFileViewer.class.getName()).log(Level.SEVERE, null, ex);
+                        content.append(((FileHeader)e).getFileName());
+                        content.append("\n");
+                    
                 }
                 
             });
