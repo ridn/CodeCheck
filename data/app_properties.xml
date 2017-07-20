@@ -15,8 +15,14 @@
     	<property name="APP_CSS"	    value="cc_style.css"></property>
         <property name="APP_PATH_WORK"      value="work/"></property>
         <property name="APP_TM_TEXT"		value="TM"></property>
-        <property name="APP_VERSION"		value="0.0.1-1a (build 1)"></property>
+        <property name="APP_VERSION"		value="0.0.9-6b (build 2)"></property>
         <property name="APP_PERSISTENT_DATA"		value="persistentData.json"></property>
+
+        <!-- PROJECT DIRS -->
+        <property name="BLACKBOARD"	    value="blackboard"></property>
+        <property name="SUBMISSIONS"	    value="submissions"></property>
+        <property name="CODE"	    value="code"></property>
+        <property name="PROJECTS"	    value="projects"></property>
 
         <!-- PROGRAM ICON FILES -->
         <property name="NEW_ICON"	    value="New.png"></property>
@@ -51,6 +57,11 @@
         <property name="STEP_3_HINT"		value="Select student submissions and click Unzip"></property>
         <property name="STEP_4_HINT"		value="Select students and click Extract Code"></property>
         <property name="STEP_5_HINT"		value="Select students and click Code Check"></property>
+        <property name="STEP_1_LIST_TITLE"		value="Blackboard Submissions"></property>
+        <property name="STEP_2_LIST_TITLE"		value="Student Submissions"></property>
+        <property name="STEP_3_LIST_TITLE"		value="Student ZIP Files"></property>
+        <property name="STEP_4_LIST_TITLE"		value="Student Work Directories"></property>
+        <property name="STEP_5_LIST_TITLE"		value="Student Work"></property>
         <property name="STEP_1_PROGRESS"		value="Extraction Progress"></property>
         <property name="STEP_2_PROGRESS"		value="Rename Progress"></property>
         <property name="STEP_3_PROGRESS"		value="Unzip Progress"></property>
@@ -79,6 +90,27 @@
         <property name="VERSION_TEXT"		value="Version"></property>
         <property name="LEGAL_NOTICE"		value="Copyright © 2017"></property>
         <property name="AUTHOR_TEXT"		value="Created By Daniel Niyazov"></property>
+        <property name="QUIT_DIALOG_TITLE_TEXT"		value="Quit"></property>
+        <property name="QUIT_DIALOG_HEADER_TEXT"		value="Close Code Check?"></property>
+        <property name="QUIT_DIALOG_CONTENT_TEXT"		value="Are you sure you wish to close this application?"></property>
+        <property name="SUCCESS_EXTRACT_MESSAGE"		value="Successfully extracted files:"></property>
+        <property name="FAIL_EXTRACT_MESSAGE"		value="Submission Errors:"></property>
+        <property name="SUCCESS_RENAME_MESSAGE"		value="Successfully renamed submissions:"></property>
+        <property name="FAIL_RENAME_MESSAGE"		value="Rename Errors:"></property>
+        <property name="SUCCESS_UNZIP_MESSAGE"		value="Successfully unzipped files:"></property>
+        <property name="FAIL_UNZIP_MESSAGE"		value="Unzip Errors:"></property>
+        <property name="SUCCESS_CODE_EXTRACT_MESSAGE"		value="Successful code extraction:"></property>
+        <property name="FAIL_CODE_EXTRACT_MESSAGE"		value="Code Extraction Errors:"></property>
+        <property name="CORRUPT_CHECK_HEADER"		value="Corrupt Code Check"></property>
+        <property name="CORRUPT_CHECK_MESSAGE"		value="The selected CodeCheck is corrupt or invalid."></property>
+        <property name="NO_SELECTION_TITLE"		value="Oops"></property>
+        <property name="NO_SELECTION_MESSAGE"		value="No files types selected."></property>
+        <property name="STEP_COMPLETE_TEXT"		value=" has completed."></property>
+        <property name="FILE_VIEWER_TITLE"		value="File Viewer"></property>
+        <property name="FILE_TYPE_DIRECTORY"		value="File Type: Directory"></property>
+        <property name="FILE_TYPE_ZIP"		value="File Type: Zip Archive"></property>
+        <property name="FILE_VIEWER_HEADER"		value="Contents of "></property>
+        <property name="CHECK_COMPLETE_MESSAGE"		value="Student Plagiarism results can be found at"></property>
 
         <!-- ERROR MESSAGES -->
         <property name="CLOSE_BUTTON_TEXT"              value="Close"></property>
@@ -91,10 +123,12 @@
         <property name="SAVE_ERROR_TITLE"		value="Save Work Error"></property>
         <property name="PROPERTIES_LOAD_ERROR_MESSAGE"	value="An error occured loading a properties file."></property>
         <property name="PROPERTIES_LOAD_ERROR_TITLE"	value="Properties File Loading Error"></property>
-        <property name="DUPLICATE_IMAGE_TITLE"	value="Duplicate Image"></property>
-        <property name="DUPLICATE_IMAGE_MESSAGE"	value="Please select another image."></property>
-        <property name="DUPLICATE_FOUND_TITLE"	value="Duplicates Found"></property>
-        <property name="DUPLICATE_FOUND_MESSAGE"	value="Some images were not added."></property>
+        <property name="ZIP_ERROR_TITLE"	value="Zip Error"></property>
+        <property name="ZIP_ERROR_MESSAGE"	value="An error occured unzipping "></property>
+        <property name="DELETE_PROMPT_HEADER"	value="Delete "></property>
+        <property name="DELETE_PROMPT_MESSAGE"	value="This is a permanent action. Are you sure?"></property>
+        <property name="STEP_IN_PROGRESS_HEADER"	value="Action in progress"></property>
+        <property name="STEP_IN_PROGRESS_MESSAGE"	value="There is already an action in progress, please wait until it is complete before you continue."></property>
 
         <!-- VERIFICATION MESSAGES -->
 

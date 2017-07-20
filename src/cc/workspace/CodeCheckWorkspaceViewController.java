@@ -393,7 +393,9 @@ class CodeCheckWorkspaceViewController {
             }
         });
         //NOW REFRESH THE LIST
-        handleRefreshRequest();
+        Platform.runLater(()-> {
+            handleRefreshRequest();
+        });
 
     }
     private void unzipSubmissions() {
