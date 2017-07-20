@@ -5,6 +5,25 @@ Author: Dan Niyazov
 .root{
 
 }
+
+.button {
+    -fx-background-insets: 1;
+    -fx-background-padding: 4;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-background-color:#ECECEC;
+    -fx-border-color:#D1D1D1;
+
+}
+.button:hover {
+    -fx-background-color:#E0E0E0;
+    -fx-border-color:#C5C5C5;
+}
+.button:focused{
+    -fx-border-color:#00CBF7;
+    -fx-effect: dropshadow(gaussian, rgba(0, 203, 247, 0.3), 5, 0.25, 0.0, 0.0);
+}
+
 .bordered_pane {
     -fx-padding:5;
 }
@@ -68,13 +87,18 @@ Author: Dan Niyazov
 }
 .welcome_close_button {
     -fx-background-color: transparent;
+    -fx-border-color:transparent;
     -fx-text-fill: #9B9B9B;
     -fx-font-size: 20px;
     -fx-font-family: Helvetica, Arial, sans-serif;
 
 }
-.welcome_close_button :hover{
+.welcome_close_button:hover{
     -fx-opacity: 0.5;
+    -fx-border-width: 1;
+    -fx-background-color:transparent;
+    -fx-border-color:transparent;
+
 }
 .welcome_banner_text {
     -fx-font-family: Helvetica, Arial, sans-serif;
@@ -114,13 +138,46 @@ Author: Dan Niyazov
 
 }
 .workspace_pane {
-    -fx-background-color:#ECECEC;
+    -fx-background-color:rgba(228, 238, 244, 0.4);
     -fx-margin:5;
 }
 .toolbar {
-    -fx-background-color:#E4E4E4;
+    -fx-background-color:rgba(196, 204, 217, 0.25);
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color:#C8C8C8;
+    -fx-padding: 5 10 5 10;
 }
+.toolbar_content {
+    -fx-padding:0 0 0 0;
+    -fx-spacing:5;
+    -fx-hgap: 5;
 
+}
+.progress-bar {
+    -fx-pref-width:250;
+    -fx-translate-y:5;
+    -fx-indeterminate-bar-length: 60;
+    -fx-indeterminate-bar-escape: true;
+    -fx-indeterminate-bar-flip: true;
+    -fx-indeterminate-bar-animation-time: 2;
+}
+.progress-bar > .bar {
+    -fx-background-color: #0B8CE3;
+    -fx-background-insets: 1;
+    -fx-background-radius: 8;
+    -fx-padding: 0.25em;
+}
+.progress-bar:indeterminate > .bar {
+    -fx-background-color: linear-gradient(to left, transparent, -fx-accent);
+}
+.progress-bar > .track {
+    -fx-background-color: transparent;          
+    -fx-border-color: #0B8CE3;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-insets: 2;
+    -fx-background-radius: 8,7,6; /* 10, 9, 8 */
+}
 .step_title {
     -fx-font-family: Helvetica, Arial, sans-serif;
     -fx-font-size: 14;

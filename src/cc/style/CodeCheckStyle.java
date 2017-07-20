@@ -22,6 +22,7 @@ public class CodeCheckStyle {
     public static String WELCOME_VIEW_RECENTS_HEADER = "welcome_recents_header";
     public static String WORKSPACE_PANE = "workspace_pane";
     public static String WORKSPACE_TOOLBAR = "toolbar";
+    public static String WORKSPACE_TOOLBAR_INNER = "toolbar_content";
     public static String STEP_TITLE_LABEL = "step_title";
     public static String CUSTOM_SOURCE_FIELD = "custom_source_textfield";
     public static String WELCOME_TITLE_BAR_MAC = "welcome_title_bar_mac";

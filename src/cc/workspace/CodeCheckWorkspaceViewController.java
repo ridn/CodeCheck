@@ -78,6 +78,7 @@ import net.lingala.zip4j.model.FileHeader;
 import properties_manager.PropertiesManager;
 import java.util.concurrent.ThreadLocalRandom;
 import javafx.scene.Scene;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
@@ -96,7 +97,7 @@ class CodeCheckWorkspaceViewController {
     
     final private CodeCheckApp app;
     final private CodeCheckWorkspaceView workspace;
-    private int currentRunningStep;
+    private int currentRunningStep = -1;
     private ReentrantLock stepProgressLock;
     private ArrayList<String> successMessages,failMessages;
     
@@ -272,6 +273,7 @@ class CodeCheckWorkspaceViewController {
                 try {
                     stepProgressLock.lock();
                     currentRunningStep = actionIndex;
+                    Platform.runLater(()->updateProgressBar(-1));
                     switch(CodeCheckStepActions.values()[actionIndex]) {
                         case EXTRACT_SUBMISSIONS: 
                             extractSubmissions();
@@ -306,16 +308,20 @@ class CodeCheckWorkspaceViewController {
             }
          };
         Thread thread = new Thread(task);
-        thread.start();            
+        thread.start();   
 
     }
     public void updateProgressBar(double progress) {
-        //int visibleWorkspace = Arrays.asList(workspace.stepPanes).indexOf(workspace.getWorkspace());
-        //if(currentRunningStep == visibleWorkspace){
+        if(progress < 0)
+            ((CodeCheckWorkspacePane)workspace.stepPanes[currentRunningStep]).stepProgress.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
+        else{
+            //int visibleWorkspace = Arrays.asList(workspace.stepPanes).indexOf(workspace.getWorkspace());
+            //if(currentRunningStep == visibleWorkspace){
 
-            ((CodeCheckWorkspacePane)workspace.stepPanes[currentRunningStep]).stepProgress.setProgress(progress);
-            ((CodeCheckWorkspacePane)workspace.stepPanes[currentRunningStep]).progressPerc.setText((int)(progress*100) + "%");
-        //}
+                ((CodeCheckWorkspacePane)workspace.stepPanes[currentRunningStep]).stepProgress.setProgress(progress);
+                ((CodeCheckWorkspacePane)workspace.stepPanes[currentRunningStep]).progressPerc.setText((int)(progress*100) + "%");
+            //}
+        }
     }
     private void extractSubmissions() {
         unarchiveFilesForSection(CodeCheckFolder.SUBMISSIONS,".zip",false);
@@ -437,7 +443,6 @@ class CodeCheckWorkspaceViewController {
                 failMessages.add("-" + file.getFileName().toString());
                 Platform.runLater(()-> {
 
-                    AppMessageDialogSingleton.getSingleton().show(ex.getMessage(),ex.getCause().getMessage());
                     AppMessageDialogSingleton.getSingleton().show(PropertiesManager.getPropertiesManager().getProperty(ZIP_ERROR_TITLE),
                             PropertiesManager.getPropertiesManager().getProperty(ZIP_ERROR_MESSAGE) + file.getFileName());
                 });
@@ -562,7 +567,7 @@ class CodeCheckWorkspaceViewController {
     public Button initChildButton(Pane toolbar,String icon, String tooltip,boolean disabled) {
         Button temp = app.getGUI().initChildButton(toolbar, "", tooltip, disabled);
         //return app.getGUI().initChildButton(toolbar, icon, tooltip, disabled);
-        Image buttonImage = new Image(CodeCheckApp.class.getResource(File.separator+PropertiesManager.getPropertiesManager().getProperty(icon)).toString());
+        Image buttonImage = new Image(CodeCheckApp.class.getResource("/"+PropertiesManager.getPropertiesManager().getProperty(icon)).toString());
         temp.setGraphic(new ImageView(buttonImage));
         return temp;
 
@@ -605,10 +610,12 @@ class CodeCheckWorkspaceViewController {
         printMessageToLog(sb.toString().trim(),MESSAGE_TYPE.MESSAGE_NORMAL);
         successMessages.clear();
         failMessages.clear();
+        currentRunningStep = -1;
+
     }
     private void printMessageToLog(String message,MESSAGE_TYPE type) {
         if(!message.isEmpty())
-        Platform.runLater( () -> {
+         {
             /*
             TextField text = new TextField(message);
             text.setEditable(false);
@@ -640,7 +647,7 @@ class CodeCheckWorkspaceViewController {
             }
             activePane.actionLog.getChildren().addAll(logText);
             activePane.scrollToBottom();
-        });
+        }
     }
 
 }

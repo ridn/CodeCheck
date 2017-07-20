@@ -71,7 +71,7 @@ public class CodeCheckWelcomeView extends BorderPane {
     private VBox recentsPanel,welcomePanel;
     private Button closeWindowButton;
     private HBox titleBar;
-
+    
     Label recentsHeaderLabel;
     Button newCodeCheckButton;
     Button recentCheckButtons[];
@@ -101,10 +101,6 @@ public class CodeCheckWelcomeView extends BorderPane {
    }
     private void initLayout() {
         PropertiesManager props = PropertiesManager.getPropertiesManager();
-        Rectangle rect = new Rectangle(primaryStage.getWidth(),primaryStage.getHeight());
-        rect.setArcHeight(10.0);
-        rect.setArcWidth(10.0);
-        setClip(rect);
     
         //ADD CUSTOM 'TITLEBAR'
         closeWindowButton = new Button("x");
@@ -173,6 +169,14 @@ public class CodeCheckWelcomeView extends BorderPane {
         VBox.setMargin(welcomePanel, new Insets(22,22,100,22)); // optional
 
         setLeft(recentsPanel);
+        primaryStage.minHeightProperty().bind(recentsPanel.heightProperty().multiply(1.2));
+        Rectangle rect = new Rectangle(primaryStage.getWidth(),primaryStage.getHeight()); 
+        rect.heightProperty().bind(primaryStage.heightProperty());
+        rect.setArcHeight(10.0);
+        rect.setArcWidth(10.0);
+        setClip(rect);
+
+
     }
    private void initControllers() {
         controller = new CodeCheckWelcomeViewController(app);
@@ -197,6 +201,8 @@ public class CodeCheckWelcomeView extends BorderPane {
                 primaryStage.setX(e.getScreenX() + xOrigin);
                 primaryStage.setY(e.getScreenY() + yOrigin);
         });
+        closeWindowButton.setFocusTraversable(false);
+
 
    }
     private void initStyle(Scene primaryScene) {

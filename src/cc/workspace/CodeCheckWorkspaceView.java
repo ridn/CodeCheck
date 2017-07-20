@@ -12,6 +12,7 @@ import cc.data.CodeCheckProjectData;
 import static cc.style.CodeCheckStyle.CUSTOM_SOURCE_FIELD;
 import static cc.style.CodeCheckStyle.STEP_TITLE_LABEL;
 import static cc.style.CodeCheckStyle.WORKSPACE_TOOLBAR;
+import static cc.style.CodeCheckStyle.WORKSPACE_TOOLBAR_INNER;
 import djf.components.AppDataComponent;
 import djf.components.AppWorkspaceComponent;
 import java.net.URL;
@@ -150,6 +151,7 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
                 customCheckbox.setFillHeight(true);
                 customCheckbox.setAlignment(Pos.CENTER_LEFT);
                 GridPane.setColumnSpan(customCheckbox, 2);
+                sourceTypes[4].disableProperty().bind(customSourceField.textProperty().isEmpty());
 
                 checkBoxPane.add(customCheckbox, 0, 2);
                 
@@ -173,7 +175,7 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
 
     }
     private void initControllers() {
-        
+
         homeButton.setOnAction(e-> {
             controller.handleHomeStepRequest();
         });
@@ -226,7 +228,8 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
     private void initStyle() {
         //app.getGUI().getTopToolbarPane().getStyleClass().add(WORKSPACE_TOOLBAR);
         app.getGUI().getAppPane().getTop().getStyleClass().add(WORKSPACE_TOOLBAR);
-        progressionToolbar.getStyleClass().add(WORKSPACE_TOOLBAR);
+        progressionToolbar.getStyleClass().add(WORKSPACE_TOOLBAR_INNER);
+        app.getGUI().getFileToolbar().getStyleClass().add(WORKSPACE_TOOLBAR_INNER);
 
     }
     private void setupToolbarAsNeeded(FlowPane toolbar) {

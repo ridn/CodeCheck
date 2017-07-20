@@ -33,6 +33,8 @@ import properties_manager.PropertiesManager;
  */
 public class CodeCheckApp extends AppTemplate {
     public static String OS = System.getProperty("os.name").toLowerCase();
+    private static double xOrigin = 0;
+    private static double yOrigin = 0;
 
     CodeCheckWelcomeView appWelcomeComponent;
     private Stage appStage;
@@ -112,6 +114,15 @@ public class CodeCheckApp extends AppTemplate {
         String title = PropertiesManager.getPropertiesManager().getProperty(APP_TITLE);
         title += (data != null)? (" - " + data.getTitle()) : "";
         appStage.setTitle(title);
+        
+        getGUI().getAppPane().getTop().setOnMousePressed(e-> {
+            xOrigin = appStage.getX() - e.getScreenX();
+            yOrigin = appStage.getY() - e.getScreenY();
+        });
+        getGUI().getAppPane().getTop().setOnMouseDragged(e-> {
+                appStage.setX(e.getScreenX() + xOrigin);
+                appStage.setY(e.getScreenY() + yOrigin);
+        });
         
     }
     private void setDataComponent(CodeCheckProjectData data) {

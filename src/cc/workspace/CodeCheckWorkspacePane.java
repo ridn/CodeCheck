@@ -9,6 +9,7 @@ package cc.workspace;
 import static cc.CodeCheckProp.*;
 import static cc.style.CodeCheckStyle.STEP_TITLE_LABEL;
 import static cc.style.CodeCheckStyle.WORKSPACE_PANE;
+import static cc.style.CodeCheckStyle.WORKSPACE_TOOLBAR_INNER;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.geometry.Insets;
@@ -141,6 +142,9 @@ class CodeCheckWorkspacePane extends HBox{
         stepTitleLabel.getStyleClass().add(STEP_TITLE_LABEL);
         progressLabel.getStyleClass().add(STEP_TITLE_LABEL);
         setPadding(new Insets(10, 10, 10, 10));
+        leftActionButtonsPane.getStyleClass().add(WORKSPACE_TOOLBAR_INNER);
+        stepActionButtonsPane.getStyleClass().add(WORKSPACE_TOOLBAR_INNER);
+
 }
 
     public void setStepTitle(String title) {
