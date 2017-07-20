@@ -24,6 +24,8 @@ public class CodeCheckStyle {
     public static String WORKSPACE_TOOLBAR = "toolbar";
     public static String WORKSPACE_TOOLBAR_INNER = "toolbar_content";
     public static String STEP_TITLE_LABEL = "step_title";
+    public static String STEP_LIST_TITLE_LABEL = "list_title";
+    public static String LIST_VIEW = "list_view";
     public static String CUSTOM_SOURCE_FIELD = "custom_source_textfield";
     public static String WELCOME_TITLE_BAR_MAC = "welcome_title_bar_mac";
     public static String WELCOME_TITLE_BAR_WIN = "welcome_title_bar_win";

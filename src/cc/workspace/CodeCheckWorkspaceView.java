@@ -94,6 +94,7 @@ public class CodeCheckWorkspaceView extends AppWorkspaceComponent{
             //STEP SPECIFIC LABELS
             stepPanes[i].setStepTitle(props.getProperty("STEP_"+ (i+1) +"_TITLE"));
             stepPanes[i].setStepHint(props.getProperty("STEP_"+ (i+1) +"_HINT"));
+            stepPanes[i].setStepListTitle(props.getProperty("STEP_"+ (i+1) +"_LIST_TITLE"));
             stepPanes[i].setStepProgressLabel(props.getProperty("STEP_"+ (i+1) +"_PROGRESS"));
             
             //CONNECT TABLES TO THEIR DATA HERE

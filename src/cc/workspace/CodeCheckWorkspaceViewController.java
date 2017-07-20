@@ -101,8 +101,8 @@ class CodeCheckWorkspaceViewController {
     final private CodeCheckApp app;
     final private CodeCheckWorkspaceView workspace;
     private int currentRunningStep = -1;
-    private ReentrantLock stepProgressLock;
-    private ArrayList<String> successMessages,failMessages;
+    final private ReentrantLock stepProgressLock;
+    final private ArrayList<String> successMessages,failMessages;
     
     public CodeCheckWorkspaceViewController(CodeCheckApp initApp,CodeCheckWorkspaceView view) {
         app = initApp;
