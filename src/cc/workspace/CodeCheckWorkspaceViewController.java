@@ -12,6 +12,7 @@ import static cc.CodeCheckProp.ABOUT_LABEL_TEXT;
 import static cc.CodeCheckProp.APP_PATH_WORK;
 import static cc.CodeCheckProp.APP_VERSION;
 import static cc.CodeCheckProp.AUTHOR_TEXT;
+import static cc.CodeCheckProp.CHECK_COMPLETE_MESSAGE;
 import static cc.CodeCheckProp.CORRUPT_CHECK_HEADER;
 import static cc.CodeCheckProp.CORRUPT_CHECK_MESSAGE;
 import static cc.CodeCheckProp.DELETE_PROMPT_HEADER;
@@ -20,6 +21,8 @@ import static cc.CodeCheckProp.LEGAL_NOTICE;
 import static cc.CodeCheckProp.NO_SELECTION_MESSAGE;
 import static cc.CodeCheckProp.NO_SELECTION_TITLE;
 import static cc.CodeCheckProp.STEP_COMPLETE_TEXT;
+import static cc.CodeCheckProp.STEP_IN_PROGRESS_HEADER;
+import static cc.CodeCheckProp.STEP_IN_PROGRESS_MESSAGE;
 import static cc.CodeCheckProp.SUCCESS_EXTRACT_MESSAGE;
 import static cc.CodeCheckProp.VERSION_TEXT;
 import static cc.CodeCheckProp.ZIP_ERROR_MESSAGE;
@@ -126,7 +129,8 @@ class CodeCheckWorkspaceViewController {
         }
         if (selectedFile != null) {
             if(isValidCodeCheckFile(selectedFile.getAbsolutePath())){
-                ((CodeCheckFileStore)app.getFileComponent()).loadProject(selectedFile);       
+                ((CodeCheckFileStore)app.getFileComponent()).loadProject(selectedFile);
+                currentRunningStep = -1;
             }else{
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle(props.getProperty(APP_TITLE));        
@@ -267,48 +271,53 @@ class CodeCheckWorkspaceViewController {
         
     }
     public void handleStepActionRequest(int actionIndex) {
-        Task<Void> task = new Task<Void>() {                    
-            @Override
-            protected Void call() throws Exception {
-                try {
-                    stepProgressLock.lock();
-                    currentRunningStep = actionIndex;
-                    Platform.runLater(()->updateProgressBar(-1));
-                    switch(CodeCheckStepActions.values()[actionIndex]) {
-                        case EXTRACT_SUBMISSIONS: 
-                            extractSubmissions();
-                            break;
-                        case RENAME_SUBMISSIONS:
-                            renameSubmissions();
-                            break;
-                        case UNZIP_SUBMISSIONS:
-                            unzipSubmissions();
-                            break;
-                        case EXTRACT_CODE:
-                            extractSubmissionCode();
-                            break;
-                        case CODE_CHECK:
-                            workspace.setCheckResults(codeCheckWithResults());
-                            break;
-                        case VIEW_RESULTS:
-                            launchViewerWithURL(workspace.codeCheckURL);
-                            currentRunningStep = actionIndex-1;
-                            break;
-                    }                    
-                    Platform.runLater(()-> {
-                        handleRefreshRequest();
-                        printAllMessages();
-                    });
-                    //Thread.sleep(10);
-                    }
-                    finally {
-                        stepProgressLock.unlock();
-                    }
-                return null;
-            }
-         };
-        Thread thread = new Thread(task);
-        thread.start();   
+        if(currentRunningStep != -1) {
+            displayStepInProgressWarning();
+        }else{
+            Task<Void> task = new Task<Void>() {                    
+                @Override
+                protected Void call() throws Exception {
+                    try {
+                        stepProgressLock.lock();
+                        currentRunningStep = actionIndex;
+                        if(actionIndex != CodeCheckStepActions.VIEW_RESULTS.ordinal())
+                            Platform.runLater(()->updateProgressBar(-1));
+                        switch(CodeCheckStepActions.values()[actionIndex]) {
+                            case EXTRACT_SUBMISSIONS: 
+                                extractSubmissions();
+                                break;
+                            case RENAME_SUBMISSIONS:
+                                renameSubmissions();
+                                break;
+                            case UNZIP_SUBMISSIONS:
+                                unzipSubmissions();
+                                break;
+                            case EXTRACT_CODE:
+                                extractSubmissionCode();
+                                break;
+                            case CODE_CHECK:
+                                workspace.setCheckResults(codeCheckWithResults());
+                                break;
+                            case VIEW_RESULTS:
+                                launchViewerWithURL(workspace.codeCheckURL);
+                                currentRunningStep = actionIndex-1;
+                                break;
+                        }                    
+                        Platform.runLater(()-> {
+                            handleRefreshRequest();
+                            printAllMessages();
+                        });
+                        //Thread.sleep(10);
+                        }
+                        finally {
+                            stepProgressLock.unlock();
+                        }
+                    return null;
+                }
+             };
+            Thread thread = new Thread(task);
+            thread.start();  
+        }
 
     }
     public void updateProgressBar(double progress) {
@@ -322,6 +331,15 @@ class CodeCheckWorkspaceViewController {
                 ((CodeCheckWorkspacePane)workspace.stepPanes[currentRunningStep]).progressPerc.setText((int)(progress*100) + "%");
             //}
         }
+    }
+    private void displayStepInProgressWarning() {
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle(props.getProperty(APP_TITLE));        
+        alert.setHeaderText(props.getProperty(STEP_IN_PROGRESS_HEADER));
+        alert.setContentText(props.getProperty(STEP_IN_PROGRESS_MESSAGE));
+        alert.showAndWait();
     }
     private void extractSubmissions() {
         unarchiveFilesForSection(CodeCheckFolder.SUBMISSIONS,".zip",false);
@@ -544,9 +562,11 @@ class CodeCheckWorkspaceViewController {
             int sleepTime = ThreadLocalRandom.current().nextInt(10, 120 + 1);
             Thread.sleep(sleepTime);
             }
-            printMessageToLog("Student Plagiarism results can be found at",MESSAGE_TYPE.MESSAGE_NORMAL);
-            printMessageToLog(url.toString(),MESSAGE_TYPE.MESSAGE_URL);
-
+            Platform.runLater( () -> {
+                printMessageToLog(PropertiesManager.getPropertiesManager().getProperty(CHECK_COMPLETE_MESSAGE),MESSAGE_TYPE.MESSAGE_NORMAL);
+                
+                printMessageToLog(url.toString(),MESSAGE_TYPE.MESSAGE_URL);
+            });
             return url;
         } catch (MalformedURLException ex) {
             Logger.getLogger(CodeCheckWorkspaceViewController.class.getName()).log(Level.SEVERE, null, ex);
