@@ -169,7 +169,11 @@ public class CodeCheckWelcomeView extends BorderPane {
         VBox.setMargin(welcomePanel, new Insets(22,22,100,22)); // optional
 
         setLeft(recentsPanel);
-        primaryStage.minHeightProperty().bind(recentsPanel.heightProperty().multiply(1.2));
+        primaryStage.showingProperty().addListener((observableValue, oldValue, newValue)->{
+            if(newValue){
+                primaryStage.setMinHeight(recentsPanel.getHeight()*1.2);
+            }
+        });
         Rectangle rect = new Rectangle(primaryStage.getWidth(),primaryStage.getHeight()); 
         rect.heightProperty().bind(primaryStage.heightProperty());
         rect.setArcHeight(10.0);
