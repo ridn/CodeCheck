@@ -7,4 +7,4 @@ Simple code extraction tool designed to be API'd into a plagiarism checker for q
 Summer '17
 
 
-[Welcome Splash](/ss1.png?raw=true "Welcome Splash")
+[Welcome Splash](/ss1.png "Welcome Splash")
